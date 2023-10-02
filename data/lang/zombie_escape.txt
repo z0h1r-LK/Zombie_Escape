@@ -1,0 +1,10 @@
+[en]
+GAME_DESC = "Zombie Escape"
+CHAT_PREFIX = "[!gZE!y]"
+
+HUD_COUNTDOWN = "Zombie(s) will be appear after %i Second(s) !!!"
+
+HUD_RELEASETIME = "Zombie(s) will release after %i Second(s) !!!"
+HUD_RELEASED = "Zombie(s) Released!!"
+
+MSG_READY = "!tAre you Ready!y? !tDon't Forget !y= !gCOVER/DEFENSE = WIN!"
