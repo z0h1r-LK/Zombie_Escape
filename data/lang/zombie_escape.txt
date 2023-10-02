@@ -8,3 +8,4 @@ HUD_RELEASETIME = "Zombie(s) will release after %i Second(s) !!!"
 HUD_RELEASED = "Zombie(s) Released!!"
 
 MSG_READY = "!tAre you Ready!y? !tDon't Forget !y= !gCOVER/DEFENSE = WIN!"
+NO_ENOUGH_PLAYERS = "!tThere are no enough players on the server!y, Required players: !g%i!y"
