@@ -567,7 +567,7 @@ public fw_HasRestrictItem_Pre(const id, ItemID:iItem)
 		return HC_CONTINUE
 
 	// Player is Zombie
-	if (iItem == ITEM_KNIFE && flag_get_boolean(g_bitsIsZombie, id))
+	if (iItem != ITEM_KNIFE && flag_get_boolean(g_bitsIsZombie, id))
 	{
 		// Block pick up weapon.
 		SetHookChainReturn(ATYPE_BOOL, true)
