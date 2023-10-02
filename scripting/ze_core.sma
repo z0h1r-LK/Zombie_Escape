@@ -86,8 +86,8 @@ public plugin_init()
 	// Events.
 	register_event("HLTV", "fw_NewRound_Event", "a", "1=0", "2=0")
 	register_event("TextMsg", "fw_RestartRound_Event", "a", "2=#Game_will_restart_in", "2=#Game_Commecing", "2=#Round_Draw")
-	register_logevent("fw_RoundStart_Event", 2, "2=Round_Start")
-	register_logevent("fw_RoundEnd_Event", 2, "2=Round_End")
+	register_logevent("fw_RoundStart_Event", 2, "1=Round_Start")
+	register_logevent("fw_RoundEnd_Event", 2, "1=Round_End")
 
 	// Hook Chains.
 	RegisterHookChain(RG_CBasePlayer_Spawn, "fw_PlayerSpawn_Post", 1)
@@ -348,15 +348,13 @@ public fw_RoundStart_Event()
 
 public check_RoundTime(const taskid)
 {
-	if (--x_iRoundTime < 1)
+	if (--x_iRoundTime <= 1)
 	{
-		remove_task(taskid)
-		return
-	}
+		rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
 
-	// Send HUD message to all clients.
-	set_hudmessage(0, 200, 0, 0.2, 0.3, 0, 0.0, 1.0, 0.0, 0.0, 4)
-	show_hudmessage(0, "%d:%02d", (x_iRoundTime / 60), (x_iRoundTime % 60))
+		// Remove task.
+		remove_task(taskid)
+	}
 }
 
 public fw_RoundEnd_Event()
