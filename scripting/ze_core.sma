@@ -392,10 +392,10 @@ public fw_PlayerSpawn_Post(const id)
 			{
 				set_user_Human(id)
 			}
-		}
 
-		// Turn off.
-		flag_unset(g_bitsRespawnAsZombie, id)
+			// Turn off.
+			flag_unset(g_bitsRespawnAsZombie, id)
+		}
 	}
 
 	check_LastPlayer()
@@ -412,10 +412,15 @@ public fw_PlayerKilled_Post(const iVictim, const iAttacker, const iGibs)
 
 	if (!x_bGameChosen)
 	{
-		if (!get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST") && !get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT"))
+		if (get_playersnum_ex(GetPlayers_ExcludeDead) < g_iReqPlayers)
 		{
 			// No One Won!
-			rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "#Round_Draw", "rounddraw")
+			rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
+		}
+		else if (!get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST") && !get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT"))
+		{
+			// No One Won!
+			rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
 		}
 	}
 
@@ -473,7 +478,7 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 
 		if (g_flKbReqDistance > 0.0)
 		{
-			if (vector_distance(vVicOrigin, vAttOrigin) <= g_flKbReqDistance)
+			if (vector_distance(vVicOrigin, vAttOrigin) > g_flKbReqDistance)
 				return
 		}
 
