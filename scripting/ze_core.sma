@@ -201,7 +201,9 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_iPlayersNum--
 
 	// Reset Var.
+	g_flUserSpeed[id] = 0.0
 	flag_unset(g_bitsIsZombie, id)
+	flag_unset(g_bitsSpeedFactor, id)
 	flag_unset(g_bitsRespawnAsZombie, id)
 
 	// Check Last Human or Zombie.
