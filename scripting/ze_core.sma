@@ -33,6 +33,7 @@ enum (+=1)
 // Cvars.
 new g_iReqPlayers,
 	bool:g_bKbEnabled,
+	bool:g_bKbBulletOnly,
 	bool:g_bBlockSuicide,
 	Float:g_flRoundEndDelay,
 	Float:g_flKbReqDistance,
@@ -106,6 +107,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_kill", "1"), g_bBlockSuicide)
 
 	bind_pcvar_num(register_cvar("ze_knockback_enable", "1"), g_bKbEnabled)
+	bind_pcvar_num(register_cvar("ze_knockback_bulletonly", "0"), g_bKbBulletOnly)
 	bind_pcvar_float(register_cvar("ze_knockback_distance", "600.0"), g_flKbReqDistance)
 	bind_pcvar_float(register_cvar("ze_knockback_speed", "300.0"), g_flKnockBackSpeed)
 
@@ -454,6 +456,9 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 		if (flag_get_boolean(g_bitsIsZombie, iVictim) == flag_get_boolean(g_bitsIsZombie, iAttacker))
 			return
 
+		if (g_bKbBulletOnly && !(bitsDamageType & DMG_BULLET))
+			return
+
 		static Float:vVicOrigin[3], Float:vAttOrigin[3], Float:vNewSpeed[3], Float:vSpeed[3]
 
 		// Reset vector3
@@ -465,6 +470,12 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 		// Get origin of the Victim and Attacker.
 		get_entvar(iVictim, var_origin, vVicOrigin)
 		get_entvar(iAttacker, var_origin, vAttOrigin)
+
+		if (g_flKbReqDistance > 0.0)
+		{
+			if (vector_distance(vVicOrigin, vAttOrigin) <= g_flKbReqDistance)
+				return
+		}
 
 		// Get current velocity of the Victim.
 		get_entvar(iVictim, var_velocity, vSpeed)
