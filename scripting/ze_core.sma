@@ -49,6 +49,7 @@ new g_iFwReturn,
 	g_bitsSpeedFactor,
 	g_bitsRespawnAsZombie,
 	bool:g_bRoundEnd,
+	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied
 
 // Arrays.
@@ -305,6 +306,9 @@ public fw_NewRound_Event()
 {
 	x_iRoundNum++
 
+	// Freeze Time.
+	g_bFreezePeriod = true
+
 	// Remove all Tasks.
 	remove_task(TASK_ROUNDTIME)
 
@@ -334,6 +338,9 @@ public fw_RestartRound_Event()
 {
 	x_iRoundNum = 0
 
+	// Round End!
+	g_bRoundEnd = true
+
 	// Remove tasks.
 	remove_task(TASK_ROUNDTIME)
 }
@@ -344,6 +351,8 @@ public fw_RoundStart_Event()
 
 	// Task for check round time left.
 	set_task(1.0, "check_RoundTime", TASK_ROUNDTIME, .flags = "b")
+
+	g_bFreezePeriod = false
 }
 
 public check_RoundTime(const taskid)
@@ -544,7 +553,7 @@ public fw_TraceAttack_Pre(const iVictim, const iAttacker, const Float:flDamage, 
 public fw_ResetMaxSpeed_Post(const id)
 {
 	// Is not Alive!
-	if (!is_user_alive(id))
+	if (!is_user_alive(id) || g_bFreezePeriod)
 		return
 
 	static Float:flMaxSpeed
