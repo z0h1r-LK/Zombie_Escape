@@ -5,6 +5,7 @@
 
 #include <amxmodx>
 #include <amxmisc>
+#include <fakemeta>
 #include <reapi>
 
 // Macroses.
@@ -46,6 +47,12 @@ stock ze_colored_print(const target, const message[], any:...)
 	return client_print_color(target, print_team_default, szBuffer);
 }
 
+/**
+ * Returns the number of required Zombies.
+ *
+ * @param iAliveNum    The number of alive players.
+ *
+ */
 stock GetRequiredZombies(iAliveNum)
 {
 	switch (iAliveNum)
@@ -57,4 +64,30 @@ stock GetRequiredZombies(iAliveNum)
 	}
 
 	return 0;
+}
+
+/**
+ * Sets custom sky for current map.
+ *
+ * @param szSkyName[]     Sky name.
+ *
+ * @noreturn
+ *
+ */
+stock precache_sky(const szSkyName[])
+{
+	new const szSuffix[6][3] = {"up", "dn", "ft", "bk", "lf", "rt"};
+	new szTgaFile[MAX_NAME_LENGTH+3];
+
+	for(new i = 0; i < 6; i++)
+	{
+		// Get full path of the File.
+		formatex(szTgaFile, 34, "gfx/env/%s%s.tga", szSkyName, szSuffix[i]);
+
+		// File is exist?
+		if(file_exists(szTgaFile, true))
+			precache_generic(szTgaFile);
+		else
+			server_print("[ZE] Cannot locate file '%s', Skipping...", szTgaFile);
+	}
 }
