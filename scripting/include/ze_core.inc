@@ -195,18 +195,6 @@ native ze_force_set_user_human(id);
 native ze_force_set_user_zombie(iVictim, iAttacker = 0);
 
 /**
- * Allow or Disallow spawing player as Zombie.
- *
- * @param id     Client index.
- *
- * @return       true  | If allowed or rejected successfully.
- *               false | If player not on game.
- *
- * @error        If this player not on game.
- */
-native ze_respawn_as_zombie(id);
-
-/**
  * Sets player maxspeed.
  *
  * @param id       Client index.
