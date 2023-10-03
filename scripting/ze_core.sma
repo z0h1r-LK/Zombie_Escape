@@ -47,7 +47,6 @@ new g_iFwReturn,
 	g_iPainShockFree,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
-	g_bitsRespawnAsZombie,
 	bool:g_bRoundEnd,
 	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied
@@ -61,7 +60,8 @@ public x_bGameStarted,
 		x_bGameChosen,
 		x_bFixSpawn,
 		x_iRoundTime,
-		x_iRoundNum
+		x_iRoundNum,
+		x_bRespawnAsZombie
 
 public plugin_natives()
 {
@@ -72,8 +72,6 @@ public plugin_natives()
 
 	register_native("ze_force_set_user_human", "__native_force_set_user_human")
 	register_native("ze_force_set_user_zombie", "__native_force_set_user_zombie")
-
-	register_native("ze_respawn_as_zombie", "__native_respawn_as_zombie")
 
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
@@ -205,7 +203,6 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_flUserSpeed[id] = 0.0
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
-	flag_unset(g_bitsRespawnAsZombie, id)
 
 	// Check Last Human or Zombie.
 	check_LastPlayer()
@@ -227,31 +224,34 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 		}
 		else
 		{
-			// Get the number of the Humans and Zombies.
-			new iHumansNum = get_member_game(m_iNumCT)
-			new iZombiesNum = get_member_game(m_iNumTerrorist)
+			if (x_bGameChosen)
+			{
+				// Get the number of the Humans and Zombies.
+				new iHumansNum = get_member_game(m_iNumCT)
+				new iZombiesNum = get_member_game(m_iNumTerrorist)
 
-			if (iHumansNum && !iZombiesNum)
-			{
-				rg_round_end(g_flRoundEndDelay, WINSTATUS_CTS, ROUND_CTS_WIN, "", "", true)
-			}
-			else if (iZombiesNum && !iHumansNum)
-			{
-				rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
-			}
-			else
-			{
-				// Get number of alive Humans and Zombies.
-				new iAliveHumansNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT")
-				new iAliveZombiesNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST")
-
-				if (iAliveHumansNum && !iAliveZombiesNum)
+				if (iHumansNum && !iZombiesNum)
 				{
 					rg_round_end(g_flRoundEndDelay, WINSTATUS_CTS, ROUND_CTS_WIN, "", "", true)
 				}
-				else if (iAliveZombiesNum && !iAliveHumansNum)
+				else if (iZombiesNum && !iHumansNum)
 				{
 					rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
+				}
+				else
+				{
+					// Get number of alive Humans and Zombies.
+					new iAliveHumansNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT")
+					new iAliveZombiesNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST")
+
+					if (iAliveHumansNum && !iAliveZombiesNum)
+					{
+						rg_round_end(g_flRoundEndDelay, WINSTATUS_CTS, ROUND_CTS_WIN, "", "", true)
+					}
+					else if (iAliveZombiesNum && !iAliveHumansNum)
+					{
+						rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
+					}
 				}
 			}
 		}
@@ -343,6 +343,9 @@ public fw_RestartRound_Event()
 
 	// Remove tasks.
 	remove_task(TASK_ROUNDTIME)
+
+	// Call forward ze_roundend(param1)
+	ExecuteForward(g_iForwards[FORWARD_ROUNDEND], _/* Ignore return value */, ZE_TEAM_UNA)
 }
 
 public fw_RoundStart_Event()
@@ -393,7 +396,7 @@ public fw_PlayerSpawn_Post(const id)
 		}
 		else
 		{
-			if (flag_get_boolean(g_bitsRespawnAsZombie, id))
+			if (x_bRespawnAsZombie)
 			{
 				set_user_Zombie(id)
 			}
@@ -401,9 +404,6 @@ public fw_PlayerSpawn_Post(const id)
 			{
 				set_user_Human(id)
 			}
-
-			// Turn off.
-			flag_unset(g_bitsRespawnAsZombie, id)
 		}
 	}
 
@@ -786,23 +786,6 @@ public __native_force_set_user_zombie(const plugin_id, const num_params)
 	}
 
 	force_set_user_Zombie(victim, attacker)
-	return true
-}
-
-public __native_respawn_as_zombie(const plugin_id, const num_params)
-{
-	new id = get_param(1)
-
-	if (!is_user_connected(id))
-	{
-		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
-		return false
-	}
-
-	if (get_param(2))
-		flag_unset(g_bitsRespawnAsZombie, id)
-	else
-		flag_set(g_bitsRespawnAsZombie, id)
 	return true
 }
 
