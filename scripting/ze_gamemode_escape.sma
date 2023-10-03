@@ -55,7 +55,8 @@ new g_iCountdown,
 	bool:g_bFreezeZombie
 
 // XVar.
-new g_xFixSpawn
+new g_xFixSpawn,
+	g_xRespawnAsZombie
 
 // Array.
 new g_iForwards[FORWARDS]
@@ -106,6 +107,7 @@ public plugin_init()
 
 	// XVars.
 	g_xFixSpawn = get_xvar_id("x_bFixSpawn")
+	g_xRespawnAsZombie = get_xvar_id("x_bRespawnAsZombie")
 
 	// Set Values.
 	g_iMsgNotice = CreateHudSyncObj()
@@ -172,8 +174,13 @@ public fw_TraceAttack_Pre(const iVictim, iAttacker, Float:flDamage, Float:vDirec
 
 public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 {
+	// Server?
+	if (!iInfector)
+		return ZE_CONTINUE
+
 	if (g_bReleaseTime)
 		return ZE_BREAK
+
 	return ZE_CONTINUE
 }
 
@@ -184,6 +191,9 @@ public ze_game_started_pre()
 
 	// Remove task.
 	remove_task(TASK_RELEASETIME)
+
+	// Disable xvar.
+	set_xvar_num(g_xRespawnAsZombie)
 }
 
 public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
@@ -238,7 +248,10 @@ public ze_gamemode_chosen(game_id, target)
 		ze_set_user_zombie(id)
 
 		// Custom Health for first Zombies.
-		set_entvar(id, var_health, float(g_iFirstZombiesHealth))
+		if (g_iFirstZombiesHealth > 0)
+		{
+			set_entvar(id, var_health, float(g_iFirstZombiesHealth))
+		}
 
 		// New Zombie.
 		iZombies[iNumZombie++] = id
@@ -250,6 +263,11 @@ public ze_gamemode_chosen(game_id, target)
 	if (g_bFreezeMode)
 	{
 		g_bFreezeZombie = true
+	}
+
+	if (g_bRespawnAsZombie)
+	{
+		set_xvar_num(g_xRespawnAsZombie, 1)
 	}
 
 	if (iNumZombie > 0)
@@ -354,4 +372,7 @@ public ze_roundend(iWinTeam)
 {
 	// Remove task.
 	remove_task(TASK_RELEASETIME)
+
+	// Disable XVar.
+	set_xvar_num(g_xRespawnAsZombie)
 }
