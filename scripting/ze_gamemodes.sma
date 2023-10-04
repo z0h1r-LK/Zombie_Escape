@@ -79,9 +79,6 @@ public plugin_init()
 	// Load Plug-In.
 	register_plugin("[ZE] Gamemodes Manager", ZE_VERSION, ZE_AUTHORS)
 
-	// Events.
-	register_event("TextMsg", "fw_RestartRound_Event", "a", "2=#Game_will_restart_in", "2=#Game_Commecing", "2=#Round_Draw")
-
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_gamemodes_delay", "20"), g_iStartDelay)
 	bind_pcvar_num(register_cvar("ze_gamemodes_firstround", "1"), g_bFirstRound)
@@ -134,14 +131,6 @@ public ze_game_started()
 
 	// Delay before start the game.
 	set_task(1.0, "show_CountdownMsg", TASK_COUNTDOWN, .flags = "b")
-}
-
-public fw_RestartRound_Event()
-{
-	set_xvar_num(g_xGameChosen)
-
-	// Remove countdown task.
-	remove_task(TASK_COUNTDOWN)
 }
 
 public show_CountdownMsg(taskid)
