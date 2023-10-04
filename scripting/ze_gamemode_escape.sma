@@ -79,8 +79,8 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_escape_enable", "1"), g_bEnabled)
-	bind_pcvar_num(register_cvar("ze_escape_type", "1"), g_bFreezeMode)
-	bind_pcvar_num(register_cvar("ze_escape_chance", "2"), g_iChance)
+	bind_pcvar_num(register_cvar("ze_escape_mode", "1"), g_bFreezeMode)
+	bind_pcvar_num(register_cvar("ze_escape_chance", "20"), g_iChance)
 	bind_pcvar_num(register_cvar("ze_escape_notice", "3"), g_iNoticeMode)
 	bind_pcvar_num(register_cvar("ze_escape_notice_red", "200"), g_iNoticeColors[Red])
 	bind_pcvar_num(register_cvar("ze_escape_notice_green", "100"), g_iNoticeColors[Green])
