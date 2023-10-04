@@ -22,7 +22,8 @@ enum any:FORWARDS
 // Task IDs.
 enum (+=100)
 {
-	TASK_RELEASETIME = 100
+	TASK_RELEASETIME = 100,
+	TASK_RELEASEDHUD
 }
 
 // Colors
@@ -191,6 +192,7 @@ public ze_game_started_pre()
 
 	// Remove task.
 	remove_task(TASK_RELEASETIME)
+	remove_task(TASK_RELEASEDHUD)
 
 	// Disable xvar.
 	set_xvar_num(g_xRespawnAsZombie)
@@ -327,9 +329,9 @@ public show_ReleaseTime(taskid)
 		}
 	}
 
-	if (g_iCountdown <= 0)
+	if (g_iCountdown <= 1)
 	{
-		release_Zombies()
+		set_task(1.0, "release_Zombies", TASK_RELEASEDHUD)
 
 		// Remove task.
 		remove_task(taskid)
@@ -371,6 +373,7 @@ public release_Zombies()
 public ze_roundend(iWinTeam)
 {
 	// Remove task.
+	remove_task(TASK_RELEASEDHUD)
 	remove_task(TASK_RELEASETIME)
 
 	// Disable XVar.
