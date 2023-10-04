@@ -627,11 +627,11 @@ set_user_Human(const id)
 	// Give player Knife.
 	rg_give_item(id, "weapon_knife", GT_REPLACE)
 
-	// Switch player to CT team.
-	rg_set_user_team(id, TEAM_CT, MODEL_UNASSIGNED)
-
 	// Call forward ze_user_humanized(param1)
 	ExecuteForward(g_iForwards[FORWARD_USER_HUMANIZED], _/* Ignore return value */, id)
+
+	// Switch player to CT team.
+	rg_set_user_team(id, TEAM_CT, MODEL_UNASSIGNED)
 
 	// Check Last Human and Zombie.
 	check_LastPlayer()
@@ -656,11 +656,11 @@ set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
 	// Give player Knife only.
 	rg_give_item(iVictim, "weapon_knife", GT_APPEND)
 
-	// Switch player TERRORIST team.
-	rg_set_user_team(iVictim, TEAM_TERRORIST, MODEL_UNASSIGNED)
-
 	// Call forward ze_user_infected(param1, param2).
 	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED], _/* Ignore return value */, iVictim, iAttacker)
+
+	// Switch player TERRORIST team.
+	rg_set_user_team(iVictim, TEAM_TERRORIST, MODEL_UNASSIGNED)
 
 	// Check Last Human and Zombie.
 	check_LastPlayer()
