@@ -135,6 +135,18 @@ public ze_game_started()
 
 public show_CountdownMsg(taskid)
 {
+	if (g_iCountdown <= 1)
+	{
+		remove_task(taskid)
+
+		// Choose a game mode.
+		choose_Gamemode()
+	}
+	else
+	{
+		g_iCountdown--
+	}
+
 	switch (g_iCountdownMode)
 	{
 		case 1: // Text Message.
@@ -157,18 +169,6 @@ public show_CountdownMsg(taskid)
 				set_dhudmessage(g_iCountdownColors[Red], g_iCountdownColors[Green], g_iCountdownColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 0, 1.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_COUNTDOWN", g_iCountdown)
 		}
-	}
-
-	if (g_iCountdown <= 0)
-	{
-		remove_task(taskid)
-
-		// Choose a game mode.
-		choose_Gamemode()
-	}
-	else
-	{
-		g_iCountdown--
 	}
 }
 
