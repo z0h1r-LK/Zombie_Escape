@@ -11,10 +11,20 @@ MSG_READY = "!tAre you Ready!y? !tDon't Forget !y= !gCOVER/DEFENSE = WIN!"
 NO_ENOUGH_PLAYERS = "!tThere are no enough players on the server!y, Required players: !g%i!y"
 
 MENU_PRIMARY_TITLE = "Primary Weapons"
+MENU_SECONDARY_TITLE = "Secondary Weapons"
 MENU_AUTOSELECT = "Remember?"
-WEAPONS_DISABLED = "Weapons Menu disabled!"
-BUY_TIME_EXPIRED = "Buy time is over !"
-ALREADY_BOUGHT = "You already bought primary and secondary weapons !"
+
+MSG_WEAPONS_DISABLED = "Weapons Menu disabled!"
+MSG_BUYTIME_OVER = "Buy time is over !"
+MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons !"
+MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
+
+MENU_NEXT = "Next"
+MENU_BACK = "Back"
+MENU_EXIT = "Exit"
+
+ON = "On"
+OFF = "Off"
 
 CMD_NOT = "Command unavailable !"
 CMD_NOT_ALIVE = "You are not alive !"
