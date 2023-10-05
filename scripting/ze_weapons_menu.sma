@@ -715,10 +715,7 @@ public __native_set_auto_buy(plugin_id, num_params)
 		return false
 	}
 
-	if (g_iMenuData[id][MD_AUTO_SELECT])
-		g_iMenuData[id][MD_AUTO_SELECT] = false
-	else
-		g_iMenuData[id][MD_AUTO_SELECT] = true
+	g_iMenuData[id][MD_AUTO_SELECT] = bool:get_param(2)
 	return true
 }
 
