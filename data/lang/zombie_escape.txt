@@ -28,3 +28,5 @@ OFF = "Off"
 
 CMD_NOT = "Command unavailable !"
 CMD_NOT_ALIVE = "You are not alive !"
+
+HUD_INFECT_NOTICE = "%s has infected by %s"
