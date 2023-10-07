@@ -3,6 +3,7 @@
 
 #include <ze_core>
 #include <ini_file>
+#include <ze_weap_models_api>
 
 // Define.
 #define CUSTOM_MODEL
@@ -13,6 +14,9 @@ new g_iZombieHealth,
 	Float:g_flZombieSpeed
 
 #if defined CUSTOM_MODEL
+	// Default Zombie knife Models.
+	new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze/v_knife_zombie.mdl"
+
 	// Dynamic Array.
 	new Array:g_aZombieModels
 
@@ -55,6 +59,13 @@ new g_iZombieHealth,
 			// Precache Model.
 			precache_model(szModel)
 		}
+
+		// Load Zombies Knife from INI file.
+		if (!ini_read_string(ZE_FILENAME, "Weapon Models", "ZOMBIES_KNIFE", g_szZombieKnifeModel, charsmax(g_szZombieKnifeModel)))
+			ini_write_string(ZE_FILENAME, "Weapon Models", "ZOMBIES_KNIFE", g_szZombieKnifeModel)
+
+		// Precache Model.
+		precache_model(g_szZombieKnifeModel)
 	}
 #endif
 
@@ -99,5 +110,9 @@ public ze_user_infected(iVictim, iInfector)
 
 	// Set player new Zombie Model.
 	rg_set_user_model(iVictim, szModel, true)
+
+	// Set player Knife Model.
+	ze_set_user_view_model(iVictim, CSW_KNIFE, g_szZombieKnifeModel)
+	ze_set_user_weap_model(iVictim, CSW_KNIFE, "")
 #endif
 }

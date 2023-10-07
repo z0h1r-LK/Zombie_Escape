@@ -4,6 +4,7 @@
 
 #include <ze_core>
 #include <ini_file>
+#include <ze_weap_models_api>
 
 // Define.
 #define CUSTOM_MODEL
@@ -130,5 +131,9 @@ public ze_user_humanized(id)
 
 	// Set player Model.
 	rg_set_user_model(id, szModel, true)
+
+	// Remove player Zombie Knife.
+	ze_remove_user_view_model(id, CSW_KNIFE)
+	ze_remove_user_weap_model(id, CSW_KNIFE)
 #endif
 }
