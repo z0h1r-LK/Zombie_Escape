@@ -3,6 +3,7 @@
 #include <reapi>
 
 #include <ze_core>
+#include <ze_grenades>
 #include <ze_gamemodes>
 
 // Define.
@@ -143,6 +144,13 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 
 	// Reset a cell in string.
 	g_szAuth[id] = NULL_STRING
+}
+
+public ze_frost_freeze(id)
+{
+	if (g_bReleaseTime)
+		return ZE_STOP
+	return ZE_CONTINUE
 }
 
 public fw_PM_Movement(id)
