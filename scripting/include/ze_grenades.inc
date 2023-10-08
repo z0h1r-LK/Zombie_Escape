@@ -32,8 +32,8 @@ forward ze_frost_freeze_end(id);
  *
  * @param id    Client index.
  *
- * @return      true  | Prevent burning the player.
- *              false | Continue burning the player.
+ * @return      ZE_STOP     | Prevent burning the player.
+ *              ZE_CONTINUE | Continue burning the player.
  */
 forward ze_fire_burn_start(id);
 
@@ -69,8 +69,8 @@ native ze_user_in_frost(id);
  * @param id    Client index.
  * @param bSet  true = Freeze the player | false = Unfreeze the player.
  *
- * @return      true  | If the player is Frozen.
- *              false | If player not on game.
+ * @return      true  | If Freeze or unfreeze successfully.
+ *              false | If player not on game or player already Frozen or prevent from Forward.
  *
  * @error       If the player not on game.
  */
@@ -82,8 +82,8 @@ native ze_set_user_frost(id, bool:bSet = false);
  * @param id      Client index.
  * @param fPeriod Freeze period (0.1 = Minimum)
  *
- * @return       true  | If the player is Frozen.
- *               false | If player not on game.
+ * @return       true  | If Freeze successfully.
+ *               false | If player not on game or already Fozen or prevent from Forward.
  *
  * @error        If the player not on game.
  */
@@ -99,7 +99,7 @@ native ze_set_user_frost_ex(id, Float:flPeriod);
  *
  * @error       If this player not on game.
  */
-native ze_zombie_in_fire(id);
+native ze_user_in_fire(id);
 
 /**
  * Burn or unburn the player.
@@ -107,7 +107,7 @@ native ze_zombie_in_fire(id);
  * @param id    Client index.
  *
  * @return      true  | If Burned successfully.
- *              false | If player not on game or prevent from forward.
+ *              false | If player not on game or prevent from Forward.
  *
  * @error       If this player not on game.
  */
@@ -116,11 +116,13 @@ native ze_set_user_fire(id, bool:bSet = false);
 /**
  * Burn or unburn the player.
  *
+ * @note Unburn player, Use native: ze_set_user_fire().
+ *
  * @param id       Client index.
  * @param flPeriod Flame Period (0.1 = Minimum).
  *
  * @return         true  | If Burned successfully.
- *                 false | If player not on game or prevent from forward.
+ *                 false | If player not on game or prevent from Forward.
  *
  * @error          If this player not on game.
  */

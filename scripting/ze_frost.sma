@@ -364,7 +364,7 @@ public unfreeze_Player(iVictim)
 	ExecuteForward(g_iForwards[FORWARD_FROST_UNFREEZE], g_iFwReturn, iVictim)
 
 	if (g_iFwReturn >= ZE_STOP)
-		return
+		return false
 
 	// Unfreeze player.
 	flag_unset(g_bitsIsFrozen, iVictim)
@@ -408,6 +408,7 @@ public unfreeze_Player(iVictim)
 
 	// Emit unfreeze sound.
 	emit_sound(iVictim, CHAN_BODY, g_szFrostUnfreezeSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
+	return true
 }
 
 /**
@@ -438,19 +439,20 @@ public __native_set_user_frost(plugin_id, num_params)
 
 	if (get_param(2))
 	{
-		// Remove old Task.
-		remove_task(victim+TASK_UNFREEZE)
+		// Already Frozen?
+		if (flag_get_boolean(g_bitsIsFrozen, victim))
+			return false
 
 		// Freeze the player.
-		freeze_Player(victim, g_flFrostPeriod)
-	}
-	else
-	{
-		// Unfreeze player.
-		unfreeze_Player(victim+TASK_UNFREEZE)
+		return freeze_Player(victim, g_flFrostPeriod)
 	}
 
-	return true
+	// Already Frozen?
+	if (!flag_get_boolean(g_bitsIsFrozen, victim))
+		return true
+
+	// Unfreeze player.
+	return unfreeze_Player(victim+TASK_UNFREEZE)
 }
 
 public __native_set_user_frost_ex(plugin_id, num_params)
@@ -462,6 +464,10 @@ public __native_set_user_frost_ex(plugin_id, num_params)
 		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", victim)
 		return false
 	}
+
+	// Already Frozen?
+	if (flag_get_boolean(g_bitsIsFrozen, victim))
+		return false
 
 	new Float:flFreezePeriod
 	if ( (flFreezePeriod = get_param_f(2)) <= 0.0)

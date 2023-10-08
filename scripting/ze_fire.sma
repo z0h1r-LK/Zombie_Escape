@@ -13,6 +13,10 @@
 #define FIRE_RING_AXIS_Y 240
 #define FIRE_RING_AXIS_Z 2400
 
+#define FIRE_COLOR_RED 200
+#define FIRE_COLOR_GREEN 0
+#define FIRE_COLOR_BLUE 0
+
 #define TASK_BURNING 100
 
 #define GRENADE_ID 3333
@@ -41,8 +45,7 @@ new g_iRingSpr,
 	g_iTrailSpr,
 	g_iFlameSpr,
 	g_iSmokeSpr,
-	g_iMsgDamage,
-	g_bitsIsBurning
+	g_iMsgDamage
 
 // Array.
 new g_iForwards[FORWARDS],
@@ -54,7 +57,7 @@ new Array:g_aFireExplodeSounds,
 
 public plugin_natives()
 {
-	register_native("ze_zombie_in_fire", "__native_zombie_in_fire")
+	register_native("ze_user_in_fire", "__native_user_in_fire")
 	register_native("ze_set_user_fire", "__native_set_user_fire")
 	register_native("ze_set_user_fire_ex", "__native_set_user_fire_ex")
 }
@@ -183,7 +186,6 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	// Turn off the Flame.
 	g_flBurnTime[id] = 0.0
 	remove_task(id+TASK_BURNING)
-	flag_unset(g_bitsIsBurning, id)
 }
 
 public ze_user_humanized(id)
@@ -191,7 +193,6 @@ public ze_user_humanized(id)
 	// Turn off the Flame.
 	g_flBurnTime[id] = 0.0
 	remove_task(id+TASK_BURNING)
-	flag_unset(g_bitsIsBurning, id)
 }
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
@@ -199,7 +200,6 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 	// Turn off the Flame.
 	g_flBurnTime[iVictim] = 0.0
 	remove_task(iVictim+TASK_BURNING)
-	flag_unset(g_bitsIsBurning, iVictim)
 }
 
 public fw_GrenadeThrown_Post(const id)
@@ -220,7 +220,7 @@ public fw_GrenadeThrown_Post(const id)
 	set_entvar(iEnt, var_impulse, GRENADE_ID)
 
 	// Set entity Glow Shell.
-	set_ent_rendering(iEnt, kRenderFxGlowShell, 200, 0, 0, kRenderNormal, 10)
+	set_ent_rendering(iEnt, kRenderFxGlowShell, FIRE_COLOR_RED, FIRE_COLOR_GREEN, FIRE_COLOR_BLUE, kRenderNormal, 10)
 
 	// Grenade Trail.
 	message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
@@ -229,9 +229,9 @@ public fw_GrenadeThrown_Post(const id)
 	write_short(g_iTrailSpr) // Sprite Index.
 	write_byte(5) // Duration.
 	write_byte(5) // Width.
-	write_byte(200) // Red.
-	write_byte(0) // Green.
-	write_byte(0) // Blue.
+	write_byte(FIRE_COLOR_RED) // Red.
+	write_byte(FIRE_COLOR_GREEN) // Green.
+	write_byte(FIRE_COLOR_BLUE) // Blue.
 	write_byte(255) // Brightness.
 	message_end()
 }
@@ -260,11 +260,11 @@ public fire_Explode(const iEnt)
 	get_entvar(iEnt, var_origin, vOrigin)
 
 	// Search victims.
-	new iPlayers[MAX_PLAYERS], victim
+	new iPlayers[MAX_PLAYERS]
 	new iAliveNum = find_sphere_class(0, "player", FIRE_RADIUS, iPlayers, MAX_PLAYERS, vOrigin)
 
 	// Burn victims.
-	for (new i = 0; i < iAliveNum; i++)
+	for (new victim, i = 0; i < iAliveNum; i++)
 	{
 		victim = iPlayers[i]
 
@@ -279,7 +279,6 @@ public fire_Explode(const iEnt)
 			continue
 
 		// Burn the player.
-		flag_set(g_bitsIsBurning, victim)
 		g_flBurnTime[victim] = g_flFirePeriod
 
 		// Task repeat damage the player.
@@ -301,9 +300,9 @@ public fire_Explode(const iEnt)
 	write_byte(FIRE_RING_PERIOD) // Duration.
 	write_byte(64) // Width.
 	write_byte(0) // Noise.
-	write_byte(200) // Red.
-	write_byte(0) // Green.
-	write_byte(0) // Blue.
+	write_byte(FIRE_COLOR_RED) // Red.
+	write_byte(FIRE_COLOR_GREEN) // Green.
+	write_byte(FIRE_COLOR_BLUE) // Blue.
 	write_byte(255) // Brightness.
 	write_byte(0) // Scroll Speed.
 	message_end()
@@ -325,7 +324,7 @@ public burn_Player(iVictim)
 	// -100ms
 	g_flBurnTime[iVictim] -= 0.1
 
-	// Turn off the Fire.
+	// Flame period is over?
 	if (g_flBurnTime[iVictim] <= 0.0)
 	{
 		// Turn off the Smoke.
@@ -404,7 +403,7 @@ public burn_Player(iVictim)
 
 public smoke_Effect(const vOrigin[3], victim)
 {
-	// Call forward ze_fire_burn_end(id)
+	// Call forward ze_fire_burn_end(id) and get return value.
 	ExecuteForward(g_iForwards[FORWARD_FIRE_BURN_END], g_iFwReturn, victim)
 
 	if (g_iFwReturn >= ZE_STOP)
@@ -412,7 +411,6 @@ public smoke_Effect(const vOrigin[3], victim)
 
 	// Remove task.
 	remove_task(victim+TASK_BURNING)
-	flag_unset(g_bitsIsBurning, victim)
 
 	// Smoke effect.
 	message_begin(MSG_PVS, SVC_TEMPENTITY, vOrigin)
@@ -429,7 +427,7 @@ public smoke_Effect(const vOrigin[3], victim)
 /**
  * -=| Natives |=-
  */
-public __native_zombie_in_fire(plugin_id, num_params)
+public __native_user_in_fire(plugin_id, num_params)
 {
 	new id = get_param(1)
 
@@ -439,7 +437,7 @@ public __native_zombie_in_fire(plugin_id, num_params)
 		return false
 	}
 
-	return true
+	return task_exists(id+TASK_BURNING)
 }
 
 public __native_set_user_fire(plugin_id, num_params)
@@ -452,26 +450,24 @@ public __native_set_user_fire(plugin_id, num_params)
 		return false
 	}
 
+	// Call forward ze_fire_burn_start(id) and get return value.
+	ExecuteForward(g_iForwards[FORWARD_FIRE_BURN_START], g_iFwReturn, victim)
+
+	if (g_iFwReturn >= ZE_STOP)
+		return false
+
+	// bSet
 	if (get_param(2))
 	{
-		// Call forward ze_fire_burn_start(id) and get return value.
-		ExecuteForward(g_iForwards[FORWARD_FIRE_BURN_START], g_iFwReturn, victim)
-
-		if (g_iFwReturn >= ZE_STOP)
-			return false
-
-		// Burn the player.
-		flag_set(g_bitsIsBurning, victim)
 		g_flBurnTime[victim] = g_flFirePeriod
 
-		// Task repeat Damage the player.
-		set_task(0.1, "burn_Player", victim+TASK_BURNING, .flags = "b")
+		if (!task_exists(victim+TASK_BURNING))
+			set_task(0.1, "burn_Player", victim+TASK_BURNING, .flags = "b")
 	}
 	else
 	{
 		g_flBurnTime[victim] = 0.0
 		remove_task(victim+TASK_BURNING)
-		flag_unset(g_bitsIsBurning, victim)
 	}
 
 	return true
@@ -487,21 +483,20 @@ public __native_set_user_fire_ex(plugin_id, num_params)
 		return false
 	}
 
+	// Call forward ze_fire_burn_start(id) and get return value.
+	ExecuteForward(g_iForwards[FORWARD_FIRE_BURN_START], g_iFwReturn, victim)
+
+	if (g_iFwReturn >= ZE_STOP)
+		return false
+
 	new Float:flBurnTime = get_param_f(2)
-	if (flag_get_boolean(g_bitsIsBurning, victim))
+	if (task_exists(victim+TASK_BURNING))
 	{
 		g_flBurnTime[victim] += flBurnTime
 	}
 	else
 	{
-		// Call forward ze_fire_burn_start(id) and get return value.
-		ExecuteForward(g_iForwards[FORWARD_FIRE_BURN_START], g_iFwReturn, victim)
-
-		if (g_iFwReturn >= ZE_STOP)
-			return false
-
 		// Burn the player.
-		flag_set(g_bitsIsBurning, victim)
 		g_flBurnTime[victim] = g_flFirePeriod
 		set_task(0.1, "burn_Player", victim+TASK_BURNING, .flags = "b")
 	}
