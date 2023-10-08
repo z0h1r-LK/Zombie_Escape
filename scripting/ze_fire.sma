@@ -93,15 +93,15 @@ public plugin_precache()
 	ini_read_string_array(ZE_FILENAME, "Sounds", "BURNING_ZOMBIE", g_aBurningZombieSounds)
 
 	// Default Fire-Nade sounds.
-	new const szFireZombieSounds[][] = {"weapons/hegrenade-1.wav", "weapons/hegrenade-2.wav"}
+	new const szFireExplodeSounds[][] = {"weapons/hegrenade-1.wav", "weapons/hegrenade-2.wav"}
 	new const szBurningZombieSounds[][] = {"zm_es/zombi_burn_1.wav", "zm_es/zombi_burn_2.wav", "zm_es/zombi_burn_3.wav", "zm_es/zombi_burn_4.wav", "zm_es/zombi_burn_5.wav"}
 
 	new i
 
 	if (!ArraySize(g_aFireExplodeSounds))
 	{
-		for (i = 0; i < sizeof(szFireZombieSounds); i++)
-			ArrayPushString(g_aFireExplodeSounds, szFireZombieSounds[i])
+		for (i = 0; i < sizeof(szFireExplodeSounds); i++)
+			ArrayPushString(g_aFireExplodeSounds, szFireExplodeSounds[i])
 
 		// Write Fire-Nade sounds on INI file.
 		ini_write_string_array(ZE_FILENAME, "Sounds", "FIRE_EXPLODE", g_aFireExplodeSounds)
@@ -310,7 +310,7 @@ public fire_Explode(const iEnt)
 
 	// Emit explode sound.
 	new szSound[MAX_RESOURCE_PATH_LENGTH]
-	ArrayGetString(g_aBurningZombieSounds, random_num(0, ArraySize(g_aFireExplodeSounds) - 1), szSound, charsmax(szSound))
+	ArrayGetString(g_aFireExplodeSounds, random_num(0, ArraySize(g_aFireExplodeSounds) - 1), szSound, charsmax(szSound))
 	emit_sound(iEnt, CHAN_WEAPON, szSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
 }
 
