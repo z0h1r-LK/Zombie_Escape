@@ -133,8 +133,8 @@ public plugin_init()
 	bind_pcvar_float(create_cvar("ze_frost_period", "3.0"), g_flFrostPeriod)
 
 	// Create new Forwards.
-	g_iForwards[FORWARD_FROST_FREEZE] = CreateMultiForward("ze_frost_freeze", ET_CONTINUE, FP_CELL)
-	g_iForwards[FORWARD_FROST_UNFREEZE] = CreateMultiForward("ze_frost_unfreeze", ET_CONTINUE, FP_CELL)
+	g_iForwards[FORWARD_FROST_FREEZE] = CreateMultiForward("ze_frost_freeze_start", ET_CONTINUE, FP_CELL)
+	g_iForwards[FORWARD_FROST_UNFREEZE] = CreateMultiForward("ze_frost_freeze_end", ET_CONTINUE, FP_CELL)
 
 	// Set Values.
 	g_iMsgDamage = get_user_msgid("Damage")
