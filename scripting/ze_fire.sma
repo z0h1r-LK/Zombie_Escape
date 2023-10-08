@@ -477,7 +477,7 @@ public __native_set_user_fire(plugin_id, num_params)
 	return true
 }
 
-public ze_set_user_fire_ex(plugin_id, num_params)
+public __native_set_user_fire_ex(plugin_id, num_params)
 {
 	new victim = get_param(1)
 
