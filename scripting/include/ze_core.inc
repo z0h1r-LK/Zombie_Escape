@@ -220,3 +220,31 @@ native ze_set_user_speed(id, Float:flSpeed, bool:bFactor = false);
  * @error        If this player not on game.
  */
 native ze_reset_user_speed(id);
+
+/**
+ * Sets or Adds number of Point(s) for specific player.
+ *
+ * @param id     Client index.
+ * @param iFrags Number of Frags.
+ * @param bAdd   true = Add | false = Set.
+ *
+ * @return       true  | If operation successfully.
+ *               false | If player not on game.
+ *
+ * @error        If this player not on game.
+ */
+native ze_add_user_frags(id, iFrags, bool:bAdd = true);
+
+/**
+ * Sets or Adds number of Death(s) for specific player.
+ *
+ * @param id      Client index.
+ * @param iDeaths Number of Deaths.
+ * @param bAdd    true = Add | false = Set.
+ *
+ * @return        true  | If operation successfully.
+ *                false | If player not on game.
+ *
+ * @error         If this player not on game.
+ */
+native ze_add_user_deaths(id, iDeaths, bool:bAdd = true);
