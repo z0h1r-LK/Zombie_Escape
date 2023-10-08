@@ -306,7 +306,7 @@ public freeze_Player(const iVictim, Float:flFreezePeriod)
 	ExecuteForward(g_iForwards[FORWARD_FROST_FREEZE], g_iFwReturn, iVictim)
 
 	if (g_iFwReturn >= ZE_STOP)
-		return
+		return false
 
 	// Freeze player.
 	flag_set(g_bitsIsFrozen, iVictim)
@@ -353,6 +353,7 @@ public freeze_Player(const iVictim, Float:flFreezePeriod)
 
 	// Task before unfreeze victim.
 	set_task(flFreezePeriod, "unfreeze_Player", iVictim+TASK_UNFREEZE)
+	return true
 }
 
 public unfreeze_Player(iVictim)
@@ -467,6 +468,5 @@ public __native_set_user_frost_ex(plugin_id, num_params)
 		return false
 
 	// Freeze the player.
-	freeze_Player(victim, flFreezePeriod)
-	return true
+	return freeze_Player(victim, flFreezePeriod)
 }
