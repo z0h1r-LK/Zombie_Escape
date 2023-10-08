@@ -146,7 +146,14 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_szAuth[id] = NULL_STRING
 }
 
-public ze_frost_freeze(id)
+public ze_frost_freeze_start(id)
+{
+	if (g_bReleaseTime)
+		return ZE_STOP
+	return ZE_CONTINUE
+}
+
+public ze_fire_burn_start(id)
 {
 	if (g_bReleaseTime)
 		return ZE_STOP
