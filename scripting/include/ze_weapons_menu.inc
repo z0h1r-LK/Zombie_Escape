@@ -32,11 +32,11 @@ native ze_set_auto_buy(id, bool:bSet = false);
  * Show weapons menu for specific player.
  *
  * @param id     Client index.
- * @param bSkip  Skip checks.
+ * @param bCheck Skip checks.
  *
  * @return       true  | If appeared successfully.
  *               false | If player not on game or Zombie or not alive or buy time over or menu Disabled.
  *
  * @error        If this player not on game.
  */
-native ze_show_weapons_menu(id);
+native ze_show_weapons_menu(id, bool:bCheck = false);
