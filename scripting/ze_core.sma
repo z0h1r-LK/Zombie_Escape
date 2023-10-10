@@ -632,6 +632,9 @@ public fw_RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event, Float:tmD
 			ExecuteForward(g_iForwards[FORWARD_ROUNDEND], _/* Ignore return value */, ZE_TEAM_ZOMBIE)
 		}
 	}
+
+	// Update Team Score.
+	rg_update_teamscores(g_iHumanWins, g_iZombieWins, false)
 }
 
 /**
