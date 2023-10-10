@@ -6,6 +6,11 @@
 #include <ze_stocks>
 #include <ze_core_const>
 
+#include <ze_grenades>
+#include <ze_gamemodes>
+#include <ze_weapons_menu>
+#include <ze_weap_models_api>
+
 /**
  * -=| Forwards |=-
  */
