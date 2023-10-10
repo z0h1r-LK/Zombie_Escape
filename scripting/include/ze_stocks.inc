@@ -91,3 +91,22 @@ stock precache_sky(const szSkyName[])
 			server_print("[ZE] Cannot locate file '%s', Skipping...", szTgaFile);
 	}
 }
+
+/**
+ * Play sound for specific player or all players.
+ *
+ * @note Counter-Strike support only .mp3 and .wav
+ *
+ * @param target  Client index (0 = everyone).
+ * @param sound[] Sound path.
+ *
+ * @noreturn
+ */
+stock PlaySound(target, const sound[])
+{
+	// MP3 Sound?
+	if (equali(sound[strlen(sound) - 4], ".mp3"))
+		client_cmd(target, "mp3 play ^"sound/%s^"", sound)
+	else
+		client_cmd(target, "spk ^"%s^"", sound)
+}
