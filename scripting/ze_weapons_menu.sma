@@ -729,7 +729,7 @@ public __native_show_weapons_menu(plugin_id, num_params)
 		return false
 	}
 
-	if (get_param(2))
+	if (!get_param(2))
 	{
 		if (x_bWeaponsDisabled)
 		{
