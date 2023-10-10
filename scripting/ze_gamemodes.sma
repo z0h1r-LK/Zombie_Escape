@@ -238,7 +238,7 @@ start_Gamemode(const game_id, target = 0, bool:bSkipCheck = false)
 	// Call forward ze_gamemode_chosen_pre(param1, param2, param3) and get return value.
 	ExecuteForward(g_iForwards[FORWARD_GAMEMODE_CHOSEN_PRE], g_iFwReturn, game_id, target, bSkipCheck)
 
-	if (g_iFwReturn >= ZE_STOP)
+	if (g_iFwReturn >= ZE_GAME_IGNORE)
 	{
 		// Re-pause plug-in again.
 		pause("ac", aArray[GAME_FILE])

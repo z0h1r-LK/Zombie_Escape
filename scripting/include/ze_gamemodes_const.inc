@@ -8,5 +8,7 @@
  */
 enum (+=1)
 {
-	ZE_GAME_INVALID = -1
+	ZE_GAME_INVALID = -1,
+	ZE_GAME_CONTINUE,
+	ZE_GAME_IGNORE
 }

@@ -216,17 +216,17 @@ public ze_game_started_pre()
 public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 {
 	if (!g_bEnabled)
-		return ZE_STOP
+		return ZE_GAME_IGNORE
 
 	if (!bSkipCheck)
 	{
 		// This is not round of this game mode.
 		if (random_num(1, g_iChance) != 1)
-			return ZE_STOP
+			return ZE_GAME_IGNORE
 	}
 
 	// Continue starting the game mode.
-	return ZE_CONTINUE
+	return ZE_GAME_CONTINUE
 }
 
 public ze_gamemode_chosen(game_id, target)
