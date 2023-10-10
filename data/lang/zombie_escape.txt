@@ -1,7 +1,12 @@
 [en]
 GAME_DESC = "Zombie Escape"
 CHAT_PREFIX = "[!gZE!y]"
+MENU_PREFIX = "\r[ZE]\w"
 
+HUD_ESCAPE_FAIL = "-=| Escape Fail |=-"
+HUD_ESCAPE_SUCCESS = "-=| Escape Success |=-"
+
+HUD_SCOREMESSAGE = "| Humans: %i - %i :Zombies |"
 HUD_COUNTDOWN = "Zombie(s) will be appear after %i Second(s) !"
 
 HUD_RELEASETIME = "Zombie(s) will release after %i Second(s) !"
@@ -18,6 +23,12 @@ MSG_WEAPONS_DISABLED = "Weapons Menu disabled!"
 MSG_BUYTIME_OVER = "Buy time is over !"
 MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons !"
 MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
+MSG_BUY_ENABLED = "Weapons Menu has been re-enabled !"
+
+MENU_MAIN_TITLE = "Menu Main"
+MENU_WEAPONS = "Weapons"
+MENU_RE_WEAPONS = "Weapons \r[Auto Buy]"
+MENU_EXTRAITEMS = "Extra Items"
 
 MENU_NEXT = "Next"
 MENU_BACK = "Back"
