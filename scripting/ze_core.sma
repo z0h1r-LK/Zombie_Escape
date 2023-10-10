@@ -42,6 +42,8 @@ new g_iReqPlayers,
 // Variables.
 new g_iFwReturn,
 	g_iLastHuman,
+	g_iHumanWins,
+	g_iZombieWins,
 	g_iLastZombie,
 	g_iPlayersNum,
 	g_iPainShockFree,
@@ -87,6 +89,9 @@ public plugin_init()
 	register_event("TextMsg", "fw_RestartRound_Event", "a", "2=#Game_will_restart_in", "2=#Game_Commecing", "2=#Round_Draw")
 	register_logevent("fw_RoundStart_Event", 2, "1=Round_Start")
 	register_logevent("fw_RoundEnd_Event", 2, "1=Round_End")
+
+	// Message.
+	register_message(get_user_msgid("TeamScore"), "fw_TeamScore_Msg")
 
 	// Hook Chains.
 	RegisterHookChain(RG_CBasePlayer_Spawn, "fw_PlayerSpawn_Post", 1)
@@ -337,6 +342,8 @@ public fw_NewRound_Event()
 public fw_RestartRound_Event()
 {
 	x_iRoundNum = 0
+	g_iHumanWins = 0
+	g_iZombieWins = 0
 
 	// Round End!
 	g_bRoundEnd = true
@@ -372,6 +379,20 @@ public check_RoundTime(const taskid)
 public fw_RoundEnd_Event()
 {
 	g_bRoundEnd = true
+}
+
+public fw_TeamScore_Msg(msg_id, dest, player)
+{
+	new szTeamName[2]
+	get_msg_arg_string(1, szTeamName, charsmax(szTeamName))
+
+	switch (szTeamName[0])
+	{
+		case 'C': // Humans.
+			set_msg_arg_int(2, ARG_BYTE, g_iHumanWins)
+		case 'T': // Zombies.
+			set_msg_arg_int(2, ARG_BYTE, g_iZombieWins)
+	}
 }
 
 public fw_PlayerSpawn_Post(const id)
@@ -602,10 +623,12 @@ public fw_RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event, Float:tmD
 	{
 		case ROUND_CTS_WIN:
 		{
+			g_iHumanWins++
 			ExecuteForward(g_iForwards[FORWARD_ROUNDEND], _/* Ignore return value */, ZE_TEAM_HUMAN)
 		}
 		case ROUND_TERRORISTS_WIN:
 		{
+			g_iZombieWins++
 			ExecuteForward(g_iForwards[FORWARD_ROUNDEND], _/* Ignore return value */, ZE_TEAM_ZOMBIE)
 		}
 	}
