@@ -148,14 +148,14 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 
 public ze_frost_freeze_start(id)
 {
-	if (g_bReleaseTime)
+	if (g_bReleaseTime && g_bFreezeZombie)
 		return ZE_STOP
 	return ZE_CONTINUE
 }
 
 public ze_fire_burn_start(id)
 {
-	if (g_bReleaseTime)
+	if (g_bReleaseTime && g_bFreezeZombie)
 		return ZE_STOP
 	return ZE_CONTINUE
 }
