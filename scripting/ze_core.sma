@@ -30,11 +30,46 @@ enum (+=1)
 	TASK_ROUNDTIME = 100
 }
 
+new const g_szBlockSounds[][] =
+{
+	"!MRAD_terwin",
+	"!MRAD_ctwin",
+	"!MRAD_rounddraw"
+}
+
+new const g_szBlockTxtMsg[][] =
+{
+	"#Terrorits_Win",
+	"#CTs_Win",
+	"#Round_Draw",
+	"#Hostages_Not_Rescued",
+	"#Target_Saved"
+}
+
+new const g_szEntitesClass[][] =
+{
+	"env_fog",
+	"env_rain",
+	"env_snow",
+	"hostage_entity",
+	"info_bomb_target",
+	"info_hostage_rescue",
+	"func_vip_safetyzone",
+	"info_vip_start",
+	"item_longjump",
+	"func_bomb_target",
+	"func_buyzone",
+	"func_hostage_rescue",
+	"weapon_c4"
+}
+
 // Cvars.
 new g_iReqPlayers,
 	bool:g_bKbEnabled,
 	bool:g_bKbBulletOnly,
 	bool:g_bBlockSuicide,
+	bool:g_bBlockMoneyHUD,
+	bool:g_bBlockHpArRrHUD,
 	Float:g_flRoundEndDelay,
 	Float:g_flKbReqDistance,
 	Float:g_flKnockBackSpeed
@@ -49,6 +84,7 @@ new g_iFwReturn,
 	g_iPainShockFree,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
+	bool:g_bEntSpawn,
 	bool:g_bRoundEnd,
 	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied
@@ -77,6 +113,8 @@ public plugin_natives()
 
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
+
+	g_bEntSpawn = true
 }
 
 public plugin_init()
@@ -91,6 +129,9 @@ public plugin_init()
 	register_logevent("fw_RoundEnd_Event", 2, "1=Round_End")
 
 	// Message.
+	register_message(get_user_msgid("TextMsg"), "fw_TextMsg_Msg")
+	register_message(get_user_msgid("SendAudio"), "fw_SendAudio_Msg")
+	register_message(get_user_msgid("HideWeapon"), "fw_HideWeapon_Msg")
 	register_message(get_user_msgid("TeamScore"), "fw_TeamScore_Msg")
 
 	// Hook Chains.
@@ -109,6 +150,8 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_lasthuman_die", "0"), g_bLastHumanDied)
 
 	bind_pcvar_num(register_cvar("ze_block_kill", "1"), g_bBlockSuicide)
+	bind_pcvar_num(register_cvar("ze_block_hp_ar_rdr", "1"), g_bBlockHpArRrHUD)
+	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
 
 	bind_pcvar_num(register_cvar("ze_knockback_enable", "1"), g_bKbEnabled)
 	bind_pcvar_num(register_cvar("ze_knockback_bulletonly", "0"), g_bKbBulletOnly)
@@ -133,6 +176,9 @@ public plugin_init()
 
 	// New Localization file (.txt)
 	register_dictionary("zombie_escape.txt")
+
+	// Set Values.
+	g_bEntSpawn = false
 }
 
 public plugin_cfg()
@@ -153,6 +199,13 @@ public plugin_cfg()
 	set_member_game(m_bTCantBuy, true)
 	set_member_game(m_bCTCantBuy, true)
 	set_member_game(m_bMapHasBuyZone, false)
+
+	// Block CS Map Gamemodes.
+	set_member_game(m_bMapHasBombZone, false)
+	set_member_game(m_bMapHasBombTarget, false)
+	set_member_game(m_bMapHasRescueZone, false)
+	set_member_game(m_bMapHasEscapeZone, false)
+	set_member_game(m_bMapHasVIPSafetyZone, false)
 }
 
 public plugin_end()
@@ -270,6 +323,24 @@ public client_kill(id)
 	return PLUGIN_CONTINUE
 }
 
+public pfn_spawn(iEnt)
+{
+	if (g_bEntSpawn)
+	{
+		for (new i = 0; i < sizeof(g_szEntitesClass); i++)
+		{
+			if (FClassnameIs(iEnt, g_szEntitesClass[i]))
+			{
+				// Free edict.
+				remove_entity(iEnt)
+				return PLUGIN_HANDLED
+			}
+		}
+	}
+
+	return PLUGIN_CONTINUE
+}
+
 public check_LastPlayer()
 {
 	new iPlayers[MAX_PLAYERS], iAliveNum
@@ -379,6 +450,53 @@ public check_RoundTime(const taskid)
 public fw_RoundEnd_Event()
 {
 	g_bRoundEnd = true
+}
+
+public fw_TextMsg_Msg(msg_id, dest, player)
+{
+	static szMsg[32], i
+	get_msg_arg_string(2, szMsg, charsmax(szMsg))
+
+	for (i = 0; i < sizeof(g_szBlockTxtMsg); i++)
+	{
+		if (equali(szMsg, g_szBlockTxtMsg[i]))
+		{
+			return PLUGIN_HANDLED
+		}
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public fw_SendAudio_Msg(msg_id, dest, player)
+{
+	static szAudio[24], i
+	get_msg_arg_string(2, szAudio, charsmax(szAudio))
+
+	for (i = 0; i < sizeof(g_szBlockSounds); i++)
+	{
+		if (equali(szAudio, g_szBlockSounds[i]))
+		{
+			return PLUGIN_HANDLED
+		}
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public fw_HideWeapon_Msg(msg_id, dest, player)
+{
+	static iFlags
+
+	if (g_bBlockMoneyHUD)
+		iFlags |= HIDEHUD_MONEY
+
+	if (g_bBlockHpArRrHUD)
+		iFlags |= HIDEHUD_HEALTH
+
+	// Change message arguments.
+	set_msg_arg_int(1, ARG_BYTE, get_msg_arg_int(1) | iFlags)
+	return PLUGIN_CONTINUE
 }
 
 public fw_TeamScore_Msg(msg_id, dest, player)
