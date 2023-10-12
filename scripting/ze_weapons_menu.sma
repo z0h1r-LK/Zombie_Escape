@@ -639,6 +639,10 @@ read_Weapons(const szFile[])
 				{
 					continue
 				}
+				case '[':
+				{
+					break
+				}
 			}
 
 			szSection = NULL_STRING
