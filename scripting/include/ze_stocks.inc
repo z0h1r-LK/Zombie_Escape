@@ -110,3 +110,18 @@ stock PlaySound(target, const sound[])
 	else
 		client_cmd(target, "spk ^"%s^"", sound)
 }
+
+/**
+ * Stop sound for specific player or all players.
+ *
+ * @note It's stop speak, MP3 and emit_sound().
+ *
+ * @param id     Client index (0 = everyone).
+ *
+ * @noreturn
+ */
+stock StopSound(target = 0)
+{
+	// Credit: Templaso
+	client_cmd(target, "mp3 stop;stopsound")
+}

@@ -52,7 +52,8 @@ new g_iChance,
 	bool:g_bRespawnAsZombie
 
 // Variables.
-new g_iCountdown,
+new g_iAmbHandle,
+	g_iCountdown,
 	bool:g_bReleaseTime,
 	bool:g_bFreezeZombie
 
@@ -68,6 +69,15 @@ new g_szAuth[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
 
 // Trie's.
 new Trie:g_tChosen
+
+public plugin_precache()
+{
+	new const szDefAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
+	const iDefAmbienceLength = 148
+
+	// Registers new Ambience sound.
+	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szDefAmbienceSound, iDefAmbienceLength)
+}
 
 public plugin_init()
 {
@@ -322,6 +332,9 @@ public ze_gamemode_chosen(game_id, target)
 		// Task for release time.
 		set_task(1.0, "show_ReleaseTime", TASK_RELEASETIME, .flags = "b")
 	}
+
+	// Plays ambience sound for everyone.
+	ze_res_ambience_play(g_iAmbHandle)
 }
 
 public show_ReleaseTime(taskid)

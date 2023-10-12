@@ -3,10 +3,32 @@
 #include <ze_core>
 #include <ini_file>
 
+// Macroses.
+#define FInvalidAmbHandle(%0) (INVALID_HANDLE>=(%0)>=g_iAmbNum)
+
 // Defines.
 #define BEGIN_SOUNDS
 #define READY_SOUNDS
 #define WINS_SOUNDS
+#define AMBIENCE_SOUNDS
+
+#if defined AMBIENCE_SOUNDS
+#define TASK_AMBIENCE 100
+
+// Enum.
+enum _:AMBIENCE_DATA
+{
+	AMB_NAME[MAX_NAME_LENGTH] = 0,
+	AMB_SOUND[MAX_RESOURCE_PATH_LENGTH],
+	AMB_LENGTH
+}
+
+// Cvars.
+new Float:g_flAmbDelay
+
+// Variables.
+new g_iAmbNum
+#endif
 
 // Dynamic Arrays.
 #if defined BEGIN_SOUNDS
@@ -20,6 +42,21 @@ new Array:g_aReadySounds
 #if defined WINS_SOUNDS
 new Array:g_aEscapeFailSounds,
 	Array:g_aEscapeSuccessSounds
+#endif
+
+#if defined AMBIENCE_SOUNDS
+new Array:g_aAmbienceSounds
+#endif
+
+#if defined AMBIENCE_SOUNDS
+public plugin_natives()
+{
+	// Create new dyn Array.
+	g_aAmbienceSounds = ArrayCreate(AMBIENCE_DATA, 1)
+
+	register_native("ze_res_ambience_register", "__native_res_ambience_register")
+	register_native("ze_res_ambience_play", "__native_res_ambience_play")
+}
 #endif
 
 public plugin_precache()
@@ -135,11 +172,19 @@ public plugin_init()
 {
 	// Load Plug-In.
 	register_plugin("[ZE] Resources", ZE_VERSION, ZE_AUTHORS)
+
+#if defined AMBIENCE_SOUNDS
+	// CVars.
+	bind_pcvar_float(get_cvar_pointer("ze_release_time"), g_flAmbDelay)
+#endif
 }
 
 public ze_game_started()
 {
 	new szSound[MAX_RESOURCE_PATH_LENGTH]
+
+	// Stop all sounds.
+	StopSound()
 
 #if defined BEGIN_SOUNDS
 	// Play Begin sound for everyone.
@@ -152,11 +197,15 @@ public ze_game_started()
 	ArrayGetString(g_aReadySounds, random_num(0, ArraySize(g_aReadySounds) - 1), szSound, charsmax(szSound))
 	PlaySound(0, szSound)
 #endif
+
+#if defined AMBIENCE_SOUNDS
+	remove_task(TASK_AMBIENCE)
+#endif
 }
 
-#if defined WINS_SOUNDS
 public ze_roundend(iWinTeam)
 {
+#if defined WINS_SOUNDS
 	switch (iWinTeam)
 	{
 		case ZE_TEAM_HUMAN:
@@ -172,5 +221,103 @@ public ze_roundend(iWinTeam)
 			PlaySound(0, szSound)
 		}
 	}
+#endif
+
+	// Stop all sounds.
+	StopSound()
+
+#if defined AMBIENCE_SOUNDS
+	remove_task(TASK_AMBIENCE)
+#endif
 }
+
+/**
+ * -=| Natives |=-
+ */
+#if defined AMBIENCE_SOUNDS
+public __native_res_ambience_register(plugin_id, num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	get_string(1, szName, charsmax(szName))
+
+	if (!strlen(szName))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't register new ambience sound without game-mode name.")
+		return INVALID_HANDLE
+	}
+
+	new pArray[AMBIENCE_DATA]
+	for (new i = 0; i < g_iAmbNum; i++)
+	{
+		ArrayGetArray(g_aAmbienceSounds, i, pArray)
+
+		if (equali(szName, pArray[AMB_NAME]))
+		{
+			log_error(AMX_ERR_NATIVE, "[ZE] Already game-mode ^'%s^' has ambience sound.", pArray[AMB_NAME])
+			return INVALID_HANDLE
+		}
+	}
+
+	get_string(2, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND)
+	pArray[AMB_LENGTH] = get_param(3)
+
+	new szTemp[MAX_NAME_LENGTH]
+	mb_strtoupper(szName, charsmax(szName))
+
+	// Read Ambience sound and Length from INI file.
+	formatex(szTemp, charsmax(szTemp), "%s_SOUND", szName)
+	if (!ini_read_string(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND))
+		ini_write_string(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_SOUND])
+
+	formatex(szTemp, charsmax(szTemp), "%s_LENGTH", szName)
+	if (!ini_read_int(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_LENGTH]))
+		ini_write_int(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_LENGTH])
+
+	// Precache Sound.
+	formatex(szTemp, charsmax(szTemp), "sound/%s", pArray[AMB_SOUND])
+	precache_generic(szTemp)
+
+	ArrayPushArray(g_aAmbienceSounds, pArray)
+	return ++g_iAmbNum - 1
+}
+
+public __native_res_ambience_play(plugin_id, num_params)
+{
+	new iHandle = get_param(1)
+
+	if (FInvalidAmbHandle(iHandle))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Ambience handle id (%d)", iHandle)
+		return false
+	}
+
+	new pArray[AMBIENCE_DATA]
+	ArrayGetArray(g_aAmbienceSounds, iHandle, pArray)
+
+	// Delay before play Ambience sound.
+	set_task(g_flAmbDelay, "@play_Sound", TASK_AMBIENCE, pArray[AMB_SOUND], sizeof(pArray) - AMB_SOUND)
+
+	if (get_param(2))
+	{
+		// Task for repeat Ambience sound.
+		set_task(float(pArray[AMB_LENGTH]), "@play_Sound", TASK_AMBIENCE, pArray[AMB_SOUND], AMB_SOUND, "b")
+	}
+
+	return true
+}
+
+@play_Sound(const szSound[], taskid)
+{
+	new iPlayers[MAX_PLAYERS], iAliveNum
+	get_players(iPlayers, iAliveNum, "h")
+
+	for (new id, i = 0; i < iAliveNum; i++)
+	{
+		id = iPlayers[i]
+
+		// Play sound for player.
+		PlaySound(id, szSound)
+	}
+}
+
 #endif

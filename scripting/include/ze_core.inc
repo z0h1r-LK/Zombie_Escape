@@ -253,3 +253,30 @@ native ze_add_user_frags(id, iFrags, bool:bAdd = true);
  * @error         If this player not on game.
  */
 native ze_add_user_deaths(id, iDeaths, bool:bAdd = true);
+
+/**
+ * Registers ambience for specific game mode.
+ *
+ * @param szName[]   Game name.
+ * @param szSound[]  Sound path ("" = Ignore).
+ * @param iLength    Ambience sound length with seconds.
+ *
+ * @return           Ambience hande | If ambience registered successfully.
+ *                   INVALID_HANDLE | Otherwise.
+ *
+ * @error            Ambience without game mode.
+ */
+native ze_res_ambience_register(const szName[], const szSound[], iLength);
+
+/**
+ * Plays ambience sound for all players.
+ *
+ * @param iHandle Ambience handle id.
+ * @param bLoop   true = Repeat ambience util round end or new round | false = Once time.
+ *
+ * @return        true  | If operation successfully.
+ *                false | Invalid Ambience handle.
+ *
+ * @error         Invalid Ambience handle.
+ */
+native ze_res_ambience_play(const iHandle, bool:bLoop = true);
