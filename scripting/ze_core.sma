@@ -70,6 +70,7 @@ new g_iReqPlayers,
 	bool:g_bBlockSuicide,
 	bool:g_bBlockMoneyHUD,
 	bool:g_bBlockHpArRrHUD,
+	bool:g_bBlockBloodEffs,
 	Float:g_flRoundEndDelay,
 	Float:g_flKbReqDistance,
 	Float:g_flKnockBackSpeed
@@ -129,6 +130,7 @@ public plugin_init()
 	register_logevent("fw_RoundEnd_Event", 2, "1=Round_End")
 
 	// Message.
+	register_message(SVC_TEMPENTITY, "fw_TempEntity_Msg")
 	register_message(get_user_msgid("TextMsg"), "fw_TextMsg_Msg")
 	register_message(get_user_msgid("SendAudio"), "fw_SendAudio_Msg")
 	register_message(get_user_msgid("HideWeapon"), "fw_HideWeapon_Msg")
@@ -152,6 +154,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_kill", "1"), g_bBlockSuicide)
 	bind_pcvar_num(register_cvar("ze_block_hp_ar_rdr", "1"), g_bBlockHpArRrHUD)
 	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
+	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
 
 	bind_pcvar_num(register_cvar("ze_knockback_enable", "1"), g_bKbEnabled)
 	bind_pcvar_num(register_cvar("ze_knockback_bulletonly", "0"), g_bKbBulletOnly)
@@ -450,6 +453,32 @@ public check_RoundTime(const taskid)
 public fw_RoundEnd_Event()
 {
 	g_bRoundEnd = true
+}
+
+public fw_TempEntity_Msg(msg_id, dest, player)
+{
+	if (!g_bBlockBloodEffs)
+		return PLUGIN_CONTINUE
+
+	switch (get_msg_arg_int(1))
+	{
+		case TE_BLOOD, TE_BLOODSTREAM, TE_BLOODSPRITE:
+		{
+			return PLUGIN_HANDLED
+		}
+		case TE_DECAL, TE_BSPDECAL, TE_WORLDDECAL, TE_DECALHIGH, TE_WORLDDECALHIGH:
+		{
+			switch (get_msg_arg_int(5))
+			{
+				case 192..197:
+				{
+					return PLUGIN_HANDLED
+				}
+			}
+		}
+	}
+
+	return PLUGIN_CONTINUE
 }
 
 public fw_TextMsg_Msg(msg_id, dest, player)
