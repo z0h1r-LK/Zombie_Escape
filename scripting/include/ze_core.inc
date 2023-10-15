@@ -3,6 +3,7 @@
 #endif
 #define _zombie_escape_included
 
+#include <ini_file>
 #include <ze_stocks>
 #include <ze_core_const>
 
