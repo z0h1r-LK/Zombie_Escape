@@ -278,11 +278,18 @@ public fire_Explode(const iEnt)
 		if (g_iFwReturn >= ZE_STOP)
 			continue
 
-		// Burn the player.
-		g_flBurnTime[victim] = g_flFirePeriod
+		if (task_exists(victim+TASK_BURNING))
+		{
+			g_flBurnTime[victim] += g_flFirePeriod
+		}
+		else
+		{
+			// Burn the player.
+			g_flBurnTime[victim] = g_flFirePeriod
 
-		// Task repeat damage the player.
-		set_task(0.1, "burn_Player", victim+TASK_BURNING, .flags = "b")
+			// Task repeat damage the player.
+			set_task(0.1, "burn_Player", victim+TASK_BURNING, .flags = "b")
+		}
 	}
 
 	// Ring effect.
