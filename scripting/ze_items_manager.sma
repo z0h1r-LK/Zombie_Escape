@@ -57,7 +57,7 @@ public plugin_init()
 
 	// Create Forwards.
 	g_iForwards[FORWARD_SELECT_ITEM_PRE] = CreateMultiForward("ze_select_item_pre", ET_CONTINUE, FP_CELL, FP_CELL, FP_CELL, FP_CELL)
-	g_iForwards[FORWARD_SELECT_ITEM_POST] = CreateMultiForward("ze_select_item_post", ET_IGNORE, FP_CELL, FP_CELL)
+	g_iForwards[FORWARD_SELECT_ITEM_POST] = CreateMultiForward("ze_select_item_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
 }
 
 public plugin_end()
@@ -189,7 +189,7 @@ buy_Item(const id, iItem, bool:bIgnoreCost)
 		return false
 
 	// Call forward ze_select_item_post(param1, param2)
-	ExecuteForward(g_iForwards[FORWARD_SELECT_ITEM_POST], g_iFwReturn, id, iItem)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_ITEM_POST], g_iFwReturn, id, iItem, bIgnoreCost)
 	return true
 }
 

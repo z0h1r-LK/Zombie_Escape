@@ -10,6 +10,7 @@
 #include <ze_grenades>
 #include <ze_gamemodes>
 #include <ze_weapons_menu>
+#include <ze_items_manager>
 #include <ze_weap_models_api>
 
 /**
@@ -281,3 +282,29 @@ native ze_res_ambience_register(const szName[], const szSound[], iLength);
  * @error         Invalid Ambience handle.
  */
 native ze_res_ambience_play(const iHandle, bool:bLoop = true);
+
+/**
+ * Get number of coins for specific player.
+ *
+ * @param id      Client index.
+ *
+ * @return        Number of Coin(s) | If got successfully.
+ *                NULLENT           | If player not on game.
+ *
+ * @error         If this player not on game.
+ */
+native ze_get_user_coins(id);
+
+/**
+ * Sets or Adds coins for specific player.
+ *
+ * @param id      Client index.
+ * @param iCoins  Number of coins.
+ * @param bAdd    true = Add Coin(s) | false = Sets Coin(s).
+ *
+ * @return        true  | If added or assigned successfully.
+ *                false | If player not on game.
+ *
+ * @error         If this player not on game.
+ */
+native ze_set_user_coins(id, iCoins, bool:bAdd = false);

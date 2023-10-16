@@ -34,3 +34,17 @@ enum (+=1)
 	ZE_TEAM_HUMAN,
 	ZE_TEAM_SPECTATOR
 }
+
+// Maximum items on Extra-Items.
+const ZE_MAX_ITEMS = 70
+
+/**
+ * Used in ze_select_item_pre().
+ */
+enum (+=1)
+{
+	ZE_ITEM_WRONG = -1,
+	ZE_ITEM_AVAILABLE,
+	ZE_ITEM_UNAVAILABLE,
+	ZE_ITEM_DONT_SHOW
+}

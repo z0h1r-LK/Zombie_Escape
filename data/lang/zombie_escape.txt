@@ -25,6 +25,12 @@ MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons !"
 MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
 MSG_BUY_ENABLED = "Weapons Menu has been re-enabled !"
 
+MENU_ITEMS_TITLE = "Extra-Items"
+
+MSG_ITEMS_DISABLED = "Extra-Items Menu disabled!"
+MSG_NO_ITEMS = "There no Items on Extra-Items Menu."
+MSG_LIMIT_REACHED = "You cannot exceed the item limit"
+
 MENU_MAIN_TITLE = "Menu Main"
 MENU_WEAPONS = "Weapons"
 MENU_RE_WEAPONS = "Weapons \r[Auto Buy]"

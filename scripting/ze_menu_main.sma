@@ -85,32 +85,19 @@ public handler_Menu_Main(const id, iKey)
 	{
 		case 0: // 1. Weapons Menu.
 		{
-			if (is_user_alive(id))
+			if (ze_auto_buy_enabled(id))
 			{
-				if (ze_auto_buy_enabled(id))
-				{
-					ze_set_auto_buy(id)
-				}
-				else
-				{
-					ze_show_weapons_menu(id)
-				}
+				ze_set_auto_buy(id)
 			}
 			else
 			{
-				ze_colored_print(id, "%L", LANG_PLAYER, "CMD_NOT_ALIVE")
+				ze_show_weapons_menu(id)
 			}
 		}
 		case 1: // 2. Extra Items.
 		{
-			if (is_user_alive(id))
-			{
-				client_cmd(id, "spk buttons/lightswitch2.wav")
-			}
-			else
-			{
-				ze_colored_print(id, "%L", LANG_PLAYER, "CMD_NOT_ALIVE")
-			}
+			// Show Extra-Items menu for player.
+			ze_item_show_menu(id)
 		}
 		case 9: // 0. Exit.
 		{
