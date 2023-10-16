@@ -13,6 +13,9 @@
 const Float:HUD_EVENT_X = -1.0
 const Float:HUD_EVENT_Y = 0.4
 
+const Float:HUD_TIMER_X = -1.0
+const Float:HUD_TIMER_Y = 0.6
+
 // Custom Forwards.
 enum any:FORWARDS
 {
@@ -70,13 +73,46 @@ new g_szAuth[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
 // Trie's.
 new Trie:g_tChosen
 
+// Dynamic Arrays.
+new Array:g_aSounds
+
 public plugin_precache()
 {
-	new const szDefAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
-	const iDefAmbienceLength = 148
+	new const szEscapeModeSound[][] = {"zm_es/ze_escape_1.wav"}
+
+	// Create new dyn Array.
+	g_aSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+
+	// Read game mode sounds from INI file.
+	ini_read_string_array(ZE_FILENAME, "Sounds", "ESCAPE_MODE", g_aSounds)
+
+	new i
+
+	if (!ArraySize(g_aSounds))
+	{
+		for (i = 0; i < sizeof(szEscapeModeSound); i++)
+			ArrayPushString(g_aSounds, szEscapeModeSound[i])
+
+		// Write game mode sounds from INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "ESCAPE_MODE", g_aSounds)
+	}
+
+	new szSound[MAX_RESOURCE_PATH_LENGTH]
+
+	// Precache Sounds
+	new iFiles = ArraySize(g_aSounds)
+	for (i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aSounds, i, szSound, charsmax(szSound))
+		format(szSound, charsmax(szSound), "sound/%s", szSound)
+		precache_generic(szSound)
+	}
+
+	new const szAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
+	const iAmbienceLength = 148
 
 	// Registers new Ambience sound.
-	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szDefAmbienceSound, iDefAmbienceLength)
+	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szAmbienceSound, iAmbienceLength)
 }
 
 public plugin_init()
@@ -333,6 +369,32 @@ public ze_gamemode_chosen(game_id, target)
 		set_task(1.0, "show_ReleaseTime", TASK_RELEASETIME, .flags = "b")
 	}
 
+	if (g_bSounds)
+	{
+		// Play sound for everyone.
+		new szSound[MAX_RESOURCE_PATH_LENGTH]
+		ArrayGetString(g_aSounds, random_num(0, ArraySize(g_aSounds) - 1), szSound, charsmax(szSound))
+		PlaySound(0, szSound)
+	}
+
+	switch (g_iNoticeMode)
+	{
+		case 1: // Text Center.
+		{
+			client_print(0, print_center, "%L", LANG_PLAYER, "HUD_ESCAPE")
+		}
+		case 2: // HUD.
+		{
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			show_hudmessage(0, "%L", LANG_PLAYER, "HUD_ESCAPE")
+		}
+		case 3: // DHUD.
+		{
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_ESCAPE")
+		}
+	}
+
 	// Plays ambience sound for everyone.
 	ze_res_ambience_play(g_iAmbHandle)
 }
@@ -347,12 +409,12 @@ public show_ReleaseTime(taskid)
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 	}
@@ -380,12 +442,12 @@ public release_Zombies()
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 	}
