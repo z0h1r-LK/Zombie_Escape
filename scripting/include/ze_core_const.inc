@@ -48,3 +48,13 @@ enum (+=1)
 	ZE_ITEM_UNAVAILABLE,
 	ZE_ITEM_DONT_SHOW
 }
+
+/**
+ * XVARs Name.
+ */
+#define X_Core_RoundNum       "x_iRoundNum"
+#define X_Core_RoundTime      "x_iRoundTime"
+#define X_Core_FixSpawn       "x_bFixSpawn"
+#define X_Core_GameStarted    "x_bGameStarted"
+#define X_Core_GamemodeBegin  "x_bGameChosen"
+#define X_Core_RespawnAsZm    "x_bRespawnAsZombie"
