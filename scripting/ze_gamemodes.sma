@@ -58,7 +58,8 @@ new g_iNext,
 	g_iMsgCountdown
 
 // XVars.
-new g_xGameChosen
+new g_xRoundNum,
+	g_xGameChosen
 
 // Array.
 new g_iForwards[FORWARDS]
@@ -97,7 +98,8 @@ public plugin_init()
 	g_aGamemodes = ArrayCreate(GAMEMODES, 1)
 
 	// XVars.
-	g_xGameChosen = get_xvar_id("x_bGameChosen")
+	g_xRoundNum = get_xvar_id(X_Core_RoundNum)
+	g_xGameChosen = get_xvar_id(X_Core_GamemodeBegin)
 
 	// Set Values.
 	g_iDefault = ZE_GAME_INVALID
@@ -123,6 +125,14 @@ public ze_game_started_pre()
 
 	// Reset XVar.
 	set_xvar_num(g_xGameChosen)
+
+	// Pause all game modes plug-ins.
+	new aArray[GAMEMODES]
+	for (new i = 0; i < g_iNumGames; i++)
+	{
+		ArrayGetArray(g_aGamemodes, i, aArray)
+		pause("ac", aArray[GAME_FILE])
+	}
 }
 
 public ze_game_started()
@@ -174,6 +184,11 @@ public show_CountdownMsg(taskid)
 
 public choose_Gamemode()
 {
+	if (get_xvar_num(g_xRoundNum) == 1 && g_bFirstRound)
+	{
+		goto FIRST_ROUND
+	}
+
 	if (g_iNext != ZE_GAME_INVALID)
 	{
 		start_Gamemode(g_iNext, 0, true)
@@ -192,6 +207,8 @@ public choose_Gamemode()
 				}
 			}
 		}
+
+		FIRST_ROUND:
 
 		if (g_iDefault != ZE_GAME_INVALID)
 		{
