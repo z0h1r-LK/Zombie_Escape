@@ -10,6 +10,7 @@
 #include <ze_grenades>
 #include <ze_gamemodes>
 #include <ze_weapons_menu>
+#include <ze_class_nemesis>
 #include <ze_items_manager>
 #include <ze_weap_models_api>
 
@@ -227,6 +228,42 @@ native ze_set_user_speed(id, Float:flSpeed, bool:bFactor = false);
  * @error        If this player not on game.
  */
 native ze_reset_user_speed(id);
+
+/**
+ * Sets custom knockback speed for specific player.
+ *
+ * @param id     Client index
+ *
+ * @return       true  | If assigned successfully.
+ *               false | If player not on game.
+ *
+ * @error        If this player not on game.
+ */
+native ze_set_zombie_knockback(id, Float:flSpeed);
+
+/**
+ * Gets knockback speed for specific player.
+ *
+ * @param id     Client index.
+ *
+ * @return       Speed  | If player id is valid.
+ *               0.0    | If player not on game.
+ *
+ * @error        If this player not on game.
+ */
+native Float:ze_get_zombie_knockback(id);
+
+/**
+ * Reset knockback speed to CVar value for specific player.
+ *
+ * @param id     Client index.
+ *
+ * @return       true  | If reset successfully.
+ *               false | If player not on game.
+ *
+ * @error        If this player not on game.
+ */
+native ze_reset_zombie_knockback(id);
 
 /**
  * Sets or Adds number of Point(s) for specific player.

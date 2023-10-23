@@ -92,7 +92,8 @@ new g_iFwReturn,
 
 // Arrays.
 new g_iForwards[FORWARDS],
-	Float:g_flUserSpeed[MAX_PLAYERS+1]
+	Float:g_flUserSpeed[MAX_PLAYERS+1],
+	Float:g_flUserKback[MAX_PLAYERS+1]
 
 // XVars.
 public x_bGameStarted,
@@ -114,6 +115,10 @@ public plugin_natives()
 
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
+
+	register_native("ze_set_zombie_knockback", "__native_set_zombie_knockback")
+	register_native("ze_get_zombie_knockback", "__native_get_zombie_knockback")
+	register_native("ze_reset_zombie_knockback", "__native_reset_zombie_knockback")
 
 	g_bEntSpawn = true
 }
@@ -262,6 +267,7 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 
 	// Reset Var.
 	g_flUserSpeed[id] = 0.0
+	g_flUserKback[id] = 0.0
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
 
@@ -665,7 +671,7 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 		// Get new Velocity for the player.
 		xs_vec_sub(vVicOrigin, vAttOrigin, vNewSpeed)
 		xs_vec_normalize(vNewSpeed, vNewSpeed)
-		xs_vec_mul_scalar(vNewSpeed, g_flKnockBackSpeed, vNewSpeed)
+		xs_vec_mul_scalar(vNewSpeed, g_flUserKback[iVictim], vNewSpeed)
 		xs_vec_add(vSpeed, vNewSpeed, vSpeed)
 
 		// Set player new velocity.
@@ -822,6 +828,9 @@ set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
 		return 0
 
 	flag_set(g_bitsIsZombie, iVictim)
+
+	// Set Zombie Knockback.
+	g_flUserKback[iVictim] = g_flKnockBackSpeed
 
 	// Remove player all weapons and items.
 	rg_remove_all_items(iVictim)
@@ -997,5 +1006,46 @@ public __native_reset_user_speed(const plugin_id, const num_params)
 
 	// Change speed of the player.
 	fw_ResetMaxSpeed_Post(id)
+	return true
+}
+
+public __native_set_zombie_knockback(const plugin_id, const num_params)
+{
+	new id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return false
+	}
+
+	g_flUserKback[id] = get_param_f(2)
+	return true
+}
+
+public Float:__native_get_zombie_knockback(const plugin_id, const num_params)
+{
+	new id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return 0.0
+	}
+
+	return g_flUserKback[id]
+}
+
+public __native_reset_zombie_knockback(const plugin_id, const num_params)
+{
+	new id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return false
+	}
+
+	g_flUserKback[id] = g_flKnockBackSpeed
 	return true
 }
