@@ -50,3 +50,8 @@ CMD_NOT = "Command unavailable !"
 CMD_NOT_ALIVE = "You are not alive !"
 
 HUD_INFECT_NOTICE = "%s has infected by %s"
+
+MSG_COINS_WINS = "!tEscape Success!y | You have earned !g+%d!y Coin(s) !
+MSG_COINS_KILLED = "!tZombie Killed!y | You have earned !g+%d!y Coin(s) !"
+MSG_COINS_INFECTED = "!tHuman Infected!y | You have earned !g+%d!y Coin(s) !"
+MSG_NO_COINS_ENOUGH = "You don't have coins enough !"
