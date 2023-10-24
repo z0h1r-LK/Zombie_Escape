@@ -4,6 +4,7 @@ CHAT_PREFIX = "[!gZE!y]"
 MENU_PREFIX = "\r[ZE]\w"
 
 HUD_ESCAPE = "** Escape Mode **"
+HUD_NEMESIS = "** Nemesis Mode **"
 
 HUD_ESCAPE_FAIL = "-=| Escape Fail |=-"
 HUD_ESCAPE_SUCCESS = "-=| Escape Success |=-"
