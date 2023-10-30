@@ -101,7 +101,8 @@ public x_bGameStarted,
 		x_bFixSpawn,
 		x_iRoundTime,
 		x_iRoundNum,
-		x_bRespawnAsZombie
+		x_bRespawnAsZombie,
+		x_szModVersion
 
 public plugin_natives()
 {
@@ -214,6 +215,10 @@ public plugin_cfg()
 	set_member_game(m_bMapHasRescueZone, false)
 	set_member_game(m_bMapHasEscapeZone, false)
 	set_member_game(m_bMapHasVIPSafetyZone, false)
+
+	// Mod Version.
+	register_cvar("ze_version", ZE_VERSION)
+	set_cvar_string("ze_version", ZE_VERSION)
 }
 
 public plugin_end()
