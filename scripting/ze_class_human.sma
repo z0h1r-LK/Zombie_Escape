@@ -9,10 +9,19 @@
 // Define.
 #define CUSTOM_MODEL
 
+// Color indexes.
+enum _:Colors
+{
+	Red = 0,
+	Green,
+	Blue
+}
+
 // CVars.
 new g_iHumanHealth,
 	g_iHumanArmor,
 	g_iHumanGravity,
+	g_iHudColor[Colors],
 	bool:g_bWeaponStrips,
 	Float:g_flHumanSpeed,
 	Float:g_flHumanSpeedFactor
@@ -77,6 +86,10 @@ public plugin_init()
 
 	bind_pcvar_float(register_cvar("ze_human_speed", "0"), g_flHumanSpeed)
 	bind_pcvar_float(register_cvar("ze_human_speed_factor", "25.0"), g_flHumanSpeedFactor)
+
+	bind_pcvar_num(register_cvar("ze_hud_info_human_red", "0"), g_iHudColor[Red])
+	bind_pcvar_num(register_cvar("ze_hud_info_human_green", "127"), g_iHudColor[Green])
+	bind_pcvar_num(register_cvar("ze_hud_info_human_blue", "255"), g_iHudColor[Blue])
 }
 
 public ze_user_humanized(id)
@@ -122,6 +135,9 @@ public ze_user_humanized(id)
 		// Give player Knife Weapon.
 		rg_give_item(id, "weapon_knife", GT_APPEND)
 	}
+
+	// Info HUD.
+	ze_hud_info_set(id, "CLASS_HUMAN", g_iHudColor, true)
 
 #if defined CUSTOM_MODEL
 	new szModel[MAX_NAME_LENGTH]

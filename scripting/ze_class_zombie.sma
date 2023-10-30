@@ -8,9 +8,18 @@
 // Define.
 #define CUSTOM_MODEL
 
+// Color indexes.
+enum _:Colors
+{
+	Red = 0,
+	Green,
+	Blue
+}
+
 // Cvars.
 new g_iZombieHealth,
 	g_iZombieGravity,
+	g_iHudColor[Colors],
 	Float:g_flZombieSpeed
 
 #if defined CUSTOM_MODEL
@@ -78,6 +87,10 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_zombie_health", "20000"), g_iZombieHealth)
 	bind_pcvar_num(register_cvar("ze_zombie_gravity", "640"), g_iZombieGravity)
 	bind_pcvar_float(register_cvar("ze_zombie_speed", "320.0"), g_flZombieSpeed)
+
+	bind_pcvar_num(register_cvar("ze_hud_info_zombie_red", "255"), g_iHudColor[Red])
+	bind_pcvar_num(register_cvar("ze_hud_info_zombie_green", "127"), g_iHudColor[Green])
+	bind_pcvar_num(register_cvar("ze_hud_info_zombie_blue", "0"), g_iHudColor[Blue])
 }
 
 public ze_user_infected(iVictim, iInfector)
@@ -101,6 +114,9 @@ public ze_user_infected(iVictim, iInfector)
 	{
 		ze_set_user_speed(iVictim, g_flZombieSpeed)
 	}
+
+	// Info HUD.
+	ze_hud_info_set(iVictim, "CLASS_ZOMBIE", g_iHudColor, true)
 
 #if defined CUSTOM_MODEL
 	new szModel[MAX_NAME_LENGTH]

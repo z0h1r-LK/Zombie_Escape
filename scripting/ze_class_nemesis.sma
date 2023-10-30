@@ -19,6 +19,7 @@ new g_iHealth,
 	g_iGravity,
 	g_iGlowAmount,
 	g_iGlowColors[Colors],
+	g_iHudColor[Colors],
 	bool:g_bOneHit,
 	bool:g_bBlockFrost,
 	bool:g_bBlockFire,
@@ -121,6 +122,10 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_nemesis_fire", "0"), g_bBlockFire)
 
 	bind_pcvar_float(register_cvar("ze_nemesis_knockback", "200.0"), g_flKnockback)
+
+	bind_pcvar_num(register_cvar("ze_hud_info_nemesis_red", "200"), g_iHudColor[Red])
+	bind_pcvar_num(register_cvar("ze_hud_info_nemesis_green", "0"), g_iHudColor[Green])
+	bind_pcvar_num(register_cvar("ze_hud_info_nemesis_blue", "0"), g_iHudColor[Blue])
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
@@ -256,6 +261,9 @@ set_User_Nemesis(const id)
 		// Set knockback.
 		ze_set_zombie_knockback(id, g_flKnockback)
 	}
+
+	// Info HUD.
+	ze_hud_info_set(id, "CLASS_NEMESIS", g_iHudColor, true)
 
 	new szModel[MAX_RESOURCE_PATH_LENGTH]
 

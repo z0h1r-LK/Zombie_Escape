@@ -461,3 +461,19 @@ native ze_set_user_fire(id, bool:bSet = false);
  * @error          If this player not on game.
  */
 native ze_set_user_fire_ex(id, Float:flPeriod);
+
+/**
+ * Add class name and set color for HUD info.
+ *
+ * @param id        Client index.
+ * @param szClass[] Class name (Ex: "Zombie", ... etc).
+ * @param iColor[3] HUD Color (Red, Green, Blue).
+ * @param bMl       true  = Class name will be looked up as multilingual keys when the menu.
+ *
+ * @return          true  | If operation successfully.
+ *                  false | Error.
+ *
+ * @error           If this player not on game,
+ *                  Translation key does not exist.
+ */
+native ze_hud_info_set(id, const szClass[], const iColor[3], bMl = false);

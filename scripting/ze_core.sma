@@ -345,6 +345,8 @@ public pfn_spawn(iEnt)
 		{
 			if (FClassnameIs(iEnt, g_szEntitesClass[i]))
 			{
+				server_print("entity: %i", iEnt)
+
 				// Free edict.
 				remove_entity(iEnt)
 				return PLUGIN_HANDLED

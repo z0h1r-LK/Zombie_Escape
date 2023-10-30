@@ -55,3 +55,10 @@ MSG_COINS_WINS = "!tEscape Success!y | You have earned !g+%d!y Coin(s) !
 MSG_COINS_KILLED = "!tZombie Killed!y | You have earned !g+%d!y Coin(s) !"
 MSG_COINS_INFECTED = "!tHuman Infected!y | You have earned !g+%d!y Coin(s) !"
 MSG_NO_COINS_ENOUGH = "You don't have coins enough !"
+
+CLASS_HUMAN = "Human"
+CLASS_ZOMBIE = "Zombie"
+CLASS_NEMESIS = "Nemesis"
+
+HUD_INFO_SPEC = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
+HUD_INFO_STATS = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
