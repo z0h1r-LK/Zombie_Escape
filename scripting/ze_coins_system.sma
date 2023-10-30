@@ -10,6 +10,7 @@ new const g_szVaultName[] = "Coins"
 new g_iSaveType,
 	g_iDmgReward,
 	g_iWinsReward,
+	g_iStartCoins,
 	g_iInfectReward,
 	g_iZombieKilled,
 	bool:g_bDmgEnabled,
@@ -50,6 +51,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_coins_killed", "15"), g_iZombieKilled)
 	bind_pcvar_num(register_cvar("ze_coins_dmg", "1"), g_bDmgEnabled)
 	bind_pcvar_num(register_cvar("ze_coins_dmg_rw", "1"), g_iDmgReward)
+	bind_pcvar_num(register_cvar("ze_coins_start", "10"), g_iStartCoins)
 	bind_pcvar_float(register_cvar("ze_coins_dmg_req", "800.0"), g_flReqDamage)
 	bind_pcvar_num(register_cvar("ze_earn_coins_message", "1"), g_bEarnMessage)
 
@@ -178,18 +180,24 @@ read_Coins(const id)
 		{
 			if (!TrieGetCell(g_tTempVault, g_szAuth[id], g_iCoins[id]))
 			{
-				g_iCoins[id] = 0
+				g_iCoins[id] = g_iStartCoins
 			}
 		}
 		case 2: // nVault.
 		{
+			// Open the Vault.
 			if ((g_iVaultHandle = nvault_open(g_szVaultName)) != INVALID_HANDLE)
 			{
 				new szCoins[32]
 
-				// Convert Integer to String.
-				num_to_str(g_iCoins[id], szCoins, charsmax(szCoins))
-				nvault_pset(g_iVaultHandle, g_szAuth[id], szCoins)
+				if (nvault_get(g_iVaultHandle, g_szAuth[id], szCoins, charsmax(szCoins)))
+				{
+					g_iCoins[id] = str_to_num(szCoins)
+				}
+				else
+				{
+					g_iCoins[id] = g_iStartCoins
+				}
 
 				// Close the Vault.
 				nvault_close(g_iVaultHandle)
@@ -209,10 +217,13 @@ write_Coins(const id)
 		}
 		case 2: // nVault.
 		{
-			// Open the Vault.
 			if ((g_iVaultHandle = nvault_open(g_szVaultName)) != INVALID_HANDLE)
 			{
-				g_iCoins[id] = nvault_get(g_iVaultHandle, g_szAuth[id])
+				new szCoins[32]
+
+				// Convert Integer to String.
+				num_to_str(g_iCoins[id], szCoins, charsmax(szCoins))
+				nvault_pset(g_iVaultHandle, g_szAuth[id], szCoins)
 
 				// Close the Vault.
 				nvault_close(g_iVaultHandle)
