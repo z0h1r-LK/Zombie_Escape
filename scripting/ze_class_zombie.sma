@@ -1,9 +1,6 @@
 #include <amxmodx>
 #include <reapi>
-
 #include <ze_core>
-#include <ini_file>
-#include <ze_weap_models_api>
 
 // Define.
 #define CUSTOM_MODEL
@@ -24,7 +21,7 @@ new g_iZombieHealth,
 
 #if defined CUSTOM_MODEL
 	// Default Zombie knife Models.
-	new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze/v_knife_zombie.mdl"
+	new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze_es/v_knife_zombie.mdl"
 
 	// Dynamic Array.
 	new Array:g_aZombieModels

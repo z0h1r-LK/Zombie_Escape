@@ -1,10 +1,6 @@
 #include <amxmodx>
-#include <amxmisc>
 #include <reapi>
-
 #include <ze_core>
-#include <ini_file>
-#include <ze_weap_models_api>
 
 // Define.
 #define CUSTOM_MODEL

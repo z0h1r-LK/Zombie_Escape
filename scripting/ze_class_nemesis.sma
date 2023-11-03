@@ -3,6 +3,9 @@
 #include <reapi>
 #include <ze_core>
 
+// Define.
+#define CUSTOM_MODEL
+
 // Macro.
 #define is_user_nemesis(%0) flag_get_boolean(g_bitsIsNemesis, %0)
 
@@ -32,21 +35,24 @@ new g_iHealth,
 // Variables.
 new g_bitsIsNemesis
 
+#if defined CUSTOM_MODEL
 // Dynamic Arrays.
 new Array:g_aNemesisModel,
 	Array:g_aNemesisClaws
+#endif
 
 public plugin_natives()
 {
 	register_native("ze_is_user_nemesis", "__native_is_user_nemesis")
 	register_native("ze_set_user_nemesis", "__native_set_user_nemesis")
-	register_native("ze_reset_user_nemesis", "__native_reset_user_nemesis")
+	register_native("ze_remove_user_nemesis", "__native_remove_user_nemesis")
 }
 
+#if defined CUSTOM_MODEL
 public plugin_precache()
 {
 	// Default Nemesis Models.
-	new const szNemesisModel[][] = {"nemesis"}
+	new const szNemesisModel[][] = {"ze_nemesis"}
 	new const szNemesisClaws[][] = {"models/v_knife_nemesis.mdl"}
 
 	// Create new dyn Array.
@@ -57,9 +63,11 @@ public plugin_precache()
 	ini_read_string_array(ZE_FILENAME, "Player Models", "NEMESIS", g_aNemesisModel)
 	ini_read_string_array(ZE_FILENAME, "Weapon Models", "NEMESIS_KNIFE", g_aNemesisClaws)
 
+	new i
+
 	if (!ArraySize(g_aNemesisModel))
 	{
-		for (new i = 0; i < sizeof(szNemesisModel); i++)
+		for (i = 0; i < sizeof(szNemesisModel); i++)
 			ArrayPushString(g_aNemesisModel, szNemesisModel[i])
 
 		// Write Nemesis Models on INI file.
@@ -68,7 +76,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aNemesisClaws))
 	{
-		for (new i = 0; i < sizeof(szNemesisClaws); i++)
+		for (i = 0; i < sizeof(szNemesisClaws); i++)
 			ArrayPushString(g_aNemesisClaws, szNemesisClaws[i])
 
 		// Write Nemesis Claws on INI file.
@@ -79,7 +87,7 @@ public plugin_precache()
 
 	// Precache Models.
 	iFiles = ArraySize(g_aNemesisModel)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aNemesisModel, i, szPlayerModel, charsmax(szPlayerModel))
 		format(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
@@ -87,12 +95,13 @@ public plugin_precache()
 	}
 
 	iFiles = ArraySize(g_aNemesisClaws)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aNemesisClaws, i, szModel, charsmax(szModel))
 		precache_model(szModel)
 	}
 }
+#endif
 
 public plugin_init()
 {
@@ -184,8 +193,8 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 
 public fw_TakeDamage_Pre(const iVictim, iInflector, iAttacker, Float:flDamage, bitsDamageType)
 {
-	// Victim not on game or damage himself?
-	if (iVictim == iAttacker || !is_user_connected(iVictim))
+	// Player not on game or damage himself?
+	if (iVictim == iAttacker || !is_user_connected(iVictim) || !is_user_connected(iAttacker))
 		return HC_CONTINUE
 
 	// Teammates?
@@ -234,6 +243,7 @@ set_User_Nemesis(const id)
 	if (!is_user_nemesis(id))
 		flag_set(g_bitsIsNemesis, id)
 
+	// HP.
 	if (g_iHealth > 0)
 	{
 		new Float:fHealth = float(g_iHealth)
@@ -241,21 +251,25 @@ set_User_Nemesis(const id)
 		set_entvar(id, var_max_health, fHealth)
 	}
 
+	// Max speed.
 	if (g_flMaxSpeed > 0.0)
 	{
 		ze_set_user_speed(id, g_flMaxSpeed)
 	}
 
+	// Gravity.
 	if (g_iGravity > 0)
 	{
 		set_entvar(id, var_gravity, float(g_iGravity) / 800.0)
 	}
 
+	// Glow shell
 	if (g_bGlowEnabled)
 	{
 		set_ent_rendering(id, kRenderFxGlowShell, g_iGlowColors[Red], g_iGlowColors[Green], g_iGlowColors[Blue], kRenderNormal, g_iGlowAmount)
 	}
 
+	// Custom Knockback
 	if (g_flKnockback > 0.0)
 	{
 		// Set knockback.
@@ -265,6 +279,7 @@ set_User_Nemesis(const id)
 	// Info HUD.
 	ze_hud_info_set(id, "CLASS_NEMESIS", g_iHudColor, true)
 
+#if defined CUSTOM_MODEL
 	new szModel[MAX_RESOURCE_PATH_LENGTH]
 
 	// Set player custom Model.
@@ -275,6 +290,7 @@ set_User_Nemesis(const id)
 	ArrayGetString(g_aNemesisClaws, random_num(0, ArraySize(g_aNemesisClaws) - 1), szModel, charsmax(szModel))
 	ze_set_user_view_model(id, CSW_KNIFE, szModel)
 	ze_set_user_weap_model(id, CSW_KNIFE, "")
+#endif
 }
 
 public unset_User_Nemesis(const id)
@@ -319,7 +335,7 @@ public __native_set_user_nemesis(const plugin_id, const num_params)
 	return true
 }
 
-public __native_reset_user_nemesis(const plugin_id, const num_params)
+public __native_remove_user_nemesis(const plugin_id, const num_params)
 {
 	new id = get_param(1)
 
