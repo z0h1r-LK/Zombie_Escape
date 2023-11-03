@@ -50,6 +50,18 @@ enum (+=1)
 }
 
 /**
+ * Type of sound, Used in ze_fw_res_player_sound()
+ */
+enum
+{
+	ZE_SND_PAIN = 0,
+	ZE_SND_SLASH,
+	ZE_SND_WALL,
+	ZE_SND_ATTACK,
+	ZE_SND_DIE
+}
+
+/**
  * XVARs Name.
  */
 #define X_Core_RoundNum       "x_iRoundNum"

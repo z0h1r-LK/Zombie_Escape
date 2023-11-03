@@ -1,7 +1,6 @@
 #include <amxmodx>
-
+#include <fakemeta>
 #include <ze_core>
-#include <ini_file>
 
 // Macroses.
 #define FInvalidAmbHandle(%0) (INVALID_HANDLE>=(%0)>=g_iAmbNum)
@@ -29,6 +28,7 @@ new Float:g_flAmbDelay
 // Variables.
 new g_iAmbNum
 #endif
+new g_iForward
 
 // Dynamic Arrays.
 #if defined BEGIN_SOUNDS
@@ -173,10 +173,36 @@ public plugin_init()
 	// Load Plug-In.
 	register_plugin("[ZE] Resources", ZE_VERSION, ZE_AUTHORS)
 
+	// Hook Chain.
+	register_forward(FM_EmitSound, "fw_EmitSound_Pre")
+
 #if defined AMBIENCE_SOUNDS
 	// CVars.
 	bind_pcvar_float(get_cvar_pointer("ze_release_time"), g_flAmbDelay)
 #endif
+
+	// Create Forwards.
+	g_iForward = CreateMultiForward("ze_res_fw_zombie_sound", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
+}
+
+public plugin_end()
+{
+	// Free the Memory.
+	DestroyForward(g_iForward)
+
+	#if defined BEGIN_SOUNDS
+	ArrayDestroy(g_aBeginSounds)
+	#endif
+	#if defined READY_SOUNDS
+	ArrayDestroy(g_aReadySounds)
+	#endif
+	#if defined AMBIENCE_SOUNDS
+	ArrayDestroy(g_aAmbienceSounds)
+	#endif
+	#if defined WINS_SOUNDS
+	ArrayDestroy(g_aEscapeFailSounds)
+	ArrayDestroy(g_aEscapeSuccessSounds)
+	#endif
 }
 
 public ze_game_started()
@@ -229,6 +255,76 @@ public ze_roundend(iWinTeam)
 #if defined AMBIENCE_SOUNDS
 	remove_task(TASK_AMBIENCE)
 #endif
+}
+
+public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:flAttn, bitsFlags, iPitch)
+{
+	// Is not Player?
+	if (szSample[0] != 'p' && szSample[1] != 'l' && szSample[2] != 'a')
+		return FMRES_IGNORED
+
+	// Is not Zombie?
+	if (!ze_is_user_zombie(iEnt))
+		return FMRES_IGNORED
+
+	static szSound[64]
+
+	// Reset string.
+	szSound = NULL_STRING
+
+	// Pain.
+	if (szSample[7] == 'b' && szSample[8] == 'h' && szSample[9] == 'i')
+	{
+		ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_PAIN, PrepareArray(szSound, sizeof(szSound), 1))
+		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+		return FMRES_SUPERCEDE
+	}
+
+	if (szSample[8] == 'k' && szSample[9] == 'n' && szSample[10] == 'i')
+	{
+		// Miss Slash.
+		if (szSample[14] == 's' && szSample[15] == 'l' && szSample[16] == 'a')
+		{
+			ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_SLASH, PrepareArray(szSound, sizeof(szSound), 1))
+			emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+			return FMRES_SUPERCEDE
+		}
+
+		if (szSample[14] == 'h' && szSample[15] == 'i' && szSample[16] == 't')
+		{
+			// Miss Wall.
+			if (szSample[17] == 'w')
+			{
+				ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_WALL, PrepareArray(szSound, sizeof(szSound), 1))
+				emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+				return FMRES_SUPERCEDE
+			}
+			else // Attack.
+			{
+				ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+				emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+				return FMRES_SUPERCEDE
+			}
+		}
+
+		// Attack.
+		if (szSample[14] == 's' && szSample[15] == 't' && szSample[16] == 'a')
+		{
+			ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+			emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+			return FMRES_SUPERCEDE
+		}
+	}
+
+	// Die | Death.
+	if (szSample[7] == 'd' && (szSample[8] == 'i' || szSample[8] == 'e') && (szSample[9] == 'e' || szSample[9] == 'a'))
+	{
+		ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_DIE, PrepareArray(szSound, sizeof(szSound), 1))
+		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+		return FMRES_SUPERCEDE
+	}
+
+	return FMRES_IGNORED
 }
 
 /**
@@ -319,5 +415,4 @@ public __native_res_ambience_play(plugin_id, num_params)
 		PlaySound(id, szSound)
 	}
 }
-
 #endif
