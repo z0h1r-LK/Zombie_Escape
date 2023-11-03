@@ -7,6 +7,9 @@
 #include <ze_stocks>
 #include <ze_core_const>
 
+// Define.
+#define CORE_KNOCKBACK
+
 // Custom Forwards.
 enum _:FORWARDS
 {
@@ -65,15 +68,19 @@ new const g_szEntitesClass[][] =
 
 // Cvars.
 new g_iReqPlayers,
-	bool:g_bKbEnabled,
-	bool:g_bKbBulletOnly,
 	bool:g_bBlockSuicide,
 	bool:g_bBlockMoneyHUD,
 	bool:g_bBlockHpArRrHUD,
 	bool:g_bBlockBloodEffs,
-	Float:g_flRoundEndDelay,
+	Float:g_flRoundEndDelay
+
+#if defined CORE_KNOCKBACK
+new bool:g_bKbEnabled,
+	bool:g_bKbBulletOnly,
+	Float:g_flKnockBackSpeed,
 	Float:g_flKbReqDistance,
-	Float:g_flKnockBackSpeed
+	Float:g_flUserKback[MAX_PLAYERS+1]
+#endif
 
 // Variables.
 new g_iFwReturn,
@@ -92,8 +99,7 @@ new g_iFwReturn,
 
 // Arrays.
 new g_iForwards[FORWARDS],
-	Float:g_flUserSpeed[MAX_PLAYERS+1],
-	Float:g_flUserKback[MAX_PLAYERS+1]
+	Float:g_flUserSpeed[MAX_PLAYERS+1]
 
 // XVars.
 public x_bGameStarted,
@@ -117,9 +123,11 @@ public plugin_natives()
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
 
+#if defined CORE_KNOCKBACK
 	register_native("ze_set_zombie_knockback", "__native_set_zombie_knockback")
 	register_native("ze_get_zombie_knockback", "__native_get_zombie_knockback")
 	register_native("ze_reset_zombie_knockback", "__native_reset_zombie_knockback")
+#endif
 
 	g_bEntSpawn = true
 }
@@ -162,10 +170,12 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
 	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
 
+#if defined CORE_KNOCKBACK
 	bind_pcvar_num(register_cvar("ze_knockback_enable", "1"), g_bKbEnabled)
 	bind_pcvar_num(register_cvar("ze_knockback_bulletonly", "0"), g_bKbBulletOnly)
 	bind_pcvar_float(register_cvar("ze_knockback_distance", "600.0"), g_flKbReqDistance)
 	bind_pcvar_float(register_cvar("ze_knockback_speed", "300.0"), g_flKnockBackSpeed)
+#endif
 
 	bind_pcvar_float(get_cvar_pointer("mp_round_restart_delay"), g_flRoundEndDelay)
 
@@ -271,8 +281,10 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_iPlayersNum--
 
 	// Reset Var.
+#if defined CORE_KNOCKBACK
 	g_flUserSpeed[id] = 0.0
 	g_flUserKback[id] = 0.0
+#endif
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
 
@@ -645,6 +657,7 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 		}
 	}
 
+#if defined CORE_KNOCKBACK
 	if (g_bKbEnabled)
 	{
 		// Victim & Attacker Teammate?
@@ -684,6 +697,7 @@ public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, cons
 		// Set player new velocity.
 		set_entvar(iVictim, var_velocity, vSpeed)
 	}
+#endif
 }
 
 public fw_TraceAttack_Pre(const iVictim, const iAttacker, const Float:flDamage, const Float:vDirecton[3], const pTrace, bitsDamageType)
@@ -836,8 +850,10 @@ set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
 
 	flag_set(g_bitsIsZombie, iVictim)
 
+#if defined CORE_KNOCKBACK
 	// Set Zombie Knockback.
 	g_flUserKback[iVictim] = g_flKnockBackSpeed
+#endif
 
 	// Remove player all weapons and items.
 	rg_remove_all_items(iVictim)
@@ -1016,6 +1032,7 @@ public __native_reset_user_speed(const plugin_id, const num_params)
 	return true
 }
 
+#if defined CORE_KNOCKBACK
 public __native_set_zombie_knockback(const plugin_id, const num_params)
 {
 	new id = get_param(1)
@@ -1056,3 +1073,4 @@ public __native_reset_zombie_knockback(const plugin_id, const num_params)
 	g_flUserKback[id] = g_flKnockBackSpeed
 	return true
 }
+#endif
