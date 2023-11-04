@@ -231,6 +231,13 @@ public ze_game_started()
 
 public ze_roundend(iWinTeam)
 {
+	// Stop all sounds.
+	StopSound()
+
+#if defined AMBIENCE_SOUNDS
+	remove_task(TASK_AMBIENCE)
+#endif
+
 #if defined WINS_SOUNDS
 	switch (iWinTeam)
 	{
@@ -247,13 +254,6 @@ public ze_roundend(iWinTeam)
 			PlaySound(0, szSound)
 		}
 	}
-#endif
-
-	// Stop all sounds.
-	StopSound()
-
-#if defined AMBIENCE_SOUNDS
-	remove_task(TASK_AMBIENCE)
 #endif
 }
 
