@@ -105,7 +105,7 @@ stock precache_sky(const szSkyName[])
 stock PlaySound(target, const sound[])
 {
 	// MP3 Sound?
-	if (equali(sound[strlen(sound) - 4], ".mp3"))
+	if (sound[strlen(sound) - 1] == '3')
 		client_cmd(target, "mp3 play ^"sound/%s^"", sound)
 	else
 		client_cmd(target, "spk ^"%s^"", sound)
