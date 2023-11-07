@@ -126,16 +126,15 @@ public fw_TakeDamage_Post(const iVictim, iInflector, iAttacker, Float:flDamage, 
 	if (!g_bDmgEnabled)
 		return
 
-	if (iVictim == iAttacker || !is_user_connected(iAttacker))
-		return
-
 	// Is Zombie?
-	if (!ze_is_user_zombie(iVictim) || ze_is_user_zombie(iAttacker))
+	if (iVictim == iAttacker || !ze_is_user_zombie(iVictim) || ze_is_user_zombie(iAttacker))
 		return
 
 	// This for avoid loop without stop!
 	if (g_flReqDamage > 0.0)
 	{
+		g_flDamage[iAttacker] += flDamage
+
 		while (g_flDamage[iAttacker] >= g_flReqDamage)
 		{
 			// +1 Coin.
