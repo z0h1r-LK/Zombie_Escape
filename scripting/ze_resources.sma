@@ -10,6 +10,10 @@
 #define READY_SOUNDS
 #define WINS_SOUNDS
 #define AMBIENCE_SOUNDS
+#define COUNTDOWN_SOUNDS
+
+// Task ID
+#define TASK_COUNTDOWN 100
 
 #if defined AMBIENCE_SOUNDS
 #define TASK_AMBIENCE 100
@@ -28,6 +32,13 @@ new Float:g_flAmbDelay
 // Variables.
 new g_iAmbNum
 #endif
+
+#if defined COUNTDOWN_SOUNDS
+new g_iCountdown,
+	g_iGameDelay,
+	g_iCountSounds
+#endif
+
 new g_iForward
 
 // Dynamic Arrays.
@@ -46,6 +57,10 @@ new Array:g_aEscapeFailSounds,
 
 #if defined AMBIENCE_SOUNDS
 new Array:g_aAmbienceSounds
+#endif
+
+#if defined COUNTDOWN_SOUNDS
+new Array:g_aCountdownSounds
 #endif
 
 #if defined AMBIENCE_SOUNDS
@@ -166,6 +181,34 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 #endif
+
+#if defined COUNTDOWN_SOUNDS
+	// Default Countdown sounds.
+	new const szCountdownSounds[][] = {"zm_es/count/1.wav", "zm_es/count/2.wav", "zm_es/count/3.wav", "zm_es/count/4.wav", "zm_es/count/5.wav", "zm_es/count/6.wav","zm_es/count/7.wav", "zm_es/count/8.wav", "zm_es/count/9.wav", "zm_es/count/10.wav"}
+
+	// Create new dyn Array.
+	g_aCountdownSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+
+	// Read Countdown sounds from INI file.
+	ini_read_string_array(ZE_FILENAME, "Sounds", "COUNTDOWN", g_aCountdownSounds)
+
+	if (!ArraySize(g_aCountdownSounds))
+	{
+		for (i = 0; i < sizeof(szCountdownSounds); i++)
+			ArrayPushString(g_aCountdownSounds, szCountdownSounds[i])
+
+		// Write Countdown sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "COUNTDOWN", g_aCountdownSounds)
+	}
+
+	iFiles = ArraySize(g_aCountdownSounds)
+	for (i = 0; i < iFiles; i++)
+	{
+		ArrayGetArray(g_aCountdownSounds, i, szSound, charsmax(szSound))
+		format(szSound, charsmax(szSound), "sound/%s", szSound)
+		precache_generic(szSound)
+	}
+#endif
 }
 
 public plugin_init()
@@ -179,6 +222,9 @@ public plugin_init()
 #if defined AMBIENCE_SOUNDS
 	// CVars.
 	bind_pcvar_float(get_cvar_pointer("ze_release_time"), g_flAmbDelay)
+#endif
+#if defined COUNTDOWN_SOUNDS
+	bind_pcvar_num(get_cvar_pointer("ze_gamemodes_delay"), g_iGameDelay)
 #endif
 
 	// Create Forwards.
@@ -203,6 +249,16 @@ public plugin_end()
 	ArrayDestroy(g_aEscapeFailSounds)
 	ArrayDestroy(g_aEscapeSuccessSounds)
 	#endif
+	#if defined COUNTDOWN_SOUNDS
+	ArrayDestroy(g_aCountdownSounds)
+	#endif
+}
+
+public ze_game_started_pre()
+{
+#if defined COUNTDOWN_SOUNDS
+	remove_task(TASK_COUNTDOWN)
+#endif
 }
 
 public ze_game_started()
@@ -227,6 +283,33 @@ public ze_game_started()
 #if defined AMBIENCE_SOUNDS
 	remove_task(TASK_AMBIENCE)
 #endif
+
+#if defined COUNTDOWN_SOUNDS
+	g_iCountdown = g_iGameDelay
+	g_iCountSounds = ArraySize(g_aCountdownSounds)
+	set_task(1.0, "play_Countdown", TASK_COUNTDOWN, .flags = "b")
+#endif
+}
+
+public play_Countdown(taskid)
+{
+	g_iCountdown--
+
+	if (g_iCountdown <= 0)
+	{
+		remove_task(taskid)
+		return
+	}
+
+	if (g_iCountdown <= g_iCountSounds)
+	{
+		if (g_iCountdown - 1 > INVALID_HANDLE)
+		{
+			static szSound[MAX_RESOURCE_PATH_LENGTH]
+			ArrayGetString(g_aCountdownSounds, g_iCountdown - 1, szSound, charsmax(szSound))
+			PlaySound(0, szSound)
+		}
+	}
 }
 
 public ze_roundend(iWinTeam)
@@ -236,6 +319,10 @@ public ze_roundend(iWinTeam)
 
 #if defined AMBIENCE_SOUNDS
 	remove_task(TASK_AMBIENCE)
+#endif
+
+#if defined COUNTDOWN_SOUNDS
+	remove_task(TASK_COUNTDOWN)
 #endif
 
 #if defined WINS_SOUNDS
