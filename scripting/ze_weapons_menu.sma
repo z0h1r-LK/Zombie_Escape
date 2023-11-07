@@ -17,7 +17,8 @@ enum _:WPN_DATA
 {
 	WPN_CUSTOM = 0,
 	WPN_NAME[MAX_NAME_LENGTH],
-	WPN_CLASS[MAX_NAME_LENGTH]
+	WPN_CLASS[MAX_NAME_LENGTH],
+	WPN_AMMO
 }
 
 // Weapon Section.
@@ -527,29 +528,43 @@ public choose_Weapon(id, iIndex, iSection)
 				}
 			}
 
+			// Set player Ammo.
+			rg_set_user_bpammo(id, WeaponIdType:get_weaponid(pArray[WPN_CLASS]), pArray[WPN_AMMO])
+
 			g_iMenuData[id][MD_PREV_PRIMARY] = iIndex
 			g_iMenuData[id][MD_PRIMARY_CHOSEN] = true
 		}
 		case SECTION_SECONDARY:
 		{
+			new pItem
 			ArrayGetArray(g_aSecondaryWeapons, iIndex, pArray)
 
 			if (pArray[WPN_CUSTOM])
 			{
-				if ((rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])) == NULLENT)
+				pItem = rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])
+
+				if (pItem == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
 				}
+
+				// Set player Ammo.
+				set_member(pItem, m_Weapon_iDefaultAmmo, pArray[WPN_AMMO])
 			}
 			else
 			{
-				if ((rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)) == NULLENT)
+				pItem = rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)
+
+				if (pItem == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
 				}
 			}
+
+			// Set player Ammo.
+			rg_set_user_bpammo(id, WeaponIdType:get_weaponid(pArray[WPN_CLASS]), pArray[WPN_AMMO])
 
 			g_iMenuData[id][MD_PREV_SECONDARY] = iIndex
 			g_iMenuData[id][MD_SECONDARY_CHOSEN] = true
@@ -619,7 +634,7 @@ read_Weapons(const szFile[])
 			return 0
 		}
 
-		new pArray[WPN_DATA], szWpnName[64], szWpnClass[64], szWpnCustom[64]
+		new pArray[WPN_DATA], szWpnName[64], szWpnClass[64], szWpnCustom[64], szWpnAmmo[32]
 
 		while (!feof(hFile))
 		{
@@ -648,9 +663,10 @@ read_Weapons(const szFile[])
 			szSection = NULL_STRING
 			szWpnName = NULL_STRING
 			szWpnClass = NULL_STRING
+			szWpnAmmo = NULL_STRING
 
 			// Parse the text.
-			if (parse(szRead, szSection, charsmax(szSection), szWpnName, charsmax(szWpnName), szWpnClass, charsmax(szWpnClass), szWpnCustom, charsmax(szWpnCustom)) < 3)
+			if (parse(szRead, szSection, charsmax(szSection), szWpnName, charsmax(szWpnName), szWpnClass, charsmax(szWpnClass), szWpnAmmo, charsmax(szWpnAmmo), szWpnCustom, charsmax(szWpnCustom)) < 4)
 			{
 				server_print("[ZE] Line #%i: Some arguments are not found !", iLine)
 				continue
@@ -661,6 +677,7 @@ read_Weapons(const szFile[])
 			remove_quotes(szWpnName)
 			remove_quotes(szWpnClass)
 			remove_quotes(szWpnCustom)
+			remove_quotes(szWpnAmmo)
 
 			switch (szSection[0])
 			{
@@ -669,6 +686,7 @@ read_Weapons(const szFile[])
 					pArray[WPN_CUSTOM] = str_to_num(szWpnCustom)
 					copy(pArray[WPN_NAME], charsmax(pArray) - WPN_NAME, szWpnName)
 					copy(pArray[WPN_CLASS], charsmax(pArray) - WPN_CLASS, szWpnClass)
+					pArray[WPN_AMMO] = str_to_num(szWpnAmmo)
 
 					ArrayPushArray(g_aPrimaryWeapons, pArray)
 					g_iPrimaryNum++
@@ -678,6 +696,7 @@ read_Weapons(const szFile[])
 					pArray[WPN_CUSTOM] = str_to_num(szWpnCustom)
 					copy(pArray[WPN_NAME], charsmax(pArray) - WPN_NAME, szWpnName)
 					copy(pArray[WPN_CLASS], charsmax(pArray) - WPN_CLASS, szWpnClass)
+					pArray[WPN_AMMO] = str_to_num(szWpnAmmo)
 
 					ArrayPushArray(g_aSecondaryWeapons, pArray)
 					g_iSecondaryNum++
