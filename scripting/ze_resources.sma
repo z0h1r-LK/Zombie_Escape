@@ -16,7 +16,7 @@
 #define TASK_COUNTDOWN 100
 
 #if defined AMBIENCE_SOUNDS
-#define TASK_AMBIENCE 100
+#define TASK_AMBIENCE 1565
 
 // Enum.
 enum _:AMBIENCE_DATA
@@ -478,7 +478,7 @@ public __native_res_ambience_play(plugin_id, num_params)
 	ArrayGetArray(g_aAmbienceSounds, iHandle, pArray)
 
 	// Delay before play Ambience sound.
-	set_task(g_flAmbDelay, "@play_Sound", TASK_AMBIENCE, pArray[AMB_SOUND], sizeof(pArray) - AMB_SOUND)
+	set_task(g_flAmbDelay, "@play_Sound", TASK_AMBIENCE, pArray[AMB_SOUND], AMB_SOUND, "a", 1)
 
 	if (get_param(2))
 	{
