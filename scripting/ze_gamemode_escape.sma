@@ -3,7 +3,6 @@
 #include <reapi>
 
 #include <ze_core>
-#include <ze_grenades>
 #include <ze_gamemodes>
 
 // Define.
