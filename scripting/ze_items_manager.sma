@@ -124,8 +124,6 @@ public show_Items_Menu(const id)
 		// Call forward ze_select_item_pre(param1, param2, param3, param4)
 		ExecuteForward(g_iForwards[FORWARD_SELECT_ITEM_PRE], g_iFwReturn, id, iItem, false, true)
 
-		server_print("g_iFwReturn = %d", g_iFwReturn)
-
 		if (g_iFwReturn >= ZE_ITEM_DONT_SHOW)
 		{
 			continue
