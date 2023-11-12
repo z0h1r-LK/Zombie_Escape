@@ -88,7 +88,6 @@ new g_iFwReturn,
 	g_iHumanWins,
 	g_iZombieWins,
 	g_iLastZombie,
-	g_iPlayersNum,
 	g_iPainShockFree,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
@@ -254,12 +253,15 @@ public client_putinserver(id)
 	if (is_user_hltv(id))
 		return
 
-	// New player joined the server.
-	g_iPlayersNum++
+	// Delay before check gamerules.
+	set_task(0.5, "client_Connected")
+}
 
+public client_Connected()
+{
 	if (!x_bGameStarted)
 	{
-		if (g_iPlayersNum >= g_iReqPlayers)
+		if (get_PlayersNum() >= g_iReqPlayers)
 		{
 			x_bGameStarted = true
 
@@ -276,9 +278,6 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	// HLTV Proxy?
 	if (is_user_hltv(id))
 		return
-
-	// Someone Leave the server.
-	g_iPlayersNum--
 
 	// Reset Var.
 #if defined CORE_KNOCKBACK
@@ -297,9 +296,15 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	if (g_iFwReturn >= ZE_STOP)
 		return
 
+	// Delay before check gamerules.
+	set_task(1.0, "client_Disconnected")
+}
+
+public client_Disconnected()
+{
 	if (x_bGameStarted)
 	{
-		if (g_iPlayersNum < g_iReqPlayers)
+		if (get_PlayersNum() < g_iReqPlayers)
 		{
 			x_bGameStarted = false
 
@@ -420,9 +425,10 @@ public fw_NewRound_Event()
 	if (g_iFwReturn >= ZE_STOP)
 		return
 
-	if (g_iPlayersNum < g_iReqPlayers)
+	new iPlayersNum = get_PlayersNum()
+	if (iPlayersNum < g_iReqPlayers)
 	{
-		ze_colored_print(0, "%L", LANG_PLAYER, "NO_ENOUGH_PLAYERS", g_iPlayersNum, g_iReqPlayers)
+		ze_colored_print(0, "%L", LANG_PLAYER, "NO_ENOUGH_PLAYERS", iPlayersNum, g_iReqPlayers)
 		return
 	}
 

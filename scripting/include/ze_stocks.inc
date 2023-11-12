@@ -106,9 +106,9 @@ stock PlaySound(target, const sound[])
 {
 	// MP3 Sound?
 	if (sound[strlen(sound) - 1] == '3')
-		client_cmd(target, "mp3 play ^"sound/%s^"", sound)
+		client_cmd(target, "mp3 play ^"sound/%s^"", sound);
 	else
-		client_cmd(target, "spk ^"%s^"", sound)
+		client_cmd(target, "spk ^"%s^"", sound);
 }
 
 /**
@@ -123,5 +123,27 @@ stock PlaySound(target, const sound[])
 stock StopSound(target = 0)
 {
 	// Credit: Templaso
-	client_cmd(target, "mp3 stop;stopsound")
+	client_cmd(target, "mp3 stop;stopsound");
+}
+
+/**
+ * Get the number of players on server.
+ *
+ * @return        Number of players.
+ */
+stock get_PlayersNum()
+{
+	new iNum;
+	for (new id = 1; id <= MaxClients; id++)
+	{
+		if (!is_user_connected(id))
+			continue;
+
+		if (is_user_hltv(id))
+			continue;
+
+		iNum++;
+	}
+
+	return iNum;
 }
