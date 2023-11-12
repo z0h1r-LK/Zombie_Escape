@@ -422,7 +422,7 @@ public fw_NewRound_Event()
 
 	if (g_iPlayersNum < g_iReqPlayers)
 	{
-		ze_colored_print(0, "%L", LANG_PLAYER, "NO_ENOUGH_PLAYERS", g_iReqPlayers)
+		ze_colored_print(0, "%L", LANG_PLAYER, "NO_ENOUGH_PLAYERS", g_iPlayersNum, g_iReqPlayers)
 		return
 	}
 
@@ -1004,6 +1004,8 @@ public __native_set_user_speed(const plugin_id, const num_params)
 
 	if (get_param(3))
 		flag_set(g_bitsSpeedFactor, id)
+	else
+		flag_unset(g_bitsSpeedFactor, id)
 
 	g_flUserSpeed[id] = get_param_f(2)
 
