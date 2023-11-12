@@ -6,10 +6,33 @@
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
 
+// Menu Sounds.
+new g_szSelectSound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+
+// Variable.
+new bool:g_bMenuSound
+
+public plugin_precache()
+{
+	// Read menu sounds from INI file.
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound, charsmax(g_szSelectSound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound)
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
+
+	// Precache Sounds.
+	precache_generic(g_szSelectSound)
+	precache_generic(g_szDisplaySound)
+}
+
 public plugin_init()
 {
 	// Load Plug-In.
 	register_plugin("[ZE] Menu Main", ZE_VERSION, ZE_AUTHORS)
+
+	// CVars.
+	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSound)
 
 	// Commands.
 	register_clcmd("chooseteam", "cmd_MenuMain")
@@ -71,6 +94,12 @@ public show_Menu_Main(const id)
 	// 0. Exit.
 	iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r0. \w%L", LANG_PLAYER, "MENU_EXIT")
 
+	if (g_bMenuSound)
+	{
+		// Play display sound.
+		client_cmd(id, "spk ^"%s^"", g_szDisplaySound)
+	}
+
 	// Show the Menu for player.
 	show_menu(id, KEYS_MENU, szMenu, 30, "Menu_Main")
 }
@@ -80,6 +109,12 @@ public handler_Menu_Main(const id, iKey)
 	// Player disconnected?
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED
+
+	if (g_bMenuSound)
+	{
+		// Play select sound.
+		client_cmd(id, "spk ^"%s^"", g_szSelectSound)
+	}
 
 	switch (iKey)
 	{

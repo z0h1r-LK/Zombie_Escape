@@ -20,6 +20,13 @@ enum _:FORWARDS
 	FORWARD_SELECT_ITEM_POST
 }
 
+// Menu Sounds.
+new g_szSelectSound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+
+// CVars.
+new bool:g_bMenuSounds
+
 // Variables.
 new g_iFwReturn
 
@@ -46,10 +53,26 @@ public plugin_natives()
 	register_native("ze_item_show_menu", "__native_item_show_menu")
 }
 
+public plugin_precache()
+{
+	// Read menu sounds from INI file.
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound, charsmax(g_szSelectSound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound)
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
+
+	// Precache Sounds.
+	precache_generic(g_szSelectSound)
+	precache_generic(g_szDisplaySound)
+}
+
 public plugin_init()
 {
 	// Load Plug-In.
 	register_plugin("[ZE] Items Manager", ZE_VERSION, ZE_AUTHORS)
+
+	// CVars.
+	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSounds)
 
 	// Commands.
 	register_clcmd("say /items", "cmd_ShowItemsMenu")
@@ -131,6 +154,11 @@ public show_Items_Menu(const id)
 		return
 	}
 
+	if (g_bMenuSounds)
+	{
+		client_cmd(id, "speak ^"%s^"", g_szDisplaySound)
+	}
+
 	// Next, Back, Exit.
 	formatex(szLang, charsmax(szLang), "%L", LANG_PLAYER, "NEXT")
 	menu_setprop(iMenu, MPROP_NEXTNAME, szLang)
@@ -145,6 +173,11 @@ public show_Items_Menu(const id)
 
 public handler_Items_Menu(id, iMenu, iKey)
 {
+	if (g_bMenuSounds)
+	{
+		client_cmd(id, "spk ^"%s^"", g_szSelectSound)
+	}
+
 	if (iKey == MENU_EXIT)
 	{
 		goto CLOSE_MENU
