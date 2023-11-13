@@ -18,7 +18,8 @@ enum _:Colors
 new g_iZombieHealth,
 	g_iZombieGravity,
 	g_iHudColor[Colors],
-	Float:g_flZombieSpeed
+	Float:g_flZombieSpeed,
+	Float:g_flZombieKnockback
 
 #if defined CUSTOM_MODEL
 // Default Zombie knife Models.
@@ -199,6 +200,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_zombie_health", "20000"), g_iZombieHealth)
 	bind_pcvar_num(register_cvar("ze_zombie_gravity", "640"), g_iZombieGravity)
 	bind_pcvar_float(register_cvar("ze_zombie_speed", "320.0"), g_flZombieSpeed)
+	bind_pcvar_float(register_cvar("ze_zombie_knockback", "200.0"), g_flZombieKnockback)
 
 	bind_pcvar_num(register_cvar("ze_hud_info_zombie_red", "255"), g_iHudColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_zombie_green", "127"), g_iHudColor[Green])
@@ -242,6 +244,11 @@ public ze_user_infected(iVictim, iInfector)
 
 	// Info HUD.
 	ze_hud_info_set(iVictim, "CLASS_ZOMBIE", g_iHudColor, true)
+
+	if (g_flZombieKnockback > 0.0)
+	{
+		ze_set_zombie_knockback(iVictim, g_flZombieKnockback)
+	}
 
 #if defined CUSTOM_MODEL
 	new szModel[MAX_NAME_LENGTH]

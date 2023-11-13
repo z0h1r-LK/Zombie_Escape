@@ -297,7 +297,7 @@ native ze_set_zombie_knockback(id, Float:flSpeed);
  * @param id     Client index.
  *
  * @return       Speed  | If player id is valid.
- *               0.0    | If player not on game.
+ *               -1.0   | If player not on game.
  *
  * @error        If this player not on game.
  */
