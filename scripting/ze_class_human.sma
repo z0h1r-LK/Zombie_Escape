@@ -13,11 +13,15 @@ enum _:Colors
 	Blue
 }
 
+// Shield Attack Sound.
+new g_szShieldAttackSound[MAX_RESOURCE_PATH_LENGTH] = "player/bhit_helmet-1.wav"
+
 // CVars.
 new g_iHumanHealth,
 	g_iHumanArmor,
 	g_iHumanGravity,
 	g_iHudColor[Colors],
+	bool:g_bHumanShield,
 	bool:g_bWeaponStrips,
 	Float:g_flHumanSpeed,
 	Float:g_flHumanSpeedFactor
@@ -65,6 +69,13 @@ new g_iHumanHealth,
 			// Precache Model.
 			precache_model(szModel)
 		}
+
+		// Read attack shield sound from INI file.
+		if (!ini_read_string(ZE_FILENAME, "Sounds", "SHIELD_ATTACK", g_szShieldAttackSound, charsmax(g_szShieldAttackSound)))
+			ini_write_string(ZE_FILENAME, "Sounds", "SHIELD_ATTACK", g_szShieldAttackSound)
+
+		// Precache Sound.
+		precache_sound(g_szShieldAttackSound)
 	}
 #endif
 
@@ -82,6 +93,8 @@ public plugin_init()
 
 	bind_pcvar_float(register_cvar("ze_human_speed", "0"), g_flHumanSpeed)
 	bind_pcvar_float(register_cvar("ze_human_speed_factor", "25.0"), g_flHumanSpeedFactor)
+
+	bind_pcvar_num(register_cvar("ze_human_shield", "1"), g_bHumanShield)
 
 	bind_pcvar_num(register_cvar("ze_hud_info_human_red", "0"), g_iHudColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_human_green", "127"), g_iHudColor[Green])
@@ -148,4 +161,30 @@ public ze_user_humanized(id)
 	ze_remove_user_view_model(id, CSW_KNIFE)
 	ze_remove_user_weap_model(id, CSW_KNIFE)
 #endif
+}
+
+public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
+{
+	if (!iInfector)
+		return ZE_CONTINUE
+
+	if (g_bHumanShield)
+	{
+		static Float:flArmor; flArmor = get_entvar(iVictim, var_armorvalue)
+
+		if (flArmor - flDamage <= 0.0)
+		{
+			set_entvar(iVictim, var_armorvalue, 0.0)
+		}
+		else
+		{
+			set_entvar(iVictim, var_armorvalue, flArmor - flDamage)
+
+			// Attack sound.
+			emit_sound(iVictim, CHAN_BODY, g_szShieldAttackSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
+			return ZE_BREAK // Prevent infection event.
+		}
+	}
+
+	return ZE_CONTINUE
 }
