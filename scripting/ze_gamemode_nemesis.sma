@@ -61,7 +61,7 @@ public plugin_precache()
 	{
 		ArrayGetString(g_aSounds, i, szSound, charsmax(szSound))
 		format(szSound, charsmax(szSound), "sound/%s", szSound)
-		precache_sound(szSound)
+		precache_generic(szSound)
 	}
 
 	new szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.wav"
