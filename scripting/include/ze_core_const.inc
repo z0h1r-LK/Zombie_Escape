@@ -12,7 +12,7 @@ stock const ZE_FILENAME[] = "zombie_escape"
  * Mod Version and Authors.
  */
 stock const ZE_VERSION[] = "1.0-alpha"
-stock const ZE_AUTHORS[] = "z0h1r-LK"
+stock const ZE_AUTHORS[] = "Escapers-Zone Team"
 
 /**
  * General return value.
