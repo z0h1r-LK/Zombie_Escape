@@ -1,6 +1,5 @@
 #include <amxmodx>
 #include <amxmisc>
-
 #include <ze_core>
 
 // Keys Menu.
@@ -21,9 +20,13 @@ public plugin_precache()
 	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
 		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
 
+	new szSound[MAX_RESOURCE_PATH_LENGTH]
+
 	// Precache Sounds.
-	precache_generic(g_szSelectSound)
-	precache_generic(g_szDisplaySound)
+	formatex(szSound, charsmax(szSound), "sound/%s", g_szSelectSound)
+	precache_generic(szSound)
+	formatex(szSound, charsmax(szSound), "sound/%s", g_szDisplaySound)
+	precache_generic(szSound)
 }
 
 public plugin_init()
@@ -66,7 +69,7 @@ public show_Menu_Main(const id)
 	{
 		if (ze_auto_buy_enabled(id))
 		{
-			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L \r[%L]^n", LANG_PLAYER, "MENU_RE_WEAPONS")
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L^n", LANG_PLAYER, "MENU_RE_WEAPONS")
 		}
 		else
 		{
@@ -97,7 +100,7 @@ public show_Menu_Main(const id)
 	if (g_bMenuSound)
 	{
 		// Play display sound.
-		client_cmd(id, "spk ^"%s^"", g_szDisplaySound)
+		PlaySound(id, g_szDisplaySound)
 	}
 
 	// Show the Menu for player.
@@ -113,7 +116,7 @@ public handler_Menu_Main(const id, iKey)
 	if (g_bMenuSound)
 	{
 		// Play select sound.
-		client_cmd(id, "spk ^"%s^"", g_szSelectSound)
+		PlaySound(id, g_szSelectSound)
 	}
 
 	switch (iKey)
