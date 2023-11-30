@@ -151,7 +151,7 @@ public plugin_end()
 
 public ze_user_infected(iVictim, iInfector)
 {
-	if (!iInfector)
+	if (!g_szFlags[0])
 		return
 
 	static szSound[MAX_RESOURCE_PATH_LENGTH], bitsFlags; bitsFlags = read_flags(g_szFlags)
