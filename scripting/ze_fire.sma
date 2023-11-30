@@ -193,6 +193,10 @@ public ze_user_humanized(id)
 	// Turn off the Flame.
 	g_flBurnTime[id] = 0.0
 	remove_task(id+TASK_BURNING)
+
+	// View and Weapon Model.
+	ze_set_user_view_model(id, CSW_HEGRENADE, g_v_szFireModel)
+	ze_set_user_weap_model(id, CSW_HEGRENADE, g_p_szFireModel)
 }
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
