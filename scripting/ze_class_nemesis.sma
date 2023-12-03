@@ -147,13 +147,9 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	flag_unset(g_bitsIsNemesis, id)
 }
 
-public ze_user_humanized(id)
+public ze_user_humanized_pre(id)
 {
-	// Is Nemesis?
-	if (is_user_nemesis(id))
-	{
-		unset_User_Nemesis(id)
-	}
+	unset_User_Nemesis(id)
 }
 
 public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
@@ -187,7 +183,7 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 	// Is Nemesis?
 	if (is_user_nemesis(iVictim))
 	{
-		flag_unset(g_bitsIsNemesis, iVictim)
+		unset_User_Nemesis(iVictim)
 	}
 }
 
