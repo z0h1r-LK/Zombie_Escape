@@ -256,6 +256,7 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 		return
 
 	// Reset Var.
+	g_flUserSpeed[id] = 0.0
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
 
