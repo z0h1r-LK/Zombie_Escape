@@ -115,7 +115,7 @@ public plugin_init()
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_nemesis_health", "2000"), g_iHealth)
 	bind_pcvar_num(register_cvar("ze_nemesis_gravity", "500"), g_iGravity)
-	bind_pcvar_float(register_cvar("ze_nemesis_maxspeed", "320.0"), g_flMaxSpeed)
+	bind_pcvar_float(register_cvar("ze_nemesis_speed", "320.0"), g_flMaxSpeed)
 
 	bind_pcvar_num(register_cvar("ze_nemesis_glow", "1"), g_bGlowEnabled)
 	bind_pcvar_num(register_cvar("ze_nemesis_glow_red", "200"), g_iGlowColors[Red])
