@@ -62,3 +62,6 @@ CLASS_NEMESIS = "Nemesis"
 
 HUD_INFO_SPEC = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
 HUD_INFO_STATS = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
+
+MSG_ZOMBIE_NAME = "Name: %s"
+MSG_ZOMBIE_INFO = "Health: %.2f | Speed: %.2f | Gravity: %.2f | Knockback: %.2f"
