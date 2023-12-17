@@ -36,4 +36,4 @@ native ze_set_user_nemesis(id);
  *
  * @error        If this player not on game.
  */
-native ze_reset_user_nemesis(id, bool:bHuman);
+native ze_remove_user_nemesis(id, bool:bHuman = false);
