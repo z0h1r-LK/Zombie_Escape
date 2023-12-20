@@ -5,6 +5,7 @@ MENU_PREFIX = "\r[ZE]\w"
 
 HUD_ESCAPE = "** Escape Mode **"
 HUD_NEMESIS = "** Nemesis Mode **"
+HUD_SURVIVOR = "** Survivor Mode **"
 
 HUD_ESCAPE_FAIL = "-=| Escape Fail |=-"
 HUD_ESCAPE_SUCCESS = "-=| Escape Success |=-"
@@ -59,6 +60,7 @@ MSG_NO_COINS_ENOUGH = "You don't have coins enough !"
 CLASS_HUMAN = "Human"
 CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
+CLASS_SURVIVOR = "Survivor"
 
 HUD_INFO_SPEC = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
 HUD_INFO_STATS = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
