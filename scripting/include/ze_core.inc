@@ -187,6 +187,27 @@ forward ze_fire_burn_end(id);
 forward ze_res_fw_zombie_sound(const id, iSnd, szSound[64]);
 
 /**
+ * Called when Zombies appear.
+ *
+ * @note This forward called when Zombies appear in Escape and Swarm mode only.
+ *
+ * @param iZombies[]     Clients indexes.
+ * @param iZombiesNum    The number of Zombies.
+ *
+ * @noreturn
+ */
+forward ze_zombie_appear(const iZombies[], iZombiesNum);
+
+/**
+ * Called when Zombies released.
+ *
+ * @note This forward called when Zombies release in Escape and Swarm mode only.
+ *
+ * @noreturn
+ */
+forward ze_zombie_release();
+
+/**
  * -=| Natives |=-
  */
 
