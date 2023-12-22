@@ -124,10 +124,10 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_survivor_unlimited_ammo", "1"), g_bUnlimitedAmmo)
 
 	bind_pcvar_num(register_cvar("ze_survivor_glow", "1"), g_bGlowEnabled)
-	bind_pcvar_num(register_cvar("ze_survivor_red", "0"), g_iGlowColors[Red])
-	bind_pcvar_num(register_cvar("ze_survivor_green", "0"), g_iGlowColors[Green])
-	bind_pcvar_num(register_cvar("ze_survivor_blue", "200"), g_iGlowColors[Blue])
-	bind_pcvar_num(register_cvar("ze_survivor_amount", "16"), g_iGlowAmount)
+	bind_pcvar_num(register_cvar("ze_survivor_glow_red", "0"), g_iGlowColors[Red])
+	bind_pcvar_num(register_cvar("ze_survivor_glow_green", "0"), g_iGlowColors[Green])
+	bind_pcvar_num(register_cvar("ze_survivor_glow_blue", "200"), g_iGlowColors[Blue])
+	bind_pcvar_num(register_cvar("ze_survivor_glow_amount", "16"), g_iGlowAmount)
 
 	bind_pcvar_string(register_cvar("ze_survivor_weapon", "weapon_m249"), g_szWeaponName, charsmax(g_szWeaponName))
 
