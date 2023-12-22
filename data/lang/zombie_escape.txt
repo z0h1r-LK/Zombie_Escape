@@ -66,5 +66,9 @@ CLASS_SURVIVOR = "Survivor"
 HUD_INFO_SPEC = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
 HUD_INFO_STATS = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
 
+MENU_ZOMBIES_TITLE = "Zombies Classes"
+NEXT = "Next"
+CURRENT = "Current"
+
 MSG_ZOMBIE_NAME = "Name: %s"
 MSG_ZOMBIE_INFO = "Health: %.2f | Speed: %.2f | Gravity: %.2f | Knockback: %.2f"
