@@ -75,6 +75,7 @@ public plugin_natives()
 	register_native("ze_zclass_set_speed", "__native_zclass_set_speed")
 	register_native("ze_zclass_set_gravity", "__native_zclass_set_gravity")
 	register_native("ze_zclass_set_knockback", "__native_zclass_set_knockback")
+	register_native("ze_zclass_show_menu", "__native_zclass_show_menu")
 }
 
 public plugin_init()
@@ -187,7 +188,7 @@ public show_Zombies_Menu(const id)
 	new szLang[MAX_MENU_LENGTH]
 
 	// Title.
-	formatex(szLang, charsmax(szLang), "\r%L \y%L:^n^n", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ZOMBIES_TITLE")
+	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ZOMBIES_TITLE")
 	new iMenu = menu_create(szLang, "handler_Zombies_Menu")
 
 	for (new aArray[ZOMBIE_ATTRIB], iItemData[2], i = 0; i < g_iNumZombies; i++)
@@ -278,10 +279,10 @@ public __native_zombie_register(const plugin_id, const num_params)
 		ini_write_string(ZE_FILENAME, szName, "NAME", aArray[ZOMBIE_NAME])
 	}
 
-	if (!ini_read_string(ZE_FILENAME, szName, "DESCRIPTION", aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC))
+	if (!ini_read_string(ZE_FILENAME, szName, "DESC", aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC))
 	{
 		get_string(2, aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC)
-		ini_write_string(ZE_FILENAME, szName, "DESCRIPTION", aArray[ZOMBIE_DESC])
+		ini_write_string(ZE_FILENAME, szName, "DESC", aArray[ZOMBIE_DESC])
 	}
 
 	if (!ini_read_string(ZE_FILENAME, szName, "MODEL", aArray[ZOMBIE_MODEL], charsmax(aArray) - ZOMBIE_MODEL))
@@ -632,5 +633,19 @@ public __native_zclass_set_knockback(const plugin_id, const num_params)
 	ArrayGetArray(g_aZombieClass, i, aArray)
 	aArray[ZOMBIE_KNOCKBACK] = get_param_f(2)
 	ArraySetArray(g_aZombieClass, i, aArray)
+	return true
+}
+
+public __native_zclass_show_menu(const plugin_id, const num_params)
+{
+	new id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return false
+	}
+
+	show_Zombies_Menu(id)
 	return true
 }
