@@ -105,6 +105,9 @@ public plugin_natives()
 	register_native("ze_set_user_human", "__native_set_user_human")
 	register_native("ze_set_user_zombie", "__native_set_user_zombie")
 
+	register_native("ze_is_last_human", "__native_is_last_human")
+	register_native("ze_is_last_zombie", "__native_is_last_zombie")
+
 	register_native("ze_force_set_user_human", "__native_force_set_user_human")
 	register_native("ze_force_set_user_zombie", "__native_force_set_user_zombie")
 
@@ -883,6 +886,16 @@ public __native_set_user_zombie(const plugin_id, const num_params)
 	}
 
 	return (set_user_Zombie(victim, attacker) == 1)
+}
+
+public __native_is_last_human(const plugin_id, const num_params)
+{
+	return g_iLastHuman
+}
+
+public __native_is_last_zombie(const plugin_id, const num_params)
+{
+	return g_iLastZombie
 }
 
 public __native_force_set_user_human(const plugin_id, const num_params)

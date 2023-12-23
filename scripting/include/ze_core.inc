@@ -249,6 +249,20 @@ native ze_set_user_human(id);
 native ze_set_user_zombie(iVictim, iInfector = 0);
 
 /**
+ * Check If player is Human.
+ *
+ * @return       Client index of last Human, 0 If there is no last Human.
+ */
+native ze_is_last_human();
+
+/**
+ * Check If player is Zombie.
+ *
+ * @return      Client index of last Zombie. 0 If there is no last Zombie.
+ */
+native ze_is_last_zombie();
+
+/**
  * Force turn a player into a Human.
  *
  * @param id     Client index.
