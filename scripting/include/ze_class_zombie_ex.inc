@@ -55,6 +55,16 @@ native ze_zclass_get_current(id);
 native ze_zclass_get_next(id);
 
 /**
+ * Check If class id is valid or not.
+ *
+ * @param iClassID   class ID.
+ *
+ * @return           true  | If class id is valid.
+ *                   false | Otherwise.
+ */
+native ze_zclass_is_valid(iClassID);
+
+/**
  * Gets a class Name.
  *
  * @param iClassID    A valid class ID.

@@ -59,6 +59,7 @@ public plugin_natives()
 	register_native("ze_zclass_register", "__native_zclass_register")
 	register_native("ze_zclass_get_current", "__native_zclass_get_current")
 	register_native("ze_zclass_get_next", "__native_zclass_get_next")
+	register_native("ze_zclass_is_valid", "__native_zclass_is_valid")
 	register_native("ze_zclass_get_name", "__native_zclass_get_name")
 	register_native("ze_zclass_get_desc", "__native_zclass_get_desc")
 	register_native("ze_zclass_get_model", "__native_zclass_get_model")
@@ -350,6 +351,13 @@ public __native_zclass_get_next(const plugin_id, const num_params)
 	}
 
 	return g_iNext[id]
+}
+
+public __native_zclass_is_valid(const plugin_id, const num_params)
+{
+	if (FIsWrongClass(get_param(1)))
+		return false
+	return true
 }
 
 public __native_zclass_get_name(const plugin_id, const num_params)
