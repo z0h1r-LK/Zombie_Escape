@@ -69,6 +69,7 @@ new g_iReqPlayers,
 	bool:g_bBlockMoneyHUD,
 	bool:g_bBlockHpArRrHUD,
 	bool:g_bBlockBloodEffs,
+	bool:g_bBlockStartupMOTD,
 	Float:g_flRoundEndDelay
 
 // Variables.
@@ -87,6 +88,7 @@ new g_iFwReturn,
 
 // Arrays.
 new g_iForwards[FORWARDS],
+	bool:g_bMOTD[MAX_PLAYERS+1],
 	Float:g_flUserSpeed[MAX_PLAYERS+1]
 
 // XVars.
@@ -134,6 +136,7 @@ public plugin_init()
 	register_message(get_user_msgid("SendAudio"), "fw_SendAudio_Msg")
 	register_message(get_user_msgid("HideWeapon"), "fw_HideWeapon_Msg")
 	register_message(get_user_msgid("TeamScore"), "fw_TeamScore_Msg")
+	register_message(get_user_msgid("MOTD"), "fw_MOTD_Msg")
 
 	// Hook Chains.
 	RegisterHookChain(RG_CBasePlayer_Spawn, "fw_PlayerSpawn_Post", 1)
@@ -154,6 +157,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_hp_ar_rdr", "1"), g_bBlockHpArRrHUD)
 	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
 	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
+	bind_pcvar_num(register_cvar("ze_block_MOTD", "1"), g_bBlockStartupMOTD)
 
 	bind_pcvar_float(get_cvar_pointer("mp_round_restart_delay"), g_flRoundEndDelay)
 
@@ -232,6 +236,8 @@ public client_putinserver(id)
 	if (is_user_hltv(id))
 		return
 
+	g_bMOTD[id] = true
+
 	// Delay before check gamerules.
 	set_task(0.5, "client_Connected")
 }
@@ -259,6 +265,7 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 		return
 
 	// Reset Var.
+	g_bMOTD[id] = false
 	g_flUserSpeed[id] = 0.0
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
@@ -545,6 +552,20 @@ public fw_TeamScore_Msg(msg_id, dest, player)
 		case 'T': // Zombies.
 			set_msg_arg_int(2, ARG_BYTE, g_iZombieWins)
 	}
+}
+
+public fw_MOTD_Msg(msg_id, dest, player)
+{
+	if (g_bMOTD[player] && g_bBlockStartupMOTD)
+	{
+		if (get_msg_arg_int(1) == 1)
+		{
+			g_bMOTD[player] = false
+			return PLUGIN_HANDLED
+		}
+	}
+
+	return PLUGIN_CONTINUE
 }
 
 public fw_PlayerSpawn_Post(const id)
