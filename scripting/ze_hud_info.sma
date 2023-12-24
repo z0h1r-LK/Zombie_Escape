@@ -2,11 +2,11 @@
 #include <ze_core>
 
 // HUD Position.
-const Float:HUD_SPEC_X = 0.10
-const Float:HUD_SPEC_Y = 0.35
+const Float:HUD_SPEC_X = -1.0
+const Float:HUD_SPEC_Y = 0.86
 
-const Float:HUD_STATS_X = 0.00
-const Float:HUD_STATS_Y = 0.90
+const Float:HUD_STATS_X = -1.0
+const Float:HUD_STATS_Y = 0.86
 
 // Color indexes.
 enum _:Colors
