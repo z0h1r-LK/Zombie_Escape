@@ -3,11 +3,8 @@
 #include <ze_core>
 #include <ze_class_const>
 
-// Macrose.
+// Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
-
-// Define.
-#define MAX_KNOCKBACK 1000.0
 
 // Zombie Attributes.
 enum _:ZOMBIE_ATTRIB
@@ -33,8 +30,8 @@ enum _:Colors
 // Default Zombie Attributes.
 stock const DEFAULT_ZOMBIE_NAME[] = "Regular Zombie"
 stock const DEFAULT_ZOMBIE_DESC[] = "-= Balanced =-"
-stock const DEFAULT_ZOMBIE_MODEL[] = "ze_zombi_1"
-stock const DEFAULT_ZOMBIE_MELEE[] = "models/ze_es/v_knife_zombi.mdl"
+stock const DEFAULT_ZOMBIE_MODEL[] = "terror"
+stock const DEFAULT_ZOMBIE_MELEE[] = "models/v_knife.mdl"
 stock Float:DEFAULT_ZOMBIE_HEALTH = 10000.0
 stock Float:DEFAULT_ZOMBIE_SPEED = 320.0
 stock Float:DEFAULT_ZOMBIE_GRAVITY = 640.0
@@ -77,6 +74,9 @@ public plugin_natives()
 	register_native("ze_zclass_set_gravity", "__native_zclass_set_gravity")
 	register_native("ze_zclass_set_knockback", "__native_zclass_set_knockback")
 	register_native("ze_zclass_show_menu", "__native_zclass_show_menu")
+
+	// Create new dyn Array.
+	g_aZombieClass = ArrayCreate(ZOMBIE_ATTRIB, 1)
 }
 
 public plugin_init()
@@ -94,9 +94,6 @@ public plugin_init()
 	register_clcmd("say_team /zm", "cmd_ShowClassesMenu")
 	register_clcmd("say /zclass", "cmd_ShowClassesMenu")
 	register_clcmd("say_team /zclass", "cmd_ShowClassesMenu")
-
-	// Create new dyn Array.
-	g_aZombieClass = ArrayCreate(ZOMBIE_ATTRIB, 1)
 }
 
 public plugin_end()
@@ -133,7 +130,7 @@ public client_putinserver(id)
 	if (is_user_hltv(id))
 		return
 
-	g_iCurrent[id] = NULLENT
+	g_iCurrent[id] = ZE_CLASS_INVALID
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
@@ -160,7 +157,7 @@ public ze_user_infected(iVictim, iInfector)
 		return
 
 	// Player hasn't chosen a class yet?
-	if (g_iCurrent[iVictim] == NULLENT)
+	if (g_iCurrent[iVictim] == ZE_CLASS_INVALID)
 		show_Zombies_Menu(iVictim)
 
 	new iClassID = g_iCurrent[iVictim] = g_iNext[iVictim]
@@ -232,6 +229,7 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 		default:
 		{
 			new aArray[ZOMBIE_ATTRIB], iItemData[2]
+			menu_item_getinfo(iMenu, iKey, .info = iItemData, .infolen = charsmax(iItemData))
 
 			// Get Zombie Attributes.
 			new i = iItemData[0]
@@ -253,7 +251,7 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 /**
  * -=| Natives |=-
  */
-public __native_zombie_register(const plugin_id, const num_params)
+public __native_zclass_register(const plugin_id, const num_params)
 {
 	new szName[MAX_NAME_LENGTH]
 	if (!get_string(1, szName, charsmax(szName)))
@@ -274,53 +272,60 @@ public __native_zombie_register(const plugin_id, const num_params)
 		}
 	}
 
-	if (!ini_read_string(ZE_FILENAME, szName, "NAME", aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME))
+	if (!ini_read_string(ZE_FILENAME_ZCLASS, szName, "NAME", aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME))
 	{
 		copy(aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME, szName)
-		ini_write_string(ZE_FILENAME, szName, "NAME", aArray[ZOMBIE_NAME])
+		ini_write_string(ZE_FILENAME_ZCLASS, szName, "NAME", aArray[ZOMBIE_NAME])
 	}
 
-	if (!ini_read_string(ZE_FILENAME, szName, "DESC", aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC))
+	if (!ini_read_string(ZE_FILENAME_ZCLASS, szName, "DESC", aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC))
 	{
 		get_string(2, aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC)
-		ini_write_string(ZE_FILENAME, szName, "DESC", aArray[ZOMBIE_DESC])
+		ini_write_string(ZE_FILENAME_ZCLASS, szName, "DESC", aArray[ZOMBIE_DESC])
 	}
 
-	if (!ini_read_string(ZE_FILENAME, szName, "MODEL", aArray[ZOMBIE_MODEL], charsmax(aArray) - ZOMBIE_MODEL))
+	if (!ini_read_string(ZE_FILENAME_ZCLASS, szName, "MODEL", aArray[ZOMBIE_MODEL], charsmax(aArray) - ZOMBIE_MODEL))
 	{
 		get_string(3, aArray[ZOMBIE_MODEL], charsmax(aArray) - ZOMBIE_MODEL)
-		ini_write_string(ZE_FILENAME, szName, "MODEL", aArray[ZOMBIE_MODEL])
+		ini_write_string(ZE_FILENAME_ZCLASS, szName, "MODEL", aArray[ZOMBIE_MODEL])
 	}
 
-	if (!ini_read_string(ZE_FILENAME, szName, "MELEE", aArray[ZOMBIE_MELEE], charsmax(aArray) - ZOMBIE_MELEE))
+	if (!ini_read_string(ZE_FILENAME_ZCLASS, szName, "MELEE", aArray[ZOMBIE_MELEE], charsmax(aArray) - ZOMBIE_MELEE))
 	{
 		get_string(4, aArray[ZOMBIE_MELEE], charsmax(aArray) - ZOMBIE_MELEE)
-		ini_write_string(ZE_FILENAME, szName, "MELEE", aArray[ZOMBIE_MELEE])
+		ini_write_string(ZE_FILENAME_ZCLASS, szName, "MELEE", aArray[ZOMBIE_MELEE])
 	}
 
-	if (!ini_read_float(ZE_FILENAME, szName, "HEALTH", aArray[ZOMBIE_HEALTH]))
+	if (!ini_read_float(ZE_FILENAME_ZCLASS, szName, "HEALTH", aArray[ZOMBIE_HEALTH]))
 	{
 		aArray[ZOMBIE_HEALTH] = get_param_f(5)
-		ini_write_float(ZE_FILENAME, szName, "HEALTH", aArray[ZOMBIE_HEALTH])
+		ini_write_float(ZE_FILENAME_ZCLASS, szName, "HEALTH", aArray[ZOMBIE_HEALTH])
 	}
 
-	if (!ini_read_float(ZE_FILENAME, szName, "SPEED", aArray[ZOMBIE_SPEED]))
+	if (!ini_read_float(ZE_FILENAME_ZCLASS, szName, "SPEED", aArray[ZOMBIE_SPEED]))
 	{
 		aArray[ZOMBIE_SPEED] = get_param_f(6)
-		ini_write_float(ZE_FILENAME, szName, "SPEED", aArray[ZOMBIE_SPEED])
+		ini_write_float(ZE_FILENAME_ZCLASS, szName, "SPEED", aArray[ZOMBIE_SPEED])
 	}
 
-	if (!ini_read_float(ZE_FILENAME, szName, "GRAVITY", aArray[ZOMBIE_GRAVITY]))
+	if (!ini_read_float(ZE_FILENAME_ZCLASS, szName, "GRAVITY", aArray[ZOMBIE_GRAVITY]))
 	{
 		aArray[ZOMBIE_GRAVITY] = get_param_f(7)
-		ini_write_float(ZE_FILENAME, szName, "GRAVITY", aArray[ZOMBIE_GRAVITY])
+		ini_write_float(ZE_FILENAME_ZCLASS, szName, "GRAVITY", aArray[ZOMBIE_GRAVITY])
 	}
 
-	if (!ini_read_float(ZE_FILENAME, szName, "KNOCKBACK", aArray[ZOMBIE_KNOCKBACK]))
+	if (!ini_read_float(ZE_FILENAME_ZCLASS, szName, "KNOCKBACK", aArray[ZOMBIE_KNOCKBACK]))
 	{
 		aArray[ZOMBIE_KNOCKBACK] = get_param_f(8)
-		ini_write_float(ZE_FILENAME, szName, "KNOCKBACK", aArray[ZOMBIE_KNOCKBACK])
+		ini_write_float(ZE_FILENAME_ZCLASS, szName, "KNOCKBACK", aArray[ZOMBIE_KNOCKBACK])
 	}
+
+	new szModel[MAX_RESOURCE_PATH_LENGTH]
+
+	// Precache Models.
+	formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MODEL])
+	precache_model(szModel)
+	precache_model(aArray[ZOMBIE_MELEE])
 
 	// Copy array on dyn Array.
 	ArrayPushArray(g_aZombieClass, aArray)
@@ -559,7 +564,7 @@ public __native_zclass_set_name(const plugin_id, const num_params)
 	return true
 }
 
-public __native__zclass_set_desc(const plugin_id, const num_params)
+public __native_zclass_set_desc(const plugin_id, const num_params)
 {
 	new i = get_param(1)
 

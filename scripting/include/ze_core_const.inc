@@ -15,6 +15,11 @@ stock const ZE_VERSION[] = "1.0-alpha"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
 
 /**
+ * Maximum Knockback speed.
+ */
+stock const Float:MAX_KNOCKBACK = 1000.0
+
+/**
  * General return value.
  */
 enum (+=1)
