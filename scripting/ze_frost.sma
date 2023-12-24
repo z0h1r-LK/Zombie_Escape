@@ -274,27 +274,30 @@ public frost_Explode(const iEnt)
 		freeze_Player(victim, g_flFrostPeriod)
 	}
 
-	// Ring effect.
-	message_begin_f(MSG_PVS, SVC_TEMPENTITY, vOrigin)
-	write_byte(TE_BEAMCYLINDER) // TE id.
-	write_coord_f(vOrigin[0]) // Position X.
-	write_coord_f(vOrigin[1]) // Position Y.
-	write_coord_f(vOrigin[2] + 64.0) // Position Z.
-	write_coord(FROST_RING_AXIS_X) // Axis X.
-	write_coord(FROST_RING_AXIS_Y) // Axis Y.
-	write_coord(FROST_RING_AXIS_Z) // Axis Z.
-	write_short(g_iRingSpr) // Sprite Index.
-	write_byte(0) // Frame.
-	write_byte(0) // Frame rate.
-	write_byte(FROST_RING_PERIOD) // Duration.
-	write_byte(64) // Width.
-	write_byte(0) // Noise.
-	write_byte(0) // Red.
-	write_byte(127) // Green.
-	write_byte(255) // Blue.
-	write_byte(255) // Brightness.
-	write_byte(0) // Scroll Speed.
-	message_end()
+	for (new i = 0; i < 2; i++)
+	{
+		// Ring effect.
+		message_begin_f(MSG_PVS, SVC_TEMPENTITY, vOrigin)
+		write_byte(TE_BEAMCYLINDER) // TE id.
+		write_coord_f(vOrigin[0]) // Position X.
+		write_coord_f(vOrigin[1]) // Position Y.
+		write_coord_f(vOrigin[2] + 64.0) // Position Z.
+		write_coord(FROST_RING_AXIS_X) // Axis X.
+		write_coord(FROST_RING_AXIS_Y) // Axis Y.
+		write_coord(FROST_RING_AXIS_Z) // Axis Z.
+		write_short(g_iRingSpr) // Sprite Index.
+		write_byte(0) // Frame.
+		write_byte(0) // Frame rate.
+		write_byte(FROST_RING_PERIOD) // Duration.
+		write_byte(64) // Width.
+		write_byte(0) // Noise.
+		write_byte(0) // Red.
+		write_byte(127) // Green.
+		write_byte(255) // Blue.
+		write_byte(255) // Brightness.
+		write_byte(0) // Scroll Speed.
+		message_end()
+	}
 
 	// Emit explode sound.
 	emit_sound(iEnt, CHAN_WEAPON, g_szFrostExplodeSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)

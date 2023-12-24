@@ -296,27 +296,30 @@ public fire_Explode(const iEnt)
 		}
 	}
 
-	// Ring effect.
-	message_begin_f(MSG_PVS, SVC_TEMPENTITY, vOrigin)
-	write_byte(TE_BEAMCYLINDER) // TE id.
-	write_coord_f(vOrigin[0]) // Position X.
-	write_coord_f(vOrigin[1]) // Position Y.
-	write_coord_f(vOrigin[2] + 64.0) // Position Z.
-	write_coord(FIRE_RING_AXIS_X) // Axis X.
-	write_coord(FIRE_RING_AXIS_Y) // Axis Y.
-	write_coord(FIRE_RING_AXIS_Z) // Axis Z.
-	write_short(g_iRingSpr) // Sprite Index.
-	write_byte(0) // Frame.
-	write_byte(0) // Frame rate.
-	write_byte(FIRE_RING_PERIOD) // Duration.
-	write_byte(64) // Width.
-	write_byte(0) // Noise.
-	write_byte(FIRE_COLOR_RED) // Red.
-	write_byte(FIRE_COLOR_GREEN) // Green.
-	write_byte(FIRE_COLOR_BLUE) // Blue.
-	write_byte(255) // Brightness.
-	write_byte(0) // Scroll Speed.
-	message_end()
+	for (new i = 0; i < 2; i++)
+	{
+		// Ring effect.
+		message_begin_f(MSG_PVS, SVC_TEMPENTITY, vOrigin)
+		write_byte(TE_BEAMCYLINDER) // TE id.
+		write_coord_f(vOrigin[0]) // Position X.
+		write_coord_f(vOrigin[1]) // Position Y.
+		write_coord_f(vOrigin[2] + 64.0) // Position Z.
+		write_coord(FIRE_RING_AXIS_X) // Axis X.
+		write_coord(FIRE_RING_AXIS_Y) // Axis Y.
+		write_coord(FIRE_RING_AXIS_Z) // Axis Z.
+		write_short(g_iRingSpr) // Sprite Index.
+		write_byte(0) // Frame.
+		write_byte(0) // Frame rate.
+		write_byte(FIRE_RING_PERIOD) // Duration.
+		write_byte(64) // Width.
+		write_byte(0) // Noise.
+		write_byte(FIRE_COLOR_RED) // Red.
+		write_byte(FIRE_COLOR_GREEN) // Green.
+		write_byte(FIRE_COLOR_BLUE) // Blue.
+		write_byte(255) // Brightness.
+		write_byte(0) // Scroll Speed.
+		message_end()
+	}
 
 	// Emit explode sound.
 	new szSound[MAX_RESOURCE_PATH_LENGTH]
