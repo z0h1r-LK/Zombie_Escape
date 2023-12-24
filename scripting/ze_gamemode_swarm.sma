@@ -144,7 +144,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_releasetime_blue", "50"), g_iReleaseTimeColors[Blue])
 
 	// New Mode (Set Escape default mode).
-	ze_gamemode_set_default(ze_gamemode_register(GAMEMODE_NAME))
+	ze_gamemode_register(GAMEMODE_NAME)
 
 	// Create Forwards.
 	g_iForwards[FORWARD_ZOMBIE_APPEAR] = CreateMultiForward("ze_zombie_appear", ET_IGNORE, FP_ARRAY, FP_CELL)
