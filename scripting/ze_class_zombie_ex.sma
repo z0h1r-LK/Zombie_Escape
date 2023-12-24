@@ -193,10 +193,10 @@ public show_Zombies_Menu(const id)
 	{
 		ArrayGetArray(g_aZombieClass, i, aArray)
 
-		if (i == g_iNext[id])
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "NEXT")
-		else if (i == g_iCurrent[id])
+		if (i == g_iCurrent[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "CURRENT")
+		else if (i == g_iNext[id])
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "NEXT")
 		else
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC])
 
