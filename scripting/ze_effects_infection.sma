@@ -4,6 +4,10 @@
 #include <ze_core>
 #include <ini_file>
 
+// HUD Position.
+const Float:HUD_INFECT_X = 0.2
+const Float:HUD_INFECT_Y = -1.0
+
 // Messages ID.
 const msg_Damage = 71
 const msg_DeathMsg = 83
@@ -172,7 +176,7 @@ public ze_user_infected(iVictim, iInfector)
 		get_user_name(iInfector, szInfName, charsmax(szInfName))
 
 		// Send colored HUD message for everyone.
-		set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], 0.2, -1.0, 1, 3.0, 3.0, 0.1, 0.1)
+		set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_INFECT_X, HUD_INFECT_Y, 1, 3.0, 3.0, 0.1, 0.1)
 		ShowSyncHudMsg(0, g_iInfectMsg, "%L", LANG_PLAYER, "HUD_INFECT_NOTICE", szVicName, szInfName)
 	}
 
