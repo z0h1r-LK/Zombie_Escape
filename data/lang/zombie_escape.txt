@@ -12,29 +12,29 @@ HUD_ESCAPE_FAIL = "-=| Escape Fail |=-"
 HUD_ESCAPE_SUCCESS = "-=| Escape Success |=-"
 
 HUD_SCOREMESSAGE = "| Humans: %i - %i :Zombies |"
-HUD_COUNTDOWN = "Zombie(s) will be appear after %i Second(s) !"
+HUD_COUNTDOWN = "Zombie(s) will appear after %i Second(s) !"
 
-HUD_RELEASETIME = "Zombie(s) will release after %i Second(s) !"
+HUD_RELEASETIME = "Zombie(s) will be released after %i Second(s) !"
 HUD_RELEASED = "Zombie(s) Released!"
 
 MSG_READY = "!tAre you Ready!y? !tDon't Forget !y= !gCOVER/DEFENSE = WIN!"
-NO_ENOUGH_PLAYERS = "!tThere are no enough players on the server!y, Required players: !g%i/%i!y"
+NO_ENOUGH_PLAYERS = "!tNot enough players!y, Required players: !g%i/%i!y"
 
 MENU_PRIMARY_TITLE = "Primary Weapons"
 MENU_SECONDARY_TITLE = "Secondary Weapons"
 MENU_AUTOSELECT = "Remember?"
 
 MSG_WEAPONS_DISABLED = "Weapons Menu disabled!"
-MSG_BUYTIME_OVER = "Buy time is over !"
-MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons !"
+MSG_BUYTIME_OVER = "Buy time is over!"
+MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons!"
 MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
-MSG_BUY_ENABLED = "Weapons Menu has been re-enabled !"
+MSG_BUY_ENABLED = "Weapons Menu has been re-enabled!"
 
 MENU_ITEMS_TITLE = "Extra-Items"
 
-MSG_ITEMS_DISABLED = "Extra-Items Menu disabled!"
-MSG_NO_ITEMS = "There no Items on Extra-Items Menu."
-MSG_LIMIT_REACHED = "You cannot exceed the item limit"
+MSG_ITEMS_DISABLED = "Extra-Items Menu is disabled!"
+MSG_NO_ITEMS = "There are no Items in Extra-Items Menu."
+MSG_LIMIT_REACHED = "You are exceeding the item limit"
 
 MENU_MAIN_TITLE = "Menu Main"
 MENU_WEAPONS = "Weapons"
@@ -48,27 +48,24 @@ MENU_EXIT = "Exit"
 ON = "On"
 OFF = "Off"
 
-CMD_NOT = "Command unavailable !"
-CMD_NOT_ALIVE = "You are not alive !"
+CMD_NOT = "Command unavailable!"
+CMD_NOT_ALIVE = "You are dead!"
 
-HUD_INFECT_NOTICE = "%s has infected by %s"
+HUD_INFECT_NOTICE = "%s has been infected by %s"
 
-MSG_COINS_WINS = "!tEscape Success!y | You have earned !g+%d!y Coin(s) !"
-MSG_COINS_KILLED = "!tZombie Killed!y | You have earned !g+%d!y Coin(s) !"
-MSG_COINS_INFECTED = "!tHuman Infected!y | You have earned !g+%d!y Coin(s) !"
-MSG_NO_COINS_ENOUGH = "You don't have coins enough !"
+MSG_COINS_WINS = "!tEscape Success!y | You earned !g+%d!y EC!"
+MSG_COINS_KILLED = "!tZombie Killed!y | You earned !g+%d!y EC!"
+MSG_COINS_INFECTED = "!tHuman Infected!y | You earned !g+%d!y EC!"
+MSG_NO_COINS_ENOUGH = "You don't have enough coins!"
 
 CLASS_HUMAN = "Human"
 CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
-HUD_INFO_SPEC = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
-HUD_INFO_STATS = "• Name: %s^n• Health: %d | Shield: %d | Class: %s | Account: %d"
+HUD_INFO_SPEC = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
+HUD_INFO_STATS = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
 
 MENU_ZOMBIES_TITLE = "Zombies Classes"
 NEXT = "Next"
 CURRENT = "Current"
-
-MSG_ZOMBIE_NAME = "Name: %s"
-MSG_ZOMBIE_INFO = "Health: %.2f | Speed: %.2f | Gravity: %.2f | Knockback: %.2f"
