@@ -4,7 +4,6 @@
 
 // Define.
 #define CUSTOM_MODEL
-#define ZOMBIE_SOUNDS
 
 // Color indexes.
 enum _:Colors
@@ -27,15 +26,6 @@ new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze_es/v_knife_zombi
 
 // Dynamic Array.
 new Array:g_aZombieModels
-#endif
-
-#if defined ZOMBIE_SOUNDS
-// Dynamic Array.
-new Array:g_aPainSounds,
-	Array:g_aMissSlashSounds,
-	Array:g_aMissWallSounds,
-	Array:g_aAttackSounds,
-	Array:g_aDieSounds
 #endif
 
 public plugin_precache()
@@ -84,111 +74,6 @@ public plugin_precache()
 	// Precache Model.
 	precache_model(g_szZombieKnifeModel)
 #endif
-
-#if defined ZOMBIE_SOUNDS
-	new const szPainSounds[][] = {"zm_es/zombie_pain_1.wav", "zm_es/zombie_pain_2.wav"}
-	new const szMissSlashSounds[][] = {"zm_es/zombie_miss_slash_1.wav", "zm_es/zombie_miss_slash_2.wav", "zm_es/zombie_miss_slash_3.wav"}
-	new const szMissWallSounds[][] = {"zm_es/zombie_miss_wall_1.wav", "zm_es/zombie_miss_wall_2.wav", "zm_es/zombie_miss_wall_3.wav"}
-	new const szAttackSounds[][] = {"zm_es/zombie_attack_1.wav", "zm_es/zombie_attack_2.wav", "zm_es/zombie_attack_3.wav"}
-	new const szDieSounds[][] = {"zm_es/zombie_death.wav", "zm_es/zombie_death_1.wav"}
-
-	// Create new dyn Arrays.
-	g_aPainSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
-	g_aMissSlashSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
-	g_aMissWallSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
-	g_aAttackSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
-	g_aDieSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
-
-	// Read Zombie sounds from INI file.
-	ini_read_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
-	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_SLASH", g_aMissSlashSounds)
-	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_WALL", g_aMissWallSounds)
-	ini_read_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
-	ini_read_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
-
-	if (!ArraySize(g_aPainSounds))
-	{
-		for (new i = 0; i < sizeof(szPainSounds); i++)
-			ArrayPushString(g_aPainSounds, szPainSounds[i])
-
-		// Write Pain sounds on INI file.
-		ini_write_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
-	}
-
-	if (!ArraySize(g_aMissSlashSounds))
-	{
-		for (new i = 0; i < sizeof(szMissSlashSounds); i++)
-			ArrayPushString(g_aMissSlashSounds, szMissSlashSounds[i])
-
-		// Write Miss Slash sounds on INI file.
-		ini_write_string_array(ZE_FILENAME, "Sounds", "MISS_SLASH", g_aMissSlashSounds)
-	}
-
-	if (!ArraySize(g_aMissWallSounds))
-	{
-		for (new i = 0; i < sizeof(szMissWallSounds); i++)
-			ArrayPushString(g_aMissWallSounds, szMissWallSounds[i])
-
-		// Write Miss Wall sounds on INI file.
-		ini_write_string_array(ZE_FILENAME, "Sounds", "MISS_WALL", g_aMissWallSounds)
-	}
-
-	if (!ArraySize(g_aAttackSounds))
-	{
-		for (new i = 0; i < sizeof(szAttackSounds); i++)
-			ArrayPushString(g_aAttackSounds, szAttackSounds[i])
-
-		// Write Attack sounds on INI file.
-		ini_write_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
-	}
-
-	if (!ArraySize(g_aDieSounds))
-	{
-		for (new i = 0; i < sizeof(szDieSounds); i++)
-			ArrayPushString(g_aDieSounds, szDieSounds[i])
-
-		// Write Die sounds on INI file.
-		ini_write_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
-	}
-
-	new szSound[MAX_RESOURCE_PATH_LENGTH], iNumSounds
-
-	// Precache Sounds.
-	iNumSounds = ArraySize(g_aPainSounds)
-	for (new i = 0; i < iNumSounds; i++)
-	{
-		ArrayGetString(g_aPainSounds, i, szSound, charsmax(szSound))
-		precache_sound(szSound)
-	}
-
-	iNumSounds = ArraySize(g_aMissSlashSounds)
-	for (new i = 0; i < iNumSounds; i++)
-	{
-		ArrayGetString(g_aMissSlashSounds, i, szSound, charsmax(szSound))
-		precache_sound(szSound)
-	}
-
-	iNumSounds = ArraySize(g_aMissWallSounds)
-	for (new i = 0; i < iNumSounds; i++)
-	{
-		ArrayGetString(g_aMissWallSounds, i, szSound, charsmax(szSound))
-		precache_sound(szSound)
-	}
-
-	iNumSounds = ArraySize(g_aAttackSounds)
-	for (new i = 0; i < iNumSounds; i++)
-	{
-		ArrayGetString(g_aAttackSounds, i, szSound, charsmax(szSound))
-		precache_sound(szSound)
-	}
-
-	iNumSounds = ArraySize(g_aDieSounds)
-	for (new i = 0; i < iNumSounds; i++)
-	{
-		ArrayGetString(g_aDieSounds, i, szSound, charsmax(szSound))
-		precache_sound(szSound)
-	}
-#endif
 }
 
 public plugin_init()
@@ -209,12 +94,6 @@ public plugin_init()
 
 public plugin_end()
 {
-	// Free the Memory.
-	ArrayDestroy(g_aPainSounds)
-	ArrayDestroy(g_aMissSlashSounds)
-	ArrayDestroy(g_aMissWallSounds)
-	ArrayDestroy(g_aAttackSounds)
-	ArrayDestroy(g_aDieSounds)
 	#if defined CUSTOM_MODEL
 	ArrayDestroy(g_aZombieModels)
 	#endif
@@ -264,17 +143,3 @@ public ze_user_infected(iVictim, iInfector)
 	ze_set_user_weap_model(iVictim, CSW_KNIFE, "")
 #endif
 }
-
-#if defined ZOMBIE_SOUNDS
-public ze_res_fw_zombie_sound(const id, iSnd, szSound[64])
-{
-	switch (iSnd)
-	{
-		case ZE_SND_PAIN: ArrayGetString(g_aPainSounds, random_num(0, ArraySize(g_aPainSounds) - 1), szSound, charsmax(szSound))
-		case ZE_SND_SLASH: ArrayGetString(g_aMissSlashSounds, random_num(0, ArraySize(g_aMissSlashSounds) - 1), szSound, charsmax(szSound))
-		case ZE_SND_WALL: ArrayGetString(g_aMissWallSounds, random_num(0, ArraySize(g_aMissWallSounds) - 1), szSound, charsmax(szSound))
-		case ZE_SND_ATTACK: ArrayGetString(g_aAttackSounds, random_num(0, ArraySize(g_aAttackSounds) - 1), szSound, charsmax(szSound))
-		case ZE_SND_DIE: ArrayGetString(g_aDieSounds, random_num(0, ArraySize(g_aDieSounds) - 1), szSound, charsmax(szSound))
-	}
-}
-#endif

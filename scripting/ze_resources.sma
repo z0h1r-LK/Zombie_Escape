@@ -32,6 +32,7 @@ new Float:g_flAmbDelay
 // Variables.
 new g_iAmbNum
 #endif
+new g_iFwReturn
 
 #if defined COUNTDOWN_SOUNDS
 new g_iCountdown,
@@ -62,6 +63,12 @@ new Array:g_aAmbienceSounds
 #if defined COUNTDOWN_SOUNDS
 new Array:g_aCountdownSounds
 #endif
+
+new Array:g_aPainSounds,
+	Array:g_aMissSlashSounds,
+	Array:g_aMissWallSounds,
+	Array:g_aAttackSounds,
+	Array:g_aDieSounds
 
 #if defined AMBIENCE_SOUNDS
 public plugin_natives()
@@ -209,6 +216,107 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 #endif
+
+	new const szPainSounds[][] = {"zm_es/zombie_pain_1.wav", "zm_es/zombie_pain_2.wav"}
+	new const szMissSlashSounds[][] = {"zm_es/zombie_miss_slash_1.wav", "zm_es/zombie_miss_slash_2.wav", "zm_es/zombie_miss_slash_3.wav"}
+	new const szMissWallSounds[][] = {"zm_es/zombie_miss_wall_1.wav", "zm_es/zombie_miss_wall_2.wav", "zm_es/zombie_miss_wall_3.wav"}
+	new const szAttackSounds[][] = {"zm_es/zombie_attack_1.wav", "zm_es/zombie_attack_2.wav", "zm_es/zombie_attack_3.wav"}
+	new const szDieSounds[][] = {"zm_es/zombie_death.wav", "zm_es/zombie_death_1.wav"}
+
+	// Create new dyn Arrays.
+	g_aPainSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aMissSlashSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aMissWallSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aAttackSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aDieSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+
+	// Read Zombie sounds from INI file.
+	ini_read_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_SLASH", g_aMissSlashSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_WALL", g_aMissWallSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
+
+	if (!ArraySize(g_aPainSounds))
+	{
+		for (new i = 0; i < sizeof(szPainSounds); i++)
+			ArrayPushString(g_aPainSounds, szPainSounds[i])
+
+		// Write Pain sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
+	}
+
+	if (!ArraySize(g_aMissSlashSounds))
+	{
+		for (new i = 0; i < sizeof(szMissSlashSounds); i++)
+			ArrayPushString(g_aMissSlashSounds, szMissSlashSounds[i])
+
+		// Write Miss Slash sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "MISS_SLASH", g_aMissSlashSounds)
+	}
+
+	if (!ArraySize(g_aMissWallSounds))
+	{
+		for (new i = 0; i < sizeof(szMissWallSounds); i++)
+			ArrayPushString(g_aMissWallSounds, szMissWallSounds[i])
+
+		// Write Miss Wall sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "MISS_WALL", g_aMissWallSounds)
+	}
+
+	if (!ArraySize(g_aAttackSounds))
+	{
+		for (new i = 0; i < sizeof(szAttackSounds); i++)
+			ArrayPushString(g_aAttackSounds, szAttackSounds[i])
+
+		// Write Attack sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
+	}
+
+	if (!ArraySize(g_aDieSounds))
+	{
+		for (new i = 0; i < sizeof(szDieSounds); i++)
+			ArrayPushString(g_aDieSounds, szDieSounds[i])
+
+		// Write Die sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
+	}
+
+	// Precache Sounds.
+	iFiles = ArraySize(g_aPainSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aPainSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
+
+	iFiles = ArraySize(g_aMissSlashSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aMissSlashSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
+
+	iFiles = ArraySize(g_aMissWallSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aMissWallSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
+
+	iFiles = ArraySize(g_aAttackSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aAttackSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
+
+	iFiles = ArraySize(g_aDieSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aDieSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
 }
 
 public plugin_init()
@@ -228,7 +336,7 @@ public plugin_init()
 #endif
 
 	// Create Forwards.
-	g_iForward = CreateMultiForward("ze_res_fw_zombie_sound", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
+	g_iForward = CreateMultiForward("ze_res_fw_zombie_sound", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
 }
 
 public plugin_end()
@@ -354,15 +462,19 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 	if (!ze_is_user_zombie(iEnt))
 		return FMRES_IGNORED
 
-	static szSound[64]
-
-	// Reset string.
-	szSound = NULL_STRING
+	static szSound[MAX_RESOURCE_PATH_LENGTH]; szSound = NULL_STRING
 
 	// Pain.
 	if (szSample[7] == 'b' && szSample[8] == 'h' && szSample[9] == 'i')
 	{
-		ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_PAIN, PrepareArray(szSound, sizeof(szSound), 1))
+		ArrayGetString(g_aPainSounds, random_num(0, ArraySize(g_aPainSounds) - 1), szSound, charsmax(szSound))
+
+		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_PAIN, PrepareArray(szSound, sizeof(szSound), 1))
+
+		if (g_iFwReturn >= ZE_STOP)
+			return FMRES_SUPERCEDE
+
 		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 		return FMRES_SUPERCEDE
 	}
@@ -372,7 +484,14 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 		// Miss Slash.
 		if (szSample[14] == 's' && szSample[15] == 'l' && szSample[16] == 'a')
 		{
-			ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_SLASH, PrepareArray(szSound, sizeof(szSound), 1))
+			ArrayGetString(g_aMissSlashSounds, random_num(0, ArraySize(g_aMissSlashSounds) - 1), szSound, charsmax(szSound))
+
+			// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+			ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_SLASH, PrepareArray(szSound, sizeof(szSound), 1))
+
+			if (g_iFwReturn >= ZE_STOP || !szSound[0])
+				return FMRES_SUPERCEDE
+
 			emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 			return FMRES_SUPERCEDE
 		}
@@ -382,13 +501,27 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 			// Miss Wall.
 			if (szSample[17] == 'w')
 			{
-				ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_WALL, PrepareArray(szSound, sizeof(szSound), 1))
+	 			ArrayGetString(g_aMissWallSounds, random_num(0, ArraySize(g_aMissWallSounds) - 1), szSound, charsmax(szSound))
+
+				// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+				ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_WALL, PrepareArray(szSound, sizeof(szSound), 1))
+
+				if (g_iFwReturn >= ZE_STOP || !szSound[0])
+					return FMRES_SUPERCEDE
+
 				emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 				return FMRES_SUPERCEDE
 			}
 			else // Attack.
 			{
-				ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+				ArrayGetString(g_aAttackSounds, random_num(0, ArraySize(g_aAttackSounds) - 1), szSound, charsmax(szSound))
+
+				// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+				ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+
+				if (g_iFwReturn >= ZE_STOP || !szSound[0])
+					return FMRES_SUPERCEDE
+
 				emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 				return FMRES_SUPERCEDE
 			}
@@ -397,7 +530,14 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 		// Attack.
 		if (szSample[14] == 's' && szSample[15] == 't' && szSample[16] == 'a')
 		{
-			ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+			ArrayGetString(g_aAttackSounds, random_num(0, ArraySize(g_aAttackSounds) - 1), szSound, charsmax(szSound))
+
+			// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+			ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_ATTACK, PrepareArray(szSound, sizeof(szSound), 1))
+
+			if (g_iFwReturn >= ZE_STOP || !szSound[0])
+				return FMRES_SUPERCEDE
+
 			emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 			return FMRES_SUPERCEDE
 		}
@@ -406,7 +546,14 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 	// Die | Death.
 	if (szSample[7] == 'd' && (szSample[8] == 'i' || szSample[8] == 'e') && (szSample[9] == 'e' || szSample[9] == 'a'))
 	{
-		ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, ZE_SND_DIE, PrepareArray(szSound, sizeof(szSound), 1))
+		ArrayGetString(g_aMissSlashSounds, random_num(0, ArraySize(g_aMissSlashSounds) - 1), szSound, charsmax(szSound))
+
+		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_DIE, PrepareArray(szSound, sizeof(szSound), 1))
+
+		if (g_iFwReturn >= ZE_STOP || !szSound[0])
+			return FMRES_SUPERCEDE
+
 		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
 		return FMRES_SUPERCEDE
 	}

@@ -179,12 +179,13 @@ forward ze_fire_burn_end(id);
  * Forward for Zombie Sounds.
  *
  * @param id        Client index.
- * @param iSnd      Sound type (enum: ZE_SND_*)
- * @param szSound[] Sound be played (can be overwritten)
+ * @param iSnd      Sound type (Enum: ZE_SND_*)
+ * @param szSound[] Sound to be played (can be overwritten)
  *
- * @noreturn
+ * @return          ZE_STOP     | Prevent playing Sound.
+ *                  ZE_CONTINUE | Continue playing Sound.
  */
-forward ze_res_fw_zombie_sound(const id, iSnd, szSound[64]);
+forward ze_res_fw_zombie_sound(const id, iSnd, szSound[MAX_RESOURCE_PATH_LENGTH]);
 
 /**
  * Called when Zombies appear.
