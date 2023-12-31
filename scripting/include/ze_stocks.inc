@@ -82,7 +82,7 @@ stock precache_sky(const szSkyName[])
 	for(new i = 0; i < 6; i++)
 	{
 		// Get full path of the File.
-		formatex(szTgaFile, MAX_NAME_LENGTH-1, "gfx/env/%s%s.tga", szSkyName, szSuffix[i]);
+		formatex(szTgaFile, charsmax(szTgaFile), "gfx/env/%s%s.tga", szSkyName, szSuffix[i]);
 
 		// File is exist?
 		if(file_exists(szTgaFile, true))
