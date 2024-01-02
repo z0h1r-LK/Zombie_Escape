@@ -53,7 +53,7 @@ public plugin_precache()
 {
 	// Default Nemesis Models.
 	new const szNemesisModel[][] = {"ze_nemesis"}
-	new const szNemesisClaws[][] = {"models/v_knife_nemesis.mdl"}
+	new const szNemesisClaws[][] = {"models/zm_es/v_knife_nemesis.mdl"}
 
 	// Create new dyn Array.
 	g_aNemesisModel = ArrayCreate(MAX_NAME_LENGTH, 1)
@@ -130,7 +130,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_nemesis_frost", "0"), g_bBlockFrost)
 	bind_pcvar_num(register_cvar("ze_nemesis_fire", "0"), g_bBlockFire)
 
-	bind_pcvar_float(register_cvar("ze_nemesis_knockback", "200.0"), g_flKnockback)
+	bind_pcvar_float(register_cvar("ze_nemesis_knockback", "100.0"), g_flKnockback)
 
 	bind_pcvar_num(register_cvar("ze_hud_info_nemesis_red", "200"), g_iHudColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_nemesis_green", "0"), g_iHudColor[Green])
@@ -157,7 +157,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 	if (!iInfector)
 		return ZE_CONTINUE
 
-	// Is not Nemesis?
+	// Is Nemesis?
 	if (is_user_nemesis(iInfector))
 		return ZE_STOP // Block infection event, Keep damage taken.
 
@@ -194,7 +194,7 @@ public fw_TakeDamage_Pre(const iVictim, iInflector, iAttacker, Float:flDamage, b
 		return HC_CONTINUE
 
 	// Teammates?
-	if (is_user_nemesis(iVictim) == is_user_nemesis(iAttacker))
+	if (ze_is_user_zombie(iVictim) == ze_is_user_zombie(iAttacker))
 		return HC_CONTINUE
 
 	if (is_user_nemesis(iAttacker))
@@ -304,7 +304,7 @@ public unset_User_Nemesis(const id)
 /**
  * -=| Natives |=-
  */
-public __native_is_user_nemesis(const plugin_id, const num_params)
+public bool:__native_is_user_nemesis(const plugin_id, const num_params)
 {
 	new id = get_param(1)
 
