@@ -42,7 +42,7 @@ new Float:g_flWeaponsPower[] =
 	5.3,    // DEAGLE
 	5.0,    // SG552
 	6.0,    // AK47
-	-1.0,   // ---
+	1.0,    // KNIFE
 	2.0     // P90
 }
 
