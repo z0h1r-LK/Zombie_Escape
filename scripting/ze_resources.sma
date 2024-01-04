@@ -73,11 +73,12 @@ new Array:g_aPainSounds,
 #if defined AMBIENCE_SOUNDS
 public plugin_natives()
 {
-	// Create new dyn Array.
-	g_aAmbienceSounds = ArrayCreate(AMBIENCE_DATA, 1)
-
+	register_library("ze_resources")
 	register_native("ze_res_ambience_register", "__native_res_ambience_register")
 	register_native("ze_res_ambience_play", "__native_res_ambience_play")
+
+	// Create new dyn Array.
+	g_aAmbienceSounds = ArrayCreate(AMBIENCE_DATA, 1)
 }
 #endif
 

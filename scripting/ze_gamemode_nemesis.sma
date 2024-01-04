@@ -1,5 +1,8 @@
 #include <amxmodx>
+
 #include <ze_core>
+#define LIBRARY_NEMESIS "ze_class_nemesis"
+#define LIBRARY_RESOURCES "ze_resources"
 
 // Defines.
 #define GAMEMODE_NAME "Nemesis"
@@ -34,6 +37,26 @@ new g_xFixSpawn
 // Dynamic Array.
 new Array:g_aSounds
 
+public plugin_natives()
+{
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_RESOURCES))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
 public plugin_precache()
 {
 	new const szNemesisModeSound[][] = {"zm_es/ze_nemesis_1.wav"}
@@ -64,10 +87,15 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 
-	new szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.wav"
 
-	// Registers new Ambience on game.
-	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szNemesisAmbienceSound, 200)
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		new const szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.wav"
+		const iNemesisAmbienceSound = 200
+
+		// Registers new Ambience on game.
+		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szNemesisAmbienceSound, iNemesisAmbienceSound)
+	}
 }
 
 public plugin_init()
@@ -100,6 +128,10 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 
 	if (!bSkipCheck)
 	{
+		// ze_class_nemesis not Loaded?
+		if (!module_exists(LIBRARY_NEMESIS))
+			return ZE_GAME_IGNORE
+
 		// This is not round of Nemesis?
 		if (random_num(1, g_iChance) != 1)
 			return ZE_GAME_IGNORE
@@ -174,6 +206,9 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	// Plays ambience sound for everyone.
-	ze_res_ambience_play(g_iAmbHandle)
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		// Plays ambience sound for everyone.
+		ze_res_ambience_play(g_iAmbHandle)
+	}
 }

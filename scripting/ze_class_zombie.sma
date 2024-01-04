@@ -1,7 +1,11 @@
 #include <amxmodx>
 #include <reapi>
+
 #include <ze_core>
 #include <ze_class_const>
+#define LIBRARY_NEMESIS "ze_class_nemesis"
+#define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_KNOCKBACK "ze_kb_system"
 
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
@@ -75,8 +79,25 @@ public plugin_natives()
 	register_native("ze_zclass_set_knockback", "__native_zclass_set_knockback")
 	register_native("ze_zclass_show_menu", "__native_zclass_show_menu")
 
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+
 	// Create new dyn Array.
 	g_aZombieClass = ArrayCreate(ZOMBIE_ATTRIB, 1)
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
@@ -153,8 +174,7 @@ public cmd_ShowClassesMenu(const id)
 public ze_user_infected(iVictim, iInfector)
 {
 	// Ignore Nemesis!
-	if (ze_is_user_nemesis(iVictim))
-		return
+	if (module_exists(LIBRARY_NEMESIS) && ze_is_user_nemesis(iVictim)) return
 
 	// Player hasn't chosen a class yet?
 	if (g_iCurrent[iVictim] == ZE_CLASS_INVALID)
@@ -171,9 +191,16 @@ public ze_user_infected(iVictim, iInfector)
 	set_entvar(iVictim, var_gravity, (aArray[ZOMBIE_GRAVITY] / 800.0))
 
 	ze_set_user_speed(iVictim, aArray[ZOMBIE_SPEED])
-	ze_set_zombie_knockback(iVictim, aArray[ZOMBIE_KNOCKBACK])
 
-	ze_hud_info_set(iVictim, aArray[ZOMBIE_NAME], g_iHudColor)
+	if (module_exists(LIBRARY_KNOCKBACK))
+	{
+		ze_set_zombie_knockback(iVictim, aArray[ZOMBIE_KNOCKBACK])
+	}
+
+	if (module_exists(LIBRARY_HUDINFO))
+	{
+		ze_hud_info_set(iVictim, aArray[ZOMBIE_NAME], g_iHudColor)
+	}
 
 	rg_set_user_model(iVictim, aArray[ZOMBIE_MODEL], true)
 

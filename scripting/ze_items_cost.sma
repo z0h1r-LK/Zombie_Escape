@@ -1,4 +1,5 @@
 #include <amxmodx>
+
 #include <ze_core>
 
 public plugin_init()
@@ -11,7 +12,7 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 {
 	if (!bIgnoreCost)
 	{
-		new iCost = ze_item_get_cost(iItem)
+		new const iCost = ze_item_get_cost(iItem)
 
 		if (iCost > 0)
 		{
@@ -34,7 +35,7 @@ public ze_select_item_post(id, iItem, bool:bIgnoreCost)
 {
 	if (!bIgnoreCost)
 	{
-		new iCost = ze_item_get_cost(iItem)
+		new const iCost = ze_item_get_cost(iItem)
 
 		if (iCost > 0)
 		{

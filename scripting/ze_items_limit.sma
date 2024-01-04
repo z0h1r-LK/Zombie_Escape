@@ -1,4 +1,5 @@
 #include <amxmodx>
+
 #include <ze_core>
 
 // Array.
@@ -25,7 +26,7 @@ public ze_game_started()
 
 public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 {
-	new iLimit = ze_item_get_limit(iItem)
+	new const iLimit = ze_item_get_limit(iItem)
 
 	if (iLimit > 0)
 	{
@@ -50,7 +51,7 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 
 public ze_select_item_post(id, iItem)
 {
-	new iLimit = ze_item_get_limit(iItem)
+	new const iLimit = ze_item_get_limit(iItem)
 
 	if (iLimit > 0)
 	{

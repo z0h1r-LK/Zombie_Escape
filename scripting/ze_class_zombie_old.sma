@@ -1,6 +1,9 @@
 #include <amxmodx>
 #include <reapi>
+
 #include <ze_core>
+#define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_KNOCKBACK "ze_kb_system"
 
 // Define.
 #define CUSTOM_MODEL
@@ -27,6 +30,26 @@ new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze_es/v_knife_zombi
 // Dynamic Array.
 new Array:g_aZombieModels
 #endif
+
+public plugin_natives()
+{
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_HUDINFO))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
 
 public plugin_precache()
 {
@@ -122,11 +145,17 @@ public ze_user_infected(iVictim, iInfector)
 	}
 
 	// Info HUD.
-	ze_hud_info_set(iVictim, "CLASS_ZOMBIE", g_iHudColor, true)
+	if (module_exists(LIBRARY_HUDINFO))
+	{
+		ze_hud_info_set(iVictim, "CLASS_ZOMBIE", g_iHudColor, true)
+	}
 
 	if (g_flZombieKnockback > 0.0)
 	{
-		ze_set_zombie_knockback(iVictim, g_flZombieKnockback)
+		if (module_exists(LIBRARY_KNOCKBACK))
+		{
+			ze_set_zombie_knockback(iVictim, g_flZombieKnockback)
+		}
 	}
 
 #if defined CUSTOM_MODEL

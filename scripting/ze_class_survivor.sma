@@ -1,7 +1,9 @@
 #include <amxmodx>
 #include <engine>
 #include <reapi>
+
 #include <ze_core>
+#define LIBRARY_HUDINFO "ze_hud_info"
 
 // Define.
 #define CUSTOM_MODEL
@@ -50,9 +52,27 @@ new Array:g_aSurvivorModel
 
 public plugin_natives()
 {
+	register_library("ze_class_survivor")
 	register_native("ze_is_user_survivor", "__native_is_user_survivor")
 	register_native("ze_set_user_survivor", "__native_set_user_survivor")
 	register_native("ze_remove_user_survivor", "__native_remove_user_survivor")
+
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_HUDINFO))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 #if defined CUSTOM_MODEL
@@ -274,7 +294,10 @@ set_User_Survivor(id)
 	}
 
 	// HUD information's color.
-	ze_hud_info_set(id, "CLASS_SURVIVOR", g_iHudColor, true)
+	if (module_exists(LIBRARY_HUDINFO))
+	{
+		ze_hud_info_set(id, "CLASS_SURVIVOR", g_iHudColor, true)
+	}
 
 #if defined CUSTOM_MODEL
 	// Player model.

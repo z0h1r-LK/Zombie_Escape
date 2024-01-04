@@ -4,6 +4,7 @@
 
 #include <ze_core>
 #include <ze_gamemodes>
+#define LIBRARY_RESOURCES "ze_resources"
 
 // Define.
 #define GAMEMODE_NAME "Escape"
@@ -75,6 +76,26 @@ new Trie:g_tChosen
 // Dynamic Arrays.
 new Array:g_aSounds
 
+public plugin_natives()
+{
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_RESOURCES))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
 public plugin_precache()
 {
 	new const szEscapeModeSound[][] = {"zm_es/ze_escape_1.wav"}
@@ -107,11 +128,14 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 
-	new const szAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
-	const iAmbienceLength = 148
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		new const szEscapeAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
+		const iEscapeAmbienceLength = 150
 
-	// Registers new Ambience sound.
-	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szAmbienceSound, iAmbienceLength)
+		// Registers new Ambience sound.
+		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szEscapeAmbienceSound, iEscapeAmbienceLength)
+	}
 }
 
 public plugin_init()
@@ -394,8 +418,11 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	// Plays ambience sound for everyone.
-	ze_res_ambience_play(g_iAmbHandle)
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		// Plays ambience sound for everyone.
+		ze_res_ambience_play(g_iAmbHandle)
+	}
 }
 
 public show_ReleaseTime(taskid)

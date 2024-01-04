@@ -1,7 +1,10 @@
 #include <amxmodx>
 #include <engine>
 #include <reapi>
+
 #include <ze_core>
+#define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_KNOCKBACK "ze_kb_system"
 
 // Define.
 #define CUSTOM_MODEL
@@ -43,9 +46,27 @@ new Array:g_aNemesisModel,
 
 public plugin_natives()
 {
+	register_library("ze_class_nemesis")
 	register_native("ze_is_user_nemesis", "__native_is_user_nemesis")
 	register_native("ze_set_user_nemesis", "__native_set_user_nemesis")
 	register_native("ze_remove_user_nemesis", "__native_remove_user_nemesis")
+
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 #if defined CUSTOM_MODEL
@@ -268,12 +289,18 @@ set_User_Nemesis(const id)
 	// Custom Knockback
 	if (g_flKnockback > 0.0)
 	{
-		// Set knockback.
-		ze_set_zombie_knockback(id, g_flKnockback)
+		if (module_exists(LIBRARY_KNOCKBACK))
+		{
+			// Set knockback.
+			ze_set_zombie_knockback(id, g_flKnockback)
+		}
 	}
 
-	// Info HUD.
-	ze_hud_info_set(id, "CLASS_NEMESIS", g_iHudColor, true)
+	// HUD info.
+	if (module_exists(LIBRARY_HUDINFO))
+	{
+		ze_hud_info_set(id, "CLASS_NEMESIS", g_iHudColor, true)
+	}
 
 #if defined CUSTOM_MODEL
 	new szModel[MAX_RESOURCE_PATH_LENGTH]

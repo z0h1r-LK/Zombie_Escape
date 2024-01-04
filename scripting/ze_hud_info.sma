@@ -35,6 +35,7 @@ new g_szName[MAX_PLAYERS+1][MAX_NAME_LENGTH],
 
 public plugin_natives()
 {
+	register_library("ze_hud_info")
 	register_native("ze_hud_info_set", "__native_hud_info_set")
 }
 

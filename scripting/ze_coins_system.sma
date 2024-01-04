@@ -32,6 +32,7 @@ new Trie:g_tTempVault
 
 public plugin_natives()
 {
+	register_library("ze_coins_system")
 	register_native("ze_get_user_coins", "__native_get_user_coins")
 	register_native("ze_set_user_coins", "__native_set_user_coins")
 }

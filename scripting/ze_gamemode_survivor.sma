@@ -1,6 +1,10 @@
 #include <amxmodx>
+#include <reapi>
+
 #include <ze_core>
 #include <ze_class_survivor>
+#define LIBRARY_SURVIVOR "ze_class_survivor"
+#define LIBRARY_RESOURCES "ze_resources"
 
 // Defines.
 #define GAMEMODE_NAME "Survivor"
@@ -35,6 +39,26 @@ new g_xFixSpawn
 // Dynamic Array.
 new Array:g_aSounds
 
+public plugin_natives()
+{
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_SURVIVOR) || equal(module, LIBRARY_RESOURCES))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
 public plugin_precache()
 {
 	new const szSurvivorModeSound[][] = {"zm_es/ze_survivor_1.wav"}
@@ -65,10 +89,15 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 
-	new szSurvivorAmbienceSound[] = "zm_es/ze_amb_survivor.wav"
 
-	// Registers new Ambience on game.
-	g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szSurvivorAmbienceSound, 200)
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		new const szSurvivorAmbienceSound[] = "zm_es/ze_amb_survivor.wav"
+		const iSurvivorAmbienceSound = 200
+
+		// Registers new Ambience on game.
+		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szSurvivorAmbienceSound, iSurvivorAmbienceSound)
+	}
 }
 
 public plugin_init()
@@ -101,6 +130,10 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 
 	if (!bSkipCheck)
 	{
+		// ze_class_survivor not Loaded!
+		if (!module_exists(LIBRARY_SURVIVOR))
+			return ZE_GAME_IGNORE
+
 		// This is not round of Nemesis?
 		if (random_num(1, g_iChance) != 1)
 			return ZE_GAME_IGNORE
@@ -178,6 +211,9 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	// Plays ambience sound for everyone.
-	ze_res_ambience_play(g_iAmbHandle)
+	if (module_exists(LIBRARY_RESOURCES))
+	{
+		// Plays ambience sound for everyone.
+		ze_res_ambience_play(g_iAmbHandle)
+	}
 }

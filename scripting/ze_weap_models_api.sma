@@ -15,6 +15,8 @@ new g_szCustomWeapModelsPath[MAX_PLAYERS+1][MAX_WEAPONS][MAX_RESOURCE_PATH_LENGT
 
 public plugin_natives()
 {
+	register_library("ze_weap_models_api")
+
 	register_native("ze_set_user_view_model", "__native_set_user_view_model")
 	register_native("ze_set_user_weap_model", "__native_set_user_weap_model")
 

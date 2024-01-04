@@ -7,6 +7,7 @@
 #include <engine>
 #include <reapi>
 #include <xs>
+
 #include <ze_core>
 
 // Weapons Power.
@@ -57,6 +58,7 @@ new Float:g_flKnockback[MAX_PLAYERS+1]
 
 public plugin_natives()
 {
+	register_library("ze_kb_system")
 	register_native("ze_get_zombie_knockback", "__native_get_zombie_knockback")
 	register_native("ze_set_zombie_knockback", "__native_set_zombie_knockback")
 }
