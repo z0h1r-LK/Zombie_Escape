@@ -39,6 +39,7 @@ new g_iHealth,
 	g_iGlowColors[Colors],
 	bool:g_bBlockWeapon,
 	bool:g_bGlowEnabled,
+	bool:g_bBlockExtraItems,
 	bool:g_bUnlimitedAmmo,
 	Float:g_flSpeed,
 	Float:g_flSpeedFactor,
@@ -142,6 +143,7 @@ public plugin_init()
 
 	bind_pcvar_num(register_cvar("ze_survivor_block_weapon", "1"), g_bBlockWeapon)
 	bind_pcvar_num(register_cvar("ze_survivor_unlimited_ammo", "1"), g_bUnlimitedAmmo)
+	bind_pcvar_num(register_cvar("ze_survivor_block_buy", "1"), g_bBlockExtraItems)
 
 	bind_pcvar_num(register_cvar("ze_survivor_glow", "1"), g_bGlowEnabled)
 	bind_pcvar_num(register_cvar("ze_survivor_glow_red", "0"), g_iGlowColors[Red])
@@ -201,6 +203,14 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
 {
 	unset_User_Survivor(iVictim)
+}
+
+public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
+{
+	// All items unallowed for Survivors?
+	if (g_bBlockExtraItems && is_user_survivor(id))
+		return ZE_ITEM_DONT_SHOW
+	return ZE_ITEM_AVAILABLE
 }
 
 public fw_HasRestrictItem_Pre(const id, pItem)

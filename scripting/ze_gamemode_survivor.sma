@@ -9,6 +9,8 @@
 // Defines.
 #define GAMEMODE_NAME "Survivor"
 
+#define X_Wpn_WeaponsDisabled "x_bWeaponsDisabled"
+
 // HUD Event Position.
 const Float:HUD_EVENT_X = -1.0
 const Float:HUD_EVENT_Y = 0.4
@@ -34,7 +36,8 @@ new g_iChance,
 new g_iAmbHandle
 
 // XVar.
-new g_xFixSpawn
+new g_xFixSpawn,
+	g_xWeaponsDisabled
 
 // Dynamic Array.
 new Array:g_aSounds
@@ -121,6 +124,7 @@ public plugin_init()
 
 	// Set Values.
 	g_xFixSpawn = get_xvar_id(X_Core_FixSpawn)
+	g_xWeaponsDisabled = get_xvar_id(X_Wpn_WeaponsDisabled)
 }
 
 public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
@@ -185,6 +189,9 @@ public ze_gamemode_chosen(game_id, target)
 	// Disable it.
 	set_xvar_num(g_xFixSpawn)
 
+	// Disable Weapons Menu for everyone.
+	set_xvar_num(g_xWeaponsDisabled, 1)
+
 	if (g_bSounds)
 	{
 		// Play sound for everyone.
@@ -216,4 +223,9 @@ public ze_gamemode_chosen(game_id, target)
 		// Plays ambience sound for everyone.
 		ze_res_ambience_play(g_iAmbHandle)
 	}
+}
+
+public ze_roundend(iWinTeam)
+{
+	set_xvar_num(g_xWeaponsDisabled, 0)
 }
