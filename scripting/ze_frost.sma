@@ -125,7 +125,7 @@ public plugin_init()
 	RegisterHookChain(RG_ThrowFlashbang, "fw_GrenadeThrown_Post", 1)
 	RegisterHookChain(RG_CGrenade_ExplodeFlashbang, "fw_GrenadeExploded_Pre")
 
-	RegisterHookChain(RG_CBasePlayer_TraceAttack, "fw_TrakeAttack_Pre")
+	RegisterHookChain(RG_CBasePlayer_TraceAttack, "fw_TraceAttack_Pre")
 
 	// Cvars.
 	bind_pcvar_num(register_cvar("ze_frost_icon", "1"), g_bFrostIcon)
@@ -191,7 +191,7 @@ public fw_PlayerMove_Movement(const id)
 	return HC_CONTINUE
 }
 
-public fw_TrakeAttack_Pre(const iVictim, iInflector, iAttacker, Float:flDamage, bitsDamageType)
+public fw_TraceAttack_Pre(const iVictim, iInflector, iAttacker, Float:flDamage, bitsDamageType)
 {
 	// Block Damage?
 	if (!g_bFrostDamage && flag_get_boolean(g_bitsIsFrozen, iVictim))
