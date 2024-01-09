@@ -547,7 +547,7 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 	// Die | Death.
 	if (szSample[7] == 'd' && (szSample[8] == 'i' || szSample[8] == 'e') && (szSample[9] == 'e' || szSample[9] == 'a'))
 	{
-		ArrayGetString(g_aMissSlashSounds, random_num(0, ArraySize(g_aMissSlashSounds) - 1), szSound, charsmax(szSound))
+		ArrayGetString(g_aDieSounds, random_num(0, ArraySize(g_aDieSounds) - 1), szSound, charsmax(szSound))
 
 		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
 		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_DIE, PrepareArray(szSound, sizeof(szSound), 1))
