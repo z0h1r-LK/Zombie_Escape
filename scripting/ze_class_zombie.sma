@@ -57,6 +57,7 @@ new Array:g_aZombieClass
 
 public plugin_natives()
 {
+	register_library("ze_class_zombie")
 	register_native("ze_zclass_register", "__native_zclass_register")
 	register_native("ze_zclass_get_current", "__native_zclass_get_current")
 	register_native("ze_zclass_get_next", "__native_zclass_get_next")

@@ -272,3 +272,15 @@ native ze_zclass_set_gravity(iClassID, Float:flGravity);
  * @error             If this class ID is invalid.
  */
 native ze_zclass_set_knockback(iClassID, Float:flSpeed);
+
+/**
+ * Show Zombies Classes Menu for specific player.
+ *
+ * @param id     Client index.
+ *
+ * @return       true  | If displayed successfully.
+ *               false | If player not on game.
+ *
+ * @error        If this player not on game.
+ */
+native ze_zclass_show_menu(id);
