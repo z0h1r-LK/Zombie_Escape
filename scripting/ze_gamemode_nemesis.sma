@@ -146,39 +146,51 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 
 public ze_gamemode_chosen(game_id, target)
 {
-	new iPlayers[MAX_PLAYERS], iAliveNum, id
 	new bool:bAppear
 
-	// Get index of all Alive Players.
-	get_players(iPlayers, iAliveNum, "a")
-
-	// Fix call the Spawn function when respawn player.
-	set_xvar_num(g_xFixSpawn, 1)
-
-	while (!bAppear)
+	if (!target)
 	{
-		// Get randomly player.
-		id = iPlayers[random_num(0, iAliveNum - 1)]
+		new iPlayers[MAX_PLAYERS], iAliveNum, id
 
-		// Player already Nemesis!
-		if (ze_is_user_nemesis(id))
-			continue
+		// Get index of all Alive Players.
+		get_players(iPlayers, iAliveNum, "a")
 
-		if (g_bBackToSpawn)
+		// Fix call the Spawn function when respawn player.
+		set_xvar_num(g_xFixSpawn, 1)
+
+		while (!bAppear)
 		{
-			// Respawn the player.
-			rg_round_respawn(id)
+			// Get randomly player.
+			id = iPlayers[random_num(0, iAliveNum - 1)]
+
+			// Player already Nemesis!
+			if (ze_is_user_nemesis(id))
+				continue
+
+			if (g_bBackToSpawn)
+			{
+				// Respawn the player.
+				rg_round_respawn(id)
+			}
+
+			// Turn a player into a Nemesis.
+			ze_set_user_nemesis(id)
+
+			// New Nemesis.
+			bAppear = true
 		}
 
+		// Disable it.
+		set_xvar_num(g_xFixSpawn)
+	}
+	else
+	{
 		// Turn a player into a Nemesis.
-		ze_set_user_nemesis(id)
+		ze_set_user_nemesis(target)
 
 		// New Nemesis.
 		bAppear = true
 	}
-
-	// Disable it.
-	set_xvar_num(g_xFixSpawn)
 
 	if (g_bSounds)
 	{

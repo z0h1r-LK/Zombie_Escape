@@ -72,7 +72,7 @@ native ze_gamemode_set_default(game_id);
 native ze_gamemode_get_current();
 
 /**
- * Sets specific game mode next.
+ * Sets specific game mode for the next round.
  *
  * @note Use this native before game mode start.
  *
@@ -84,3 +84,45 @@ native ze_gamemode_get_current();
  * @error           If game mode id invalid.
  */
 native ze_gamemode_set_next(game_id);
+
+/**
+ * Gets the name for the specific gamemode.
+ *
+ * @param game_id    A valid game id.
+ * @param szName[]   Buffer to store string in.
+ * @param iLength    Buffer length.
+ *
+ * @return           Number of cells written.
+ *
+ * @error            If game mod is invalid.
+ */
+native ze_gamemode_get_name(game_id, szName[], iLength);
+
+/**
+ * Gets the game mode id via name.
+ *
+ * @note Maximum name length is 32 character.
+ *
+ * @param szName[]   Gamemode Name.
+ *
+ * @return           A valid game id | If the name is correct.
+ *                   ZE_GAME_INVALID | If the name is incorrect or no name is entered.
+ *
+ * @error            If no name is entered.
+ */
+native ze_gamemode_get_id(const szName[]);
+
+/**
+ * Start a specific game mode.
+ *
+ * @note Game mode will not start if it is disabled from CVar.
+ *
+ * @param game_id    A valid game id.
+ * @param target     Target index (0 = Ignore).
+ *
+ * @return           true  | If game mode started successfully.
+ *                   false | If error.
+ *
+ * @error            If game mode invalid or player not on game.
+ */
+native ze_gamemode_start(game_id, target = 0);

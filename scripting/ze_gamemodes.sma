@@ -69,10 +69,14 @@ new Array:g_aGamemodes
 
 public plugin_natives()
 {
+	register_library("ze_gamemodes")
 	register_native("ze_gamemode_register", "__native_gamemode_register")
 	register_native("ze_gamemode_set_default", "__native_gamemode_set_default")
-	register_native("ze_gamemode_get_current", "__native_gamemode_get_current")
 	register_native("ze_gamemode_set_next", "__native_gamemode_set_next")
+	register_native("ze_gamemode_get_current", "__native_gamemode_get_current")
+	register_native("ze_gamemode_get_name", "__native_gamemode_get_name")
+	register_native("ze_gamemode_get_id", "__native_gamemode_get_id")
+	register_native("ze_gamemode_start", "__native_gamemode_start")
 }
 
 public plugin_init()
@@ -266,6 +270,9 @@ start_Gamemode(const game_id, target = 0, bool:bSkipCheck = false)
 	g_iCurrent = game_id
 	set_xvar_num(g_xGameChosen, 1)
 	ExecuteForward(g_iForwards[FORWARD_GAMEMODE_CHOSEN], _/* Ignore return value */, game_id, target)
+
+	// Remove Countdown Task.
+	remove_task(TASK_COUNTDOWN)
 	return 1
 }
 
@@ -316,7 +323,7 @@ public __native_gamemode_register(const plugin_id, const num_params)
 
 public __native_gamemode_set_default(const plugin_id, const num_params)
 {
-	new game_id = get_param(1)
+	new const game_id = get_param(1)
 
 	if (FIsGameInvalid(game_id))
 	{
@@ -330,7 +337,7 @@ public __native_gamemode_set_default(const plugin_id, const num_params)
 
 public __native_gamemode_get_current(const plugin_id, const num_params)
 {
-	new game_id = get_param(1)
+	new const game_id = get_param(1)
 
 	if (FIsGameInvalid(game_id))
 	{
@@ -343,7 +350,7 @@ public __native_gamemode_get_current(const plugin_id, const num_params)
 
 public __native_gamemode_set_next(const plugin_id, const num_params)
 {
-	new game_id = get_param(1)
+	new const game_id = get_param(1)
 
 	if (FIsGameInvalid(game_id))
 	{
@@ -352,5 +359,66 @@ public __native_gamemode_set_next(const plugin_id, const num_params)
 	}
 
 	g_iNext = game_id
+	return 1
+}
+
+public __native_gamemode_get_name(const plugin_id, const num_params)
+{
+	new const game_id = get_param(1)
+
+	if (FIsGameInvalid(game_id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid game mode id (%d)", game_id)
+		return 0
+	}
+
+	new aArray[GAMEMODES]
+	ArrayGetArray(g_aGamemodes, game_id, aArray)
+	return set_string(2, aArray[GAME_NAME], get_param(3))
+}
+
+public __native_gamemode_get_id(const plugin_id, const num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't find on game mode id without name.")
+		return ZE_GAME_INVALID
+	}
+
+	for (new aArray[GAMEMODES], i = 0; i < g_iNumGames; i++)
+	{
+		ArrayGetArray(g_aGamemodes, i, aArray)
+		if (equal(szName, aArray[GAME_NAME]))
+		{
+			return i
+		}
+	}
+
+	return ZE_GAME_INVALID
+}
+
+public __native_gamemode_start(const plugin_id, const num_params)
+{
+	new const game_id = get_param(1)
+
+	if (FIsGameInvalid(game_id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid game mode id (%d)", game_id)
+		return 0
+	}
+
+	new const target = get_param(2)
+
+	if (target != 0)
+	{
+		if (!is_user_connected(target))
+		{
+			log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", target)
+			return 0
+		}
+	}
+
+	start_Gamemode(game_id, target, true)
 	return 1
 }

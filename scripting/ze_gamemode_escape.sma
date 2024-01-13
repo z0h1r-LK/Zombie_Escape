@@ -302,49 +302,59 @@ public ze_gamemode_chosen(game_id, target)
 {
 	new iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
 
-	// Get index of all Alive Players.
-	get_players(iPlayers, iAliveNum, "a")
-
-	// Fix call the Spawn function when respawn player.
-	set_xvar_num(g_xFixSpawn, 1)
-
-	// Get required Zombies.
-	iReqZombie = GetRequiredZombies(iAliveNum)
-
-	while (iNumZombie < iReqZombie)
+	if (!target)
 	{
-		// Get randomly player.
-		id = iPlayers[random_num(0, iAliveNum - 1)]
+		// Get index of all Alive Players.
+		get_players(iPlayers, iAliveNum, "a")
 
-		// Player already Zombie!
-		if (ze_is_user_zombie(id))
-			continue
+		// Fix call the Spawn function when respawn player.
+		set_xvar_num(g_xFixSpawn, 1)
 
-		// Player was Zombie in previous Rounds?
-		if (g_bSmartRandom && TrieKeyExists(g_tChosen, g_szAuth[id]))
-			continue
+		// Get required Zombies.
+		iReqZombie = GetRequiredZombies(iAliveNum)
 
-		if (g_bBackToSpawn)
+		while (iNumZombie < iReqZombie)
 		{
-			// Respawn the player.
-			rg_round_respawn(id)
+			// Get randomly player.
+			id = iPlayers[random_num(0, iAliveNum - 1)]
+
+			// Player already Zombie!
+			if (ze_is_user_zombie(id))
+				continue
+
+			// Player was Zombie in previous Rounds?
+			if (g_bSmartRandom && TrieKeyExists(g_tChosen, g_szAuth[id]))
+				continue
+
+			if (g_bBackToSpawn)
+			{
+				// Respawn the player.
+				rg_round_respawn(id)
+			}
+
+			// Infect player.
+			ze_set_user_zombie(id)
+
+			// Custom Health for first Zombies.
+			if (g_iFirstZombiesHealth > 0)
+			{
+				set_entvar(id, var_health, float(g_iFirstZombiesHealth))
+			}
+
+			// New Zombie.
+			iZombies[iNumZombie++] = id
 		}
+
+		// Disable it.
+		set_xvar_num(g_xFixSpawn)
+	}
+	else
+	{
+		iZombies[iNumZombie++] = target
 
 		// Infect player.
-		ze_set_user_zombie(id)
-
-		// Custom Health for first Zombies.
-		if (g_iFirstZombiesHealth > 0)
-		{
-			set_entvar(id, var_health, float(g_iFirstZombiesHealth))
-		}
-
-		// New Zombie.
-		iZombies[iNumZombie++] = id
+		ze_set_user_zombie(target)
 	}
-
-	// Disable it.
-	set_xvar_num(g_xFixSpawn)
 
 	if (g_bFreezeMode)
 	{
