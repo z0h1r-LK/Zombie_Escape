@@ -1,6 +1,9 @@
 #include <amxmodx>
 #include <amxmisc>
+
 #include <ze_core>
+#include <ze_class_zombie>
+#define LIBRARY_ZOMBIE "ze_class_zombie"
 
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
@@ -11,6 +14,26 @@ new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
 
 // Variable.
 new bool:g_bMenuSound
+
+public plugin_natives()
+{
+	set_module_filter("module_filter")
+	set_native_filter("native_filter")
+}
+
+public module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_ZOMBIE))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
 
 public plugin_precache()
 {
@@ -38,6 +61,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSound)
 
 	// Commands.
+	register_clcmd("jointeam", "cmd_MenuMain")
 	register_clcmd("chooseteam", "cmd_MenuMain")
 	register_clcmd("say /menu", "cmd_MenuMain")
 	register_clcmd("say_team /menu", "cmd_MenuMain")
@@ -91,6 +115,12 @@ public show_Menu_Main(const id)
 		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \d%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
 	}
 
+	// 3. Zombie Classes
+	if (module_exists(LIBRARY_ZOMBIE))
+	{
+		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r3. \y%L^n", LANG_PLAYER, "MENU_ZCLASSES")
+	}
+
 	// New Line.
 	szMenu[iLen++] = '^n'
 
@@ -136,6 +166,13 @@ public handler_Menu_Main(const id, iKey)
 		{
 			// Show Extra-Items menu for player.
 			ze_item_show_menu(id)
+		}
+		case 2: // 3. Zombie Classes.
+		{
+			if (module_exists(LIBRARY_ZOMBIE))
+			{
+				ze_zclass_show_menu(id)
+			}
 		}
 		case 9: // 0. Exit.
 		{
