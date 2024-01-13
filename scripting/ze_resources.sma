@@ -1,6 +1,8 @@
 #include <amxmodx>
 #include <fakemeta>
+
 #include <ze_core>
+#include <ze_gamemodes>
 
 // Macroses.
 #define FInvalidAmbHandle(%0) (INVALID_HANDLE>=(%0)>=g_iAmbNum)
@@ -398,6 +400,12 @@ public ze_game_started()
 	g_iCountSounds = ArraySize(g_aCountdownSounds)
 	set_task(1.0, "play_Countdown", TASK_COUNTDOWN, .flags = "b")
 #endif
+}
+
+public ze_gamemode_chosen(game_id, target)
+{
+	// Remove Countdown Task.
+	remove_task(TASK_COUNTDOWN)
 }
 
 public play_Countdown(taskid)
