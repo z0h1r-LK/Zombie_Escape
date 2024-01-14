@@ -40,6 +40,7 @@ MENU_MAIN_TITLE = "Menu Main"
 MENU_WEAPONS = "Weapons"
 MENU_RE_WEAPONS = "Weapons \r[Auto Buy]"
 MENU_EXTRAITEMS = "Extra Items"
+MENU_ZCLASSES = "Zombie Classes"
 
 MENU_NEXT = "Next"
 MENU_BACK = "Back"
