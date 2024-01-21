@@ -149,6 +149,7 @@ public plugin_init()
 	RegisterHookChain(RG_RoundEnd, "fw_RoundEnd_Post", 1)
 
 	// FakeMeta.
+	register_forward(FM_ClientKill, "fw_ClientKill_Pre")
 	unregister_forward(FM_Spawn, g_iFwSpawn)
 	g_iFwSpawn = 0
 
@@ -331,7 +332,7 @@ public client_Disconnected()
 	}
 }
 
-public client_kill(id)
+public fw_ClientKill_Pre(id)
 {
 	if (g_bBlockSuicide)
 		return PLUGIN_HANDLED
