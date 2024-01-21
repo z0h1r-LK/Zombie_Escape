@@ -1,6 +1,6 @@
 #include <amxmodx>
 #include <amxmisc>
-#include <engine>
+#include <fakemeta>
 #include <reapi>
 #include <xs>
 
@@ -73,7 +73,8 @@ new g_iReqPlayers,
 	Float:g_flRoundEndDelay
 
 // Variables.
-new g_iFwReturn,
+new g_iFwSpawn,
+	g_iFwReturn,
 	g_iLastHuman,
 	g_iHumanWins,
 	g_iZombieWins,
@@ -81,7 +82,6 @@ new g_iFwReturn,
 	g_iPainShockFree,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
-	bool:g_bEntSpawn,
 	bool:g_bRoundEnd,
 	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied
@@ -116,7 +116,7 @@ public plugin_natives()
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
 
-	g_bEntSpawn = true
+	g_iFwSpawn = register_forward(FM_Spawn, "fw_Spawn_Pre")
 }
 
 public plugin_init()
@@ -148,6 +148,10 @@ public plugin_init()
 	RegisterHookChain(RG_CSGameRules_CheckWinConditions, "fw_CheckWinConditions_Post", 1)
 	RegisterHookChain(RG_RoundEnd, "fw_RoundEnd_Post", 1)
 
+	// FakeMeta.
+	unregister_forward(FM_Spawn, g_iFwSpawn)
+	g_iFwSpawn = 0
+
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_required_players", "2"), g_iReqPlayers)
 	bind_pcvar_num(register_cvar("ze_painshockfree", "1"), g_iPainShockFree)
@@ -177,9 +181,6 @@ public plugin_init()
 
 	// New Localization file (.txt)
 	register_dictionary("zombie_escape.txt")
-
-	// Set Values.
-	g_bEntSpawn = false
 }
 
 public plugin_cfg()
@@ -337,22 +338,19 @@ public client_kill(id)
 	return PLUGIN_CONTINUE
 }
 
-public pfn_spawn(iEnt)
+public fw_Spawn_Pre(iEnt)
 {
-	if (g_bEntSpawn)
+	for (new i = 0; i < sizeof(g_szEntitesClass); i++)
 	{
-		for (new i = 0; i < sizeof(g_szEntitesClass); i++)
+		if (FClassnameIs(iEnt, g_szEntitesClass[i]))
 		{
-			if (FClassnameIs(iEnt, g_szEntitesClass[i]))
-			{
-				// Free edict.
-				remove_entity(iEnt)
-				return PLUGIN_HANDLED
-			}
+			// Free edict.
+			engfunc(EngFunc_RemoveEntity, iEnt)
+			return FMRES_SUPERCEDE
 		}
 	}
 
-	return PLUGIN_CONTINUE
+	return FMRES_IGNORED
 }
 
 public check_LastPlayer()
