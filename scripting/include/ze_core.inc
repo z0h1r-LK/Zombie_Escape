@@ -69,6 +69,8 @@ forward ze_user_infected_pre(iVictim, iInfector, Float:flDamage);
 /**
  * Called after infection event. It called whenever ze_set_user_zombie(param1, param2) native used.
  *
+ * @note This forward doesn't called, If pre-forward is return ZE_STOP or ZE_BREAK.
+ *
  * @param iVictim     Victim index.
  * @param iInfector   Attacker index. (0 = SERVER)
  *
@@ -340,18 +342,6 @@ native ze_set_zombie_knockback(id, Float:flSpeed);
 native Float:ze_get_zombie_knockback(id);
 
 /**
- * Reset knockback speed to CVar value for specific player.
- *
- * @param id     Client index.
- *
- * @return       true  | If reset successfully.
- *               false | If player not on game.
- *
- * @error        If this player not on game.
- */
-native ze_reset_zombie_knockback(id);
-
-/**
  * Sets or Adds number of Point(s) for specific player.
  *
  * @param id     Client index.
@@ -386,8 +376,8 @@ native ze_add_user_deaths(id, iDeaths, bool:bAdd = true);
  * @param szSound[]  Sound path ("" = Ignore).
  * @param iLength    Ambience sound length with seconds.
  *
- * @return           Ambience hande | If ambience registered successfully.
- *                   INVALID_HANDLE | Otherwise.
+ * @return           Ambience handle | If ambience registered successfully.
+ *                   INVALID_HANDLE  | Otherwise.
  *
  * @error            Ambience without game mode.
  */
@@ -397,7 +387,7 @@ native ze_res_ambience_register(const szName[], const szSound[], iLength);
  * Plays ambience sound for all players.
  *
  * @param iHandle Ambience handle id.
- * @param bLoop   true = Repeat ambience util round end or new round | false = Once time.
+ * @param bLoop   true = Repeat ambience until round end or new round | false = Once time.
  *
  * @return        true  | If operation successfully.
  *                false | Invalid Ambience handle.
@@ -412,7 +402,7 @@ native ze_res_ambience_play(const iHandle, bool:bLoop = true);
  * @param id      Client index.
  *
  * @return        Number of Coin(s) | If got successfully.
- *                NULLENT           | If player not on game.
+ *                NULLENT (-1)      | If player not on game.
  *
  * @error         If this player not on game.
  */
