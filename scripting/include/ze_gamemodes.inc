@@ -126,3 +126,17 @@ native ze_gamemode_get_id(const szName[]);
  * @error            If game mode invalid or player not on game.
  */
 native ze_gamemode_start(game_id, target = 0);
+
+/**
+ * Gets the number of registered game modes.
+ *
+ * @return           Number of game modes.
+ */
+native ze_gamemode_get_count();
+
+/**
+ * Gets the next game mode.
+ *
+ * @return           A valid game mode id.
+ */
+native ze_gamemode_get_next();

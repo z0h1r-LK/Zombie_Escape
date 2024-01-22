@@ -73,9 +73,11 @@ public plugin_natives()
 	register_native("ze_gamemode_register", "__native_gamemode_register")
 	register_native("ze_gamemode_set_default", "__native_gamemode_set_default")
 	register_native("ze_gamemode_set_next", "__native_gamemode_set_next")
+	register_native("ze_gamemode_get_next", "__native_gamemode_get_next")
 	register_native("ze_gamemode_get_current", "__native_gamemode_get_current")
 	register_native("ze_gamemode_get_name", "__native_gamemode_get_name")
 	register_native("ze_gamemode_get_id", "__native_gamemode_get_id")
+	register_native("ze_gamemode_get_count", "__native_gamemode_get_count")
 	register_native("ze_gamemode_start", "__native_gamemode_start")
 }
 
@@ -362,6 +364,11 @@ public __native_gamemode_set_next(const plugin_id, const num_params)
 	return 1
 }
 
+public __native_gamemode_get_next(const plugin_id, const num_params)
+{
+	return g_iNext
+}
+
 public __native_gamemode_get_name(const plugin_id, const num_params)
 {
 	new const game_id = get_param(1)
@@ -421,4 +428,9 @@ public __native_gamemode_start(const plugin_id, const num_params)
 
 	start_Gamemode(game_id, target, true)
 	return 1
+}
+
+public __native_gamemode_get_count(const plugin_id, const num_params)
+{
+	return g_iNumGames
 }
