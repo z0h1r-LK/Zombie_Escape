@@ -430,6 +430,9 @@ public fw_RestartRound_Event()
 	g_iHumanWins = 0
 	g_iZombieWins = 0
 
+	// Update Score on SERVER.
+	rg_update_teamscores(0, 0, false)
+
 	// Round End!
 	g_bRoundEnd = true
 
