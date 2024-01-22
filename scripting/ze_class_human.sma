@@ -1,6 +1,8 @@
 #include <amxmodx>
 #include <reapi>
 #include <ze_core>
+#define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -25,6 +27,26 @@ new g_iHumanHealth,
 	bool:g_bWeaponStrips,
 	Float:g_flHumanSpeed,
 	Float:g_flHumanSpeedFactor
+
+public plugin_natives()
+{
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_WPNMODELS) || equal(module, LIBRARY_HUDINFO))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
 
 #if defined CUSTOM_MODEL
 	// Dynamic Array.
@@ -145,8 +167,11 @@ public ze_user_humanized(id)
 		rg_give_item(id, "weapon_knife", GT_APPEND)
 	}
 
-	// Info HUD.
-	ze_hud_info_set(id, "CLASS_HUMAN", g_iHudColor, true)
+	// HUD Info.
+	if (module_exists(LIBRARY_HUDINFO))
+	{
+		ze_hud_info_set(id, "CLASS_HUMAN", g_iHudColor, true)
+	}
 
 #if defined CUSTOM_MODEL
 	new szModel[MAX_NAME_LENGTH]
@@ -157,9 +182,12 @@ public ze_user_humanized(id)
 	// Set player Model.
 	rg_set_user_model(id, szModel, true)
 
-	// Remove player Zombie Knife.
-	ze_remove_user_view_model(id, CSW_KNIFE)
-	ze_remove_user_weap_model(id, CSW_KNIFE)
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		// Remove player Zombie Knife.
+		ze_remove_user_view_model(id, CSW_KNIFE)
+		ze_remove_user_weap_model(id, CSW_KNIFE)
+	}
 #endif
 }
 
