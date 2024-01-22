@@ -505,7 +505,7 @@ native ze_set_user_fire_ex(id, Float:flPeriod);
  * @param id        Client index.
  * @param szClass[] Class name (Ex: "Zombie", ... etc).
  * @param iColor[3] HUD Color (Red, Green, Blue).
- * @param bMl       true  = Class name will be looked up as multilingual keys when the menu.
+ * @param bMl       true  = Class name will be looked up as multilingual key.
  *
  * @return          true  | If operation successfully.
  *                  false | Error.
