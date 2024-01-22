@@ -6,6 +6,7 @@
 #define LIBRARY_NEMESIS "ze_class_nemesis"
 #define LIBRARY_HUDINFO "ze_hud_info"
 #define LIBRARY_KNOCKBACK "ze_kb_system"
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
@@ -89,7 +90,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK))
+	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK) || equal(module, LIBRARY_WPNMODELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -205,8 +206,11 @@ public ze_user_infected(iVictim, iInfector)
 
 	rg_set_user_model(iVictim, aArray[ZOMBIE_MODEL], true)
 
-	ze_set_user_view_model(iVictim, CSW_KNIFE, aArray[ZOMBIE_MELEE])
-	ze_set_user_weap_model(iVictim, CSW_KNIFE)
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		ze_set_user_view_model(iVictim, CSW_KNIFE, aArray[ZOMBIE_MELEE])
+		ze_set_user_weap_model(iVictim, CSW_KNIFE)
+	}
 }
 
 public show_Zombies_Menu(const id)

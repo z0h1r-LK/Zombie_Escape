@@ -4,6 +4,7 @@
 #include <ze_core>
 #define LIBRARY_HUDINFO "ze_hud_info"
 #define LIBRARY_KNOCKBACK "ze_kb_system"
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -39,7 +40,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_HUDINFO))
+	if (equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK) || equal(module, LIBRARY_WPNMODELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }

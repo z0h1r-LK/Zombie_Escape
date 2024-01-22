@@ -4,6 +4,7 @@
 
 #include <ze_core>
 #define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -64,7 +65,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_HUDINFO))
+	if (equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_WPNMODELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -315,10 +316,13 @@ set_User_Survivor(id)
 	ArrayGetString(g_aSurvivorModel, random_num(0, ArraySize(g_aSurvivorModel) - 1), szModel, charsmax(szModel))
 	rg_set_user_model(id, szModel, true)
 
-	// Weapon model.
-	new iWeaponID = get_weaponid(g_szWeaponName)
-	ze_set_user_view_model(id, iWeaponID, g_v_szWeaponModel)
-	ze_set_user_weap_model(id, iWeaponID, g_p_szWeaponModel)
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		// Weapon model.
+		new iWeaponID = get_weaponid(g_szWeaponName)
+		ze_set_user_view_model(id, iWeaponID, g_v_szWeaponModel)
+		ze_set_user_weap_model(id, iWeaponID, g_p_szWeaponModel)
+	}
 #endif
 }
 

@@ -4,6 +4,7 @@
 
 #include <ze_core>
 #define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 #define LIBRARY_KNOCKBACK "ze_kb_system"
 
 // Define.
@@ -57,7 +58,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK))
+	if (equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK) || equal(module, LIBRARY_WPNMODELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -309,10 +310,13 @@ set_User_Nemesis(const id)
 	ArrayGetString(g_aNemesisModel, random_num(0, ArraySize(g_aNemesisModel) - 1), szModel, charsmax(szModel))
 	rg_set_user_model(id, szModel, true)
 
-	// Set player custom Knife Model.
-	ArrayGetString(g_aNemesisClaws, random_num(0, ArraySize(g_aNemesisClaws) - 1), szModel, charsmax(szModel))
-	ze_set_user_view_model(id, CSW_KNIFE, szModel)
-	ze_set_user_weap_model(id, CSW_KNIFE, "")
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		// Set player custom Knife Model.
+		ArrayGetString(g_aNemesisClaws, random_num(0, ArraySize(g_aNemesisClaws) - 1), szModel, charsmax(szModel))
+		ze_set_user_view_model(id, CSW_KNIFE, szModel)
+		ze_set_user_weap_model(id, CSW_KNIFE, "")
+	}
 #endif
 }
 
