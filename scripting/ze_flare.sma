@@ -3,6 +3,7 @@
 #include <engine>
 #include <reapi>
 #include <ze_core>
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Macroses.
 #define FIsClient(%0) (1<=(%0)<=MaxClients)
@@ -30,6 +31,26 @@ new g_iRingSpr,
 
 // Dynamic Arrays.
 new Array:g_aFlareExplodeSounds
+
+public plugin_natives()
+{
+	set_module_filter("fw_module_fitler")
+	set_module_filter("fw_native_fitler")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_WPNMODELS))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
 
 public plugin_precache()
 {
@@ -101,9 +122,12 @@ public plugin_init()
 
 public ze_user_humanized(id)
 {
-	// View and Weapon Model.
-	ze_set_user_view_model(id, CSW_SMOKEGRENADE, g_v_szFlareModel)
-	ze_set_user_weap_model(id, CSW_SMOKEGRENADE, g_p_szFlareModel)
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		// View and Weapon Model.
+		ze_set_user_view_model(id, CSW_SMOKEGRENADE, g_v_szFlareModel)
+		ze_set_user_weap_model(id, CSW_SMOKEGRENADE, g_p_szFlareModel)
+	}
 }
 
 public fw_GrenadeThrown_Post(const id)
@@ -198,9 +222,9 @@ public flare_Explode(const iEnt)
 		write_coord_f(vOrigin[0]) // Position X.
 		write_coord_f(vOrigin[1]) // Position Y.
 		write_coord_f(vOrigin[2] + 64.0) // Position Z.
-		write_coord(FLARE_RING_AXIS_X) // Axis X.
-		write_coord(FLARE_RING_AXIS_Y) // Axis Y.
-		write_coord(FLARE_RING_AXIS_Z) // Axis Z.
+		write_coord_f(vOrigin[0] + FLARE_RING_AXIS_X) // Axis X.
+		write_coord_f(vOrigin[1] + FLARE_RING_AXIS_Y) // Axis Y.
+		write_coord_f(vOrigin[2] + FLARE_RING_AXIS_Z) // Axis Z.
 		write_short(g_iRingSpr) // Sprite Index.
 		write_byte(0) // Frame.
 		write_byte(0) // Frame rate.

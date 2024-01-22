@@ -5,6 +5,7 @@
 #include <ze_core>
 #include <ini_file>
 #include <ze_weap_models_api>
+#define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Defines.
 #define FROST_RADIUS 240.0
@@ -66,6 +67,23 @@ public plugin_natives()
 	register_native("ze_user_in_frost", "__native_user_in_frost")
 	register_native("ze_set_user_frost", "__native_set_user_frost")
 	register_native("ze_set_user_frost_ex", "__native_set_user_frost_ex")
+
+	set_module_filter("fw_module_fitler")
+	set_module_filter("fw_native_fitler")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_WPNMODELS))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_precache()
@@ -168,9 +186,12 @@ public ze_user_humanized(id)
 	remove_task(id+TASK_UNFREEZE)
 	flag_unset(g_bitsIsFrozen, id)
 
-	// View and Weapon Model.
-	ze_set_user_view_model(id, CSW_FLASHBANG, g_v_szFrostModel)
-	ze_set_user_weap_model(id, CSW_FLASHBANG, g_p_szFrostModel)
+	if (module_exists(LIBRARY_WPNMODELS))
+	{
+		// View and Weapon Model.
+		ze_set_user_view_model(id, CSW_FLASHBANG, g_v_szFrostModel)
+		ze_set_user_weap_model(id, CSW_FLASHBANG, g_p_szFrostModel)
+	}
 }
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
@@ -282,9 +303,9 @@ public frost_Explode(const iEnt)
 		write_coord_f(vOrigin[0]) // Position X.
 		write_coord_f(vOrigin[1]) // Position Y.
 		write_coord_f(vOrigin[2] + 64.0) // Position Z.
-		write_coord(FROST_RING_AXIS_X) // Axis X.
-		write_coord(FROST_RING_AXIS_Y) // Axis Y.
-		write_coord(FROST_RING_AXIS_Z) // Axis Z.
+		write_coord_f(vOrigin[0] + FROST_RING_AXIS_X) // Axis X.
+		write_coord_f(vOrigin[1] + FROST_RING_AXIS_Y) // Axis Y.
+		write_coord_f(vOrigin[2] + FROST_RING_AXIS_Z) // Axis Z.
 		write_short(g_iRingSpr) // Sprite Index.
 		write_byte(0) // Frame.
 		write_byte(0) // Frame rate.
