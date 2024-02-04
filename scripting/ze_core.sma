@@ -211,8 +211,10 @@ public plugin_cfg()
 	set_member_game(m_bMapHasVIPSafetyZone, false)
 
 	// Mod Version.
-	register_cvar("ze_version", ZE_VERSION)
-	set_cvar_string("ze_version", ZE_VERSION)
+	register_cvar("ze_mod_version", ZE_VERSION, FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("ze_mod_version", ZE_VERSION)
+	register_cvar("ze_mod_uid", "b4fc8fbf32a138f1018e31c018535437", FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("ze_mod_uid", "b4fc8fbf32a138f1018e31c018535437")
 }
 
 public plugin_end()
