@@ -13,6 +13,7 @@ stock const ZE_FILENAME[] = "zombie_escape"
  */
 stock const ZE_VERSION[] = "1.0 beta 1"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
+stock const ZE_UID[] = "2f7830579418644e324b6870d5bf2dc8"
 
 /**
  * Maximum Knockback speed.
@@ -69,9 +70,10 @@ enum
 /**
  * XVARs Name.
  */
-#define X_Core_RoundNum       "x_iRoundNum"
-#define X_Core_RoundTime      "x_iRoundTime"
-#define X_Core_FixSpawn       "x_bFixSpawn"
-#define X_Core_GameStarted    "x_bGameStarted"
-#define X_Core_GamemodeBegin  "x_bGameChosen"
-#define X_Core_RespawnAsZm    "x_bRespawnAsZombie"
+#define X_Core_RoundNum        "x_iRoundNum"
+#define X_Core_RoundTime       "x_iRoundTime"
+#define X_Core_FixSpawn        "x_bFixSpawn"
+#define X_Core_GameStarted     "x_bGameStarted"
+#define X_Core_GamemodeBegin   "x_bGameChosen"
+#define X_Core_RespawnAsZm     "x_bRespawnAsZombie"
+#define X_Core_UpdateAvailable "x_bUpdateAvailable"

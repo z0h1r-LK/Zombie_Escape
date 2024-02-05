@@ -1,7 +1,9 @@
 #include <amxmodx>
 #include <amxmisc>
+#include <sockets>
 #include <fakemeta>
 #include <reapi>
+#include <json>
 #include <xs>
 
 #include <ze_stocks>
@@ -27,7 +29,10 @@ enum _:FORWARDS
 // Task IDs.
 enum (+=1)
 {
-	TASK_ROUNDTIME = 100
+	TASK_ROUNDTIME = 100,
+	TASK_SVREPONSE,
+	TASK_CONNECTFAIL,
+	TASK_CHECKUPDATE
 }
 
 new const g_szBlockSounds[][] =
@@ -82,7 +87,9 @@ new g_iFwSpawn,
 	g_iPainShockFree,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
+	g_hSocketUpdate,
 	bool:g_bRoundEnd,
+	bool:g_bCheckUpdate,
 	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied
 
@@ -98,7 +105,7 @@ public x_bGameStarted,
 		x_iRoundTime,
 		x_iRoundNum,
 		x_bRespawnAsZombie,
-		x_szModVersion
+		x_bUpdateAvailable
 
 public plugin_natives()
 {
@@ -117,6 +124,23 @@ public plugin_natives()
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
 
 	g_iFwSpawn = register_forward(FM_Spawn, "fw_Spawn_Pre")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, "sockets"))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
@@ -163,6 +187,8 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
 	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
 	bind_pcvar_num(register_cvar("ze_block_MOTD", "1"), g_bBlockStartupMOTD)
+
+	bind_pcvar_num(register_cvar("ze_check_update", "1"), g_bCheckUpdate)
 
 	bind_pcvar_float(get_cvar_pointer("mp_round_restart_delay"), g_flRoundEndDelay)
 
@@ -213,8 +239,12 @@ public plugin_cfg()
 	// Mod Version.
 	register_cvar("ze_mod_version", ZE_VERSION, FCVAR_SERVER|FCVAR_SPONLY)
 	set_cvar_string("ze_mod_version", ZE_VERSION)
-	register_cvar("ze_mod_uid", "b4fc8fbf32a138f1018e31c018535437", FCVAR_SERVER|FCVAR_SPONLY)
-	set_cvar_string("ze_mod_uid", "b4fc8fbf32a138f1018e31c018535437")
+	register_cvar("ze_mod_uid", ZE_UID, FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("ze_mod_uid", ZE_UID)
+
+	// Check Update.
+	if (g_bCheckUpdate)
+		set_task(10.0, "check_Update", TASK_CHECKUPDATE)
 }
 
 public plugin_end()
@@ -232,6 +262,79 @@ public plugin_end()
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_ZOMBIE])
 	DestroyForward(g_iForwards[FORWARD_USER_DISCONNECTED])
 	DestroyForward(g_iForwards[FORWARD_ROUNDEND])
+}
+
+public check_Update(taskid)
+{
+	new const szHost[] = "escapers-zone.net"
+	new const szHandler[] = "/CS.php"
+	new const iPort = 80
+	new error
+
+	// Open a Socket.
+	if ((g_hSocketUpdate = socket_open(szHost, iPort, SOCKET_TCP, error)))
+	{
+		switch (error)
+		{
+			case 1: server_print("[ZE] Check-Update: Unable to create socket.")
+			case 2: server_print("[ZE] Check-Update: Unable to connect to hostname.")
+			case 3: server_print("[ZE] Check-Update: Unable to connect to HTTP Port.")
+		}
+
+		// Send request to Server.
+		new szRequest[256]
+		formatex(szRequest, charsmax(szRequest), "GET %s?MVer=%s HTTP/1.1^r^nHost:%s^r^n^r^n", szHandler, ZE_UID, szHost)
+		socket_send2(g_hSocketUpdate, szRequest, strlen(szRequest))
+
+		// Check from reponse.
+		set_task(1.0, "check_Reponse", TASK_SVREPONSE, "", 0, "a", 5)
+		set_task(6.0, "close_Connection", TASK_CONNECTFAIL)
+	}
+}
+
+public check_Reponse(taskid)
+{
+	// Remove Other Tasks.
+	remove_task(TASK_SVREPONSE)
+	remove_task(TASK_CONNECTFAIL)
+
+	// Data received?
+	if (socket_is_readable(g_hSocketUpdate))
+	{
+		new szReponse[2048]
+		socket_recv(g_hSocketUpdate, szReponse, charsmax(szReponse))
+
+		if (strfind(szReponse, "update-available") > -1)
+		{
+			new const szMessage[] =
+			"\
+			^n ^n ^n\
+			| ***--- Zombie Escape Rebuild ---***^n\
+			| There is a new update!^n\
+			| • Official Website: https://escapers-zone.net/^n\
+			| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
+			^n ^n ^n\
+			"
+
+			x_bUpdateAvailable = 1
+			server_print(szMessage)
+		}
+		else if (strfind(szReponse, "up-to-date") > -1)
+		{
+			server_print("[Zombie-Escape] Your Mod is up to date :)")
+		}
+
+		// Close socket.
+		socket_close(g_hSocketUpdate)
+	}
+}
+
+public close_Connection(taskid)
+{
+	server_print("[Zombie-Escape] Failed to connect to the server!")
+
+	// Close socket.
+	socket_close(g_hSocketUpdate)
 }
 
 public client_putinserver(id)
