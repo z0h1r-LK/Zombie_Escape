@@ -75,6 +75,7 @@ new g_iReqPlayers,
 	bool:g_bBlockHpArRrHUD,
 	bool:g_bBlockBloodEffs,
 	bool:g_bBlockStartupMOTD,
+	boool:g_bBlockHintMessage,
 	Float:g_flRoundEndDelay
 
 // Variables.
@@ -169,6 +170,7 @@ public plugin_init()
 	RegisterHookChain(RG_CBasePlayer_TraceAttack, "fw_TraceAttack_Pre", 0)
 	RegisterHookChain(RG_CBasePlayer_ResetMaxSpeed, "fw_ResetMaxSpeed_Post", 1)
 	RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "fw_HasRestrictItem_Pre", 0)
+	RegisterHookChain(RG_CBasePlayer_HintMessageEx, "fw_PlayerHintMessageEx_Pre")
 	RegisterHookChain(RG_CSGameRules_CheckWinConditions, "fw_CheckWinConditions_Post", 1)
 	RegisterHookChain(RG_RoundEnd, "fw_RoundEnd_Post", 1)
 
@@ -187,6 +189,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_money", "1"), g_bBlockMoneyHUD)
 	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
 	bind_pcvar_num(register_cvar("ze_block_MOTD", "1"), g_bBlockStartupMOTD)
+	bind_pcvar_num(register_cvar("ze_block_hintmsg", "1"), g_bBlockHintMessage)
 
 	bind_pcvar_num(register_cvar("ze_check_update", "1"), g_bCheckUpdate)
 
@@ -846,6 +849,17 @@ public fw_HasRestrictItem_Pre(const id, ItemID:iItem)
 	{
 		// Block pick up weapon.
 		SetHookChainReturn(ATYPE_BOOL, true)
+	}
+
+	return HC_CONTINUE
+}
+
+public fw_PlayerHintMessageEx_Pre(id, const message[], Float:duration, bool:bDisplayIfPlayerDead, bool:bOverride)
+{
+	if (g_bBlockHintMessage)
+	{
+		SetHookChainReturn(ATYPE_BOOL, true)
+		return HC_SUPERCEDE
 	}
 
 	return HC_CONTINUE
