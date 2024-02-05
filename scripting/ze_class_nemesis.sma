@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <hamsandwich>
 #include <engine>
 #include <reapi>
 
@@ -181,7 +182,15 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 
 	// Is Nemesis?
 	if (is_user_nemesis(iInfector))
+	{
+		if (g_bOneHit)
+		{
+			// Kill player.
+			ExecuteHamB(Ham_Killed, iVictim, iInfector, GIB_ALWAYS)
+		}
+
 		return ZE_STOP // Block infection event, Keep damage taken.
+	}
 
 	return ZE_CONTINUE
 }
