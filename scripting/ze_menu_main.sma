@@ -2,7 +2,9 @@
 #include <amxmisc>
 
 #include <ze_core>
+#include <ze_class_human>
 #include <ze_class_zombie>
+#define LIBRARY_HUMAN "ze_class_human"
 #define LIBRARY_ZOMBIE "ze_class_zombie"
 
 // Keys Menu.
@@ -23,7 +25,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_ZOMBIE))
+	if (equal(module, LIBRARY_HUMAN) || equal(module, LIBRARY_ZOMBIE))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -115,10 +117,19 @@ public show_Menu_Main(const id)
 		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \d%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
 	}
 
-	// 3. Zombie Classes
+	// New Line.
+	szMenu[iLen++] = '^n'
+
+	// 3. Human Classes
+	if (module_exists(LIBRARY_HUMAN))
+	{
+		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r3. %L^n", LANG_PLAYER, "MENU_HCLASSES")
+	}
+
+	// 4. Zombie Classes
 	if (module_exists(LIBRARY_ZOMBIE))
 	{
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r3. \y%L^n", LANG_PLAYER, "MENU_ZCLASSES")
+		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r4. %L^n", LANG_PLAYER, "MENU_ZCLASSES")
 	}
 
 	// New Line.
@@ -167,7 +178,14 @@ public handler_Menu_Main(const id, iKey)
 			// Show Extra-Items menu for player.
 			ze_item_show_menu(id)
 		}
-		case 2: // 3. Zombie Classes.
+		case 2: // 3. Human Classes.
+		{
+			if (module_exists(LIBRARY_HUMAN))
+			{
+				ze_hclass_show_menu(id)
+			}
+		}
+		case 3: // 4. Zombie Classes.
 		{
 			if (module_exists(LIBRARY_ZOMBIE))
 			{

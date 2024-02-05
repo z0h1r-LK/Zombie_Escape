@@ -40,6 +40,7 @@ MENU_MAIN_TITLE = "Menu Main"
 MENU_WEAPONS = "Weapons"
 MENU_RE_WEAPONS = "Weapons \r[Auto Buy]"
 MENU_EXTRAITEMS = "Extra Items"
+MENU_HCLASSES = "Human Classes"
 MENU_ZCLASSES = "Zombie Classes"
 
 MENU_NEXT = "Next"
@@ -68,8 +69,16 @@ HUD_INFO_SPEC = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
 HUD_INFO_STATS = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
 
 MENU_ZOMBIES_TITLE = "Zombies Classes"
+MENU_HUMANS_TITLE = "Humans Classes"
+
 NEXT = "Next"
 CURRENT = "Current"
 
+MSG_HUMAN_NAME = "Name: !t%s"
+MSG_HUMAN_INFO = "HP: !g%.2f!y | Shield: !g%.2f!y | Speed (!g%L!y): !g%.2f!y | Gravity: !g%.2f!y"
+
 MSG_ZOMBIE_NAME = "Name: !t%s"
 MSG_ZOMBIE_INFO = "HP: !g%.2f!y | Speed: !g%.2f!y | Gravity: !g%.2f!y | Knockback: !g%.2f!y"
+
+STATIC = "Static"
+DYNAMIC = "Dynamic"
