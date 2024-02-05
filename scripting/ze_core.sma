@@ -443,8 +443,8 @@ public client_Disconnected()
 public fw_ClientKill_Pre(id)
 {
 	if (g_bBlockSuicide)
-		return PLUGIN_HANDLED
-	return PLUGIN_CONTINUE
+		return FMRES_SUPERCEDE
+	return FMRES_IGNORED
 }
 
 public fw_Spawn_Pre(iEnt)
