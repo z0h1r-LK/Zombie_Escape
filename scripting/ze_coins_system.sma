@@ -66,7 +66,7 @@ public plugin_end()
 	TrieDestroy(g_tTempVault)
 }
 
-public client_putinserver(id)
+public client_authorized(id, const authid[])
 {
 	if (is_user_hltv(id))
 		return
@@ -75,7 +75,7 @@ public client_putinserver(id)
 		return
 
 	// Get player's steamid.
-	get_user_authid(id, g_szAuth[id], charsmax(g_szAuth[]))
+	copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
 
 	// Load player's coins.
 	read_Coins(id)
