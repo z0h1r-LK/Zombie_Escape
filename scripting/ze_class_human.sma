@@ -42,11 +42,15 @@ stock DEFAULT_HUMAN_SPEED_FACTOR = 1
 stock Float:DEFAULT_HUMAN_SPEED = 25.0
 stock Float:DEFAULT_HUMAN_GRAVITY = 800.0
 
+// Shield Attack Sound.
+new g_szShieldAttackSound[MAX_RESOURCE_PATH_LENGTH] = "player/bhit_helmet-1.wav"
+
 // Variable.
 new g_iNumHumans
 
 // Cvars.
 new bool:g_bHumanShield,
+	bool:g_bWeaponStrips,
 	g_iHudColor[Colors]
 
 // Arrays.
@@ -104,6 +108,16 @@ public fw_native_filter(const name[], index, trap)
 	return PLUGIN_CONTINUE
 }
 
+public plugin_precache()
+{
+	// Read attack shield sound from INI file.
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "SHIELD_ATTACK", g_szShieldAttackSound, charsmax(g_szShieldAttackSound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "SHIELD_ATTACK", g_szShieldAttackSound)
+
+	// Precache Sound.
+	precache_sound(g_szShieldAttackSound)
+}
+
 public plugin_init()
 {
 	// Load Plug-In.
@@ -111,6 +125,7 @@ public plugin_init()
 
 	// Cvars.
 	bind_pcvar_num(register_cvar("ze_human_shield", "1"), g_bHumanShield)
+	bind_pcvar_num(register_cvar("ze_human_weapon_strip", "1"), g_bWeaponStrips)
 
 	bind_pcvar_num(register_cvar("ze_hud_info_human_red", "0"), g_iHudColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_human_green", "127"), g_iHudColor[Green])
@@ -196,6 +211,15 @@ public ze_user_humanized(id)
 	set_entvar(id, var_max_health, aArray[HUMAN_HEALTH])
 	set_entvar(id, var_gravity, (aArray[HUMAN_GRAVITY] / 800.0))
 
+	if (g_bWeaponStrips)
+	{
+		// Strips all Weapons for player.
+		rg_remove_all_items(id)
+
+		// Give player Knife Weapon.
+		rg_give_item(id, "weapon_knife", GT_APPEND)
+	}
+
 	ze_set_user_speed(id, aArray[HUMAN_SPEED], bool:aArray[HUMAN_SPEED_FACTOR])
 
 	if (module_exists(LIBRARY_HUDINFO))
@@ -210,6 +234,32 @@ public ze_user_humanized(id)
 		ze_remove_user_view_model(id, CSW_KNIFE)
 		ze_remove_user_weap_model(id, CSW_KNIFE)
 	}
+}
+
+public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
+{
+	if (!iInfector)
+		return ZE_CONTINUE
+
+	if (g_bHumanShield)
+	{
+		static Float:flArmor; flArmor = get_entvar(iVictim, var_armorvalue)
+
+		if (flArmor - flDamage <= 0.0)
+		{
+			set_entvar(iVictim, var_armorvalue, 0.0)
+		}
+		else
+		{
+			set_entvar(iVictim, var_armorvalue, flArmor - flDamage)
+
+			// Attack sound.
+			emit_sound(iVictim, CHAN_BODY, g_szShieldAttackSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
+			return ZE_BREAK // Prevent infection event.
+		}
+	}
+
+	return ZE_CONTINUE
 }
 
 public show_Humans_Menu(const id)
