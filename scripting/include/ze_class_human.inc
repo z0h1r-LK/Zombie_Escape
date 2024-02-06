@@ -164,29 +164,18 @@ native Float:ze_hclass_get_speed(iClassID);
 native Float:ze_hclass_get_gravity(iClassID);
 
 /**
- * Gets a class Knockback speed.
- *
- * @param iClassID    A valid class ID.
- *
- * @return            Knockback speed on success, ZE_CLASS_INVALID when failure.
- *
- * @error             If this class ID is invalid.
- */
-native Float:ze_hclass_get_knockback(iClassID);
-
-/**
  * Sets a class for specific player.
  *
  * @param id          Client index.
  * @param iClassID    A valid class ID.
- * @param bInfect     true = Infect player to set Zombie attributes | false = Otherwise.
+ * @param bCure       true = set Human attributes | false = Otherwise.
  *
  * @return            true  | If assigned successfully.
  *                    false | If failure.
  *
  * @error             If this player not on game or class ID is invalid.
  */
-native ze_hclass_set_current(id, iClassID, bool:bInfect = false);
+native ze_hclass_set_current(id, iClassID, bool:bCure = false);
 
 /**
  * Sets a class for specific player.
@@ -247,14 +236,15 @@ native ze_hclass_set_health(iClassID, Float:flHealth);
 /**
  * Sets speed type for specific class.
  *
- * @param iClassID    A valid class ID.
+ * @param iClassID      A valid class ID.
+ * @param bSpeedFactor  true = Dynamic (Speed factor) | false = Static.
  *
- * @return            true  | If changed successfully.
- *                    false | If failure.
+ * @return              true  | If changed successfully.
+ *                      false | If failure.
  *
- * @error             If this class ID is invalid.
+ * @error               If this class ID is invalid.
  */
-native ze_hclass_set_speed_factor(iClassID, fSpeedFactor = 0)
+native ze_hclass_set_speed_factor(iClassID, bool:bSpeedFactor = true)
 
 /**
  * Sets new Speed for specific class.
