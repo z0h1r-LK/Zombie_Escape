@@ -166,18 +166,21 @@ public ze_user_infected(iVictim, iInfector)
 	get_user_origin(iVictim, vOrigin, Origin_Client)
 
 	// Notice Message.
-	if (bitsFlags & FLAG_NOTICE)
+	if (iInfector)
 	{
-		static szVicName[MAX_NAME_LENGTH], szInfName[MAX_NAME_LENGTH]
-		szVicName = NULL_STRING, szInfName = NULL_STRING
+		if (bitsFlags & FLAG_NOTICE)
+		{
+			static szVicName[MAX_NAME_LENGTH], szInfName[MAX_NAME_LENGTH]
+			szVicName = NULL_STRING, szInfName = NULL_STRING
 
-		// Get victim and infector name.
-		get_user_name(iVictim, szVicName, charsmax(szVicName))
-		get_user_name(iInfector, szInfName, charsmax(szInfName))
+			// Get victim and infector name.
+			get_user_name(iVictim, szVicName, charsmax(szVicName))
+			get_user_name(iInfector, szInfName, charsmax(szInfName))
 
-		// Send colored HUD message for everyone.
-		set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_INFECT_X, HUD_INFECT_Y, 1, 3.0, 3.0, 0.1, 0.1)
-		ShowSyncHudMsg(0, g_iInfectMsg, "%L", LANG_PLAYER, "HUD_INFECT_NOTICE", szVicName, szInfName)
+			// Send colored HUD message for everyone.
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_INFECT_X, HUD_INFECT_Y, 1, 3.0, 3.0, 0.1, 0.1)
+			ShowSyncHudMsg(0, g_iInfectMsg, "%L", LANG_PLAYER, "HUD_INFECT_NOTICE", szVicName, szInfName)
+		}
 	}
 
 	// Fade Screen.
