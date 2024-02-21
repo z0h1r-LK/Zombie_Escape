@@ -180,7 +180,9 @@ public plugin_init()
 	g_iFwSpawn = 0
 
 	// CVars.
-	bind_pcvar_num(register_cvar("ze_required_players", "2"), g_iReqPlayers)
+	new const pCvarReqPlayers = register_cvar("ze_required_players", "2")
+
+	bind_pcvar_num(pCvarReqPlayers, g_iReqPlayers)
 	bind_pcvar_num(register_cvar("ze_painshockfree", "1"), g_iPainShockFree)
 	bind_pcvar_num(register_cvar("ze_lasthuman_die", "0"), g_bLastHumanDied)
 
@@ -194,6 +196,8 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_check_update", "1"), g_bCheckUpdate)
 
 	bind_pcvar_float(get_cvar_pointer("mp_round_restart_delay"), g_flRoundEndDelay)
+
+	hook_cvar_change(pCvarReqPlayers, "cvar_ReqPlayers")
 
 	// Create Forwards.
 	g_iForwards[FORWARD_GAMESTARTED_PRE] = CreateMultiForward("ze_game_started_pre", ET_CONTINUE)
@@ -265,6 +269,26 @@ public plugin_end()
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_ZOMBIE])
 	DestroyForward(g_iForwards[FORWARD_USER_DISCONNECTED])
 	DestroyForward(g_iForwards[FORWARD_ROUNDEND])
+}
+
+public cvar_ReqPlayers(pCvar)
+{
+	if (!x_bGameStarted)
+	{
+		if (get_PlayersNum() >= g_iReqPlayers)
+		{
+			x_bGameStarted = true
+			set_cvar_num("sv_restartround", 2)
+		}
+	}
+	else // Game already started.
+	{
+		if (get_PlayersNum() < g_iReqPlayers)
+		{
+			x_bGameStarted = false
+			set_cvar_num("sv_restartround", 2)
+		}
+	}
 }
 
 public check_Update(taskid)
