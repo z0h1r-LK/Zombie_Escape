@@ -4,9 +4,6 @@
 // Macro.
 #define FIsItemValid(%0) (ZE_ITEM_WRONG<(%0)<x_iMaxItems)
 
-// INI File Name.
-stock const ZE_INI_FILENAME[] = "ze_extra_items"
-
 enum _:ITEM_DATA
 {
 	ITEM_NAME[MAX_NAME_LENGTH] = 0,
@@ -265,12 +262,12 @@ public __native_item_register(const plugin_id, const num_params)
 		iLimit = 0
 
 	// Read Item Name, Cost and Limit from INI file.
-	if (!ini_read_string(ZE_INI_FILENAME, szName, "NAME", szItemName, charsmax(szItemName)))
-		ini_write_string(ZE_INI_FILENAME, szName, "NAME", szItemName)
-	if (!ini_read_int(ZE_INI_FILENAME, szName, "COST", iCost))
-		ini_write_int(ZE_INI_FILENAME, szName, "COST", iCost)
-	if (!ini_read_int(ZE_INI_FILENAME, szName, "LIMIT", iLimit))
-		ini_write_int(ZE_INI_FILENAME, szName, "LIMIT", iLimit)
+	if (!ini_read_string(ZE_ET_FILENAME, szName, "NAME", szItemName, charsmax(szItemName)))
+		ini_write_string(ZE_ET_FILENAME, szName, "NAME", szItemName)
+	if (!ini_read_int(ZE_ET_FILENAME, szName, "COST", iCost))
+		ini_write_int(ZE_ET_FILENAME, szName, "COST", iCost)
+	if (!ini_read_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit))
+		ini_write_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit)
 
 	// Copy item data on Array.
 	copy(g_aItems[x_iMaxItems][ITEM_NAME], charsmax(g_aItems[]) - ITEM_NAME, szItemName)

@@ -7,6 +7,7 @@
  * File Name (.cfg/.ini)
  */
 stock const ZE_FILENAME[] = "zombie_escape"
+stock const ZE_ET_FILENAME[] = "ze_extra_items"
 
 /**
  * Mod Version and Authors.
