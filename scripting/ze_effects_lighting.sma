@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <engine>
 #include <ze_core>
 
 // Flags.
@@ -57,6 +58,11 @@ public cvar_NVGFlags(pCvar, const szOldVal[], const szNewVal[])
 	g_bitsNvgFlags = read_flags(szNewVal)
 }
 
+public client_putinserver(id)
+{
+	set_task(1.0, "set_LightStyle", id)
+}
+
 public client_disconnected(id, bool:drop, message[], maxlen)
 {
 	if (is_user_hltv(id))
@@ -106,6 +112,21 @@ public ze_roundend(iWinTeam)
 	arrayset(g_bNVGToggle, false, MAX_PLAYERS+1)
 }
 
+public set_LightStyle(const id)
+{
+	// Player disconnected?
+	if (!is_user_connected(id))
+		return
+
+	emessage_begin(MSG_ONE, SVC_LIGHTSTYLE, _, id)
+	ewrite_byte(0) // Light index.
+	ewrite_string(g_szLight) // Light style.
+	emessage_end()
+}
+
+/**
+ * -=| Function |=-
+ */
 CanUseNvg(id)
 {
 	if (!is_user_alive(id))
