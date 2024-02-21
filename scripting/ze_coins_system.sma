@@ -1,11 +1,18 @@
 #include <amxmodx>
-#include <reapi>
 #include <nvault>
+#include <reapi>
+#include <sqlx>
 #include <ze_core>
 
-// Vault Name.
-new const g_szVaultName[] = "Coins"
-
+// Contants.
+new const g_szVaultName[] = "ZE_Coins"
+new const g_szLogFile[] = "MySQL_Logs"
+new const g_szTable[] = "\
+CREATE TABLE IF NOT EXISTS `ze_coins` ( \
+`AuthID` varchar(64) NOT NULL, \
+`Amount` int(32) NOT NULL DEFAULT 0, \
+PRIMARY KEY (AuthID)); \
+"
 // CVars.
 new g_iSaveType,
 	g_iDmgReward,
@@ -18,7 +25,7 @@ new g_iSaveType,
 	Float:g_flReqDamage
 
 // Variables.
-new g_iVaultHandle
+new g_iVaultCoins
 
 // Array.
 new g_iCoins[MAX_PLAYERS+1],
@@ -29,6 +36,9 @@ new g_szAuth[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
 
 // Trie.
 new Trie:g_tTempVault
+
+// MySQL handle.
+new Handle:g_hTuple
 
 public plugin_natives()
 {
@@ -56,14 +66,94 @@ public plugin_init()
 	bind_pcvar_float(register_cvar("ze_coins_dmg_req", "800.0"), g_flReqDamage)
 	bind_pcvar_num(register_cvar("ze_earn_coins_message", "1"), g_bEarnMessage)
 
-	// Create new hash map.
-	g_tTempVault = TrieCreate()
+	// Initial Value.
+	g_iVaultCoins = INVALID_HANDLE
+}
+
+public plugin_cfg()
+{
+	switch (g_iSaveType)
+	{
+		case 1: // Trie.
+		{
+			// Create new hash map.
+			g_tTempVault = TrieCreate()
+		}
+		case 2: // nVault.
+		{
+			// Open the Vault.
+			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
+				set_fail_state("Error in opening the nVault (-1)")
+		}
+		case 3: // MySQL.
+		{
+			RequestFrame("MySQL_Init")
+		}
+	}
 }
 
 public plugin_end()
 {
-	// Free the Memory.
-	TrieDestroy(g_tTempVault)
+	switch (g_iSaveType)
+	{
+		case 1: // Trie.
+		{
+			// Free the Memory.
+			if (g_tTempVault != Invalid_Trie)
+				TrieDestroy(g_tTempVault)
+		}
+		case 2: // nVault.
+		{
+			// Close the Vault.
+			if (g_iVaultCoins != INVALID_HANDLE)
+				nvault_close(g_iVaultCoins)
+		}
+		case 3: // MySQL.
+		{
+			if (g_hTuple != Empty_Handle)
+				SQL_FreeHandle(g_hTuple)
+		}
+	}
+}
+
+public MySQL_Init()
+{
+	new szHost[64], szUser[64], szPass[64], szDB[64]
+
+	// amx_sql.cfg
+	get_pcvar_string(register_cvar("amx_sql_host", "127.0.0.1", FCVAR_PROTECTED), szHost, charsmax(szHost))
+	get_pcvar_string(register_cvar("amx_sql_user", "root", FCVAR_PROTECTED), szUser, charsmax(szUser))
+	get_pcvar_string(register_cvar("amx_sql_pass", "", FCVAR_PROTECTED), szPass, charsmax(szPass))
+	get_pcvar_string(register_cvar("amx_sql_db", "amx", FCVAR_PROTECTED), szDB, charsmax(szDB))
+	new const iTimeOut = get_pcvar_num(register_cvar("amx_sql_timeout", "60"))
+
+	g_hTuple = SQL_MakeDbTuple(szHost, szUser, szPass, szDB, iTimeOut)
+
+	new Handle:hSQLConnection, szError[256], iError
+
+	// Connect to SQL database.
+	hSQLConnection = SQL_Connect(g_hTuple, iError, szError, charsmax(szError))
+
+	if (hSQLConnection != Empty_Handle)
+	{
+		log_amx("[MySQL][Coins] Successfully connected to host: %s (ALL IS OK).", szHost)
+
+		// Frees SQL handle.
+		SQL_FreeHandle(hSQLConnection)
+	}
+	else
+	{
+		// Disable plugin.
+		set_fail_state("[MySQL][Coins] Failed to connect to MySQL database: %s.", szError)
+	}
+
+	// Create Table.
+	SQL_ThreadQuery(g_hTuple, "query_CreateTable", g_szTable)
+}
+
+public query_CreateTable(iFailState, Handle:hQuery, szError[], iError, szData[], iSize, Float:flQueueTime)
+{
+	SQL_IsFail(iFailState, iError, szError, g_szLogFile)
 }
 
 public client_authorized(id, const authid[])
@@ -169,10 +259,7 @@ public ze_roundend(iWinTeam)
 	}
 }
 
-/**
- * -=| Functions |=-
- */
-read_Coins(const id)
+public read_Coins(const id)
 {
 	switch (g_iSaveType)
 	{
@@ -185,28 +272,46 @@ read_Coins(const id)
 		}
 		case 2: // nVault.
 		{
-			// Open the Vault.
-			if ((g_iVaultHandle = nvault_open(g_szVaultName)) != INVALID_HANDLE)
+			new szCoins[32]
+
+			if (nvault_get(g_iVaultCoins, g_szAuth[id], szCoins, charsmax(szCoins)))
 			{
-				new szCoins[32]
-
-				if (nvault_get(g_iVaultHandle, g_szAuth[id], szCoins, charsmax(szCoins)))
-				{
-					g_iCoins[id] = str_to_num(szCoins)
-				}
-				else
-				{
-					g_iCoins[id] = g_iStartCoins
-				}
-
-				// Close the Vault.
-				nvault_close(g_iVaultHandle)
+				g_iCoins[id] = str_to_num(szCoins)
 			}
+			else
+			{
+				g_iCoins[id] = g_iStartCoins
+			}
+		}
+		case 3: // MySQL.
+		{
+			new szQuery[128], szData[4]
+			formatex(szQuery, charsmax(szQuery), "SELECT * FROM `ze_coins` WHERE `AuthID` = '%s';", g_szAuth[id])
+
+			num_to_str(id, szData, charsmax(szData))
+			SQL_ThreadQuery(g_hTuple, "query_SelectData", szQuery, szData, charsmax(szData))
 		}
 	}
 }
 
-write_Coins(const id)
+public query_SelectData(iFailState, Handle:hQuery, szError[], iError, szData[], iSize, Float:flQueueTime)
+{
+	if (SQL_IsFail(iFailState, iError, szError, g_szLogFile))
+		return
+
+	new const id = str_to_num(szData)
+
+	if (!SQL_NumResults(hQuery))
+	{
+		g_iCoins[id] = g_iStartCoins
+	}
+	else
+	{
+		g_iCoins[id] = SQL_ReadResult(hQuery, 1)
+	}
+}
+
+public write_Coins(const id)
 {
 	switch (g_iSaveType)
 	{
@@ -217,19 +322,24 @@ write_Coins(const id)
 		}
 		case 2: // nVault.
 		{
-			if ((g_iVaultHandle = nvault_open(g_szVaultName)) != INVALID_HANDLE)
-			{
-				new szCoins[32]
+			new szCoins[32]
 
-				// Convert Integer to String.
-				num_to_str(g_iCoins[id], szCoins, charsmax(szCoins))
-				nvault_pset(g_iVaultHandle, g_szAuth[id], szCoins)
-
-				// Close the Vault.
-				nvault_close(g_iVaultHandle)
-			}
+			// Convert Integer to String.
+			num_to_str(g_iCoins[id], szCoins, charsmax(szCoins))
+			nvault_pset(g_iVaultCoins, g_szAuth[id], szCoins)
+		}
+		case 3: // MySQL.
+		{
+			new szQuery[128]
+			formatex(szQuery, charsmax(szQuery), "REPLACE INTO `ze_coins` (`AuthID`, `Amount`) VALUES ('%s', %d);", g_szAuth[id], g_iCoins[id])
+			SQL_ThreadQuery(g_hTuple, "query_SetData", szQuery)
 		}
 	}
+}
+
+public query_SetData(iFailState, Handle:hQuery, szError[], iError, szData[], iSize, Float:flQueueTime)
+{
+	SQL_IsFail(iFailState, iError, szError, g_szLogFile)
 }
 
 /**

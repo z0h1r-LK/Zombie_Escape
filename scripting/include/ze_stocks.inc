@@ -147,3 +147,35 @@ stock get_PlayersNum()
 
 	return iNum;
 }
+
+/**
+ * Log MySQL errors.
+ *
+ * @param iFailState     Faile state.
+ * @param iError         Error code.
+ * @param szError[]      Error message.
+ * @param szLogFile[]    Log file path.
+ *
+ * @return               true  | MySQL failed, There a error.
+ *                       false | MySQL Success, No Error.
+ */
+stock SQL_IsFail(iFailState, iError, const szError[], const szLogFile[])
+{
+	if (iFailState == TQUERY_CONNECT_FAILED)
+	{
+		log_to_file(szLogFile, "[MySQL] Could not connect to SQL database: %s", szError)
+		return true
+	}
+	else if (iFailState == TQUERY_QUERY_FAILED)
+	{
+		log_to_file(szLogFile, "[MySQL] Query failed: %s", szError)
+		return true
+	}
+	else if (iError)
+	{
+		log_to_file(szLogFile, "[MySQL] Error on query: %s", szError)
+		return true
+	}
+
+	return false
+}
