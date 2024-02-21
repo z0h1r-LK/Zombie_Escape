@@ -132,7 +132,11 @@ public ze_user_humanized(id)
 
 public fw_GrenadeThrown_Post(const id)
 {
-	if (!is_user_alive(id))
+	if (!is_user_connected(id))
+		return
+
+	// Is Zombie?
+	if (ze_is_user_zombie(id))
 		return
 
 	// Get grenade entity.

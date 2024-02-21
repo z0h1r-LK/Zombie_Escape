@@ -58,6 +58,7 @@ new Array:g_aFireExplodeSounds,
 
 public plugin_natives()
 {
+	register_library("ze_fire")
 	register_native("ze_user_in_fire", "__native_user_in_fire")
 	register_native("ze_set_user_fire", "__native_set_user_fire")
 	register_native("ze_set_user_fire_ex", "__native_set_user_fire_ex")
@@ -229,7 +230,11 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 
 public fw_GrenadeThrown_Post(const id)
 {
-	if (!is_user_alive(id))
+	if (!is_user_connected(id))
+		return
+
+	// Is Zombie?
+	if (ze_is_user_zombie(id))
 		return
 
 	// Get grenade entity.

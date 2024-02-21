@@ -64,6 +64,7 @@ new g_iForwards[FORWARDS],
 
 public plugin_natives()
 {
+	register_library("ze_frost")
 	register_native("ze_user_in_frost", "__native_user_in_frost")
 	register_native("ze_set_user_frost", "__native_set_user_frost")
 	register_native("ze_set_user_frost_ex", "__native_set_user_frost_ex")
@@ -223,7 +224,11 @@ public fw_TraceAttack_Pre(const iVictim, iInflector, iAttacker, Float:flDamage, 
 
 public fw_GrenadeThrown_Post(const id)
 {
-	if (!is_user_alive(id))
+	if (!is_user_connected(id))
+		return
+
+	// Is Zombie?
+	if (ze_is_user_zombie(id))
 		return
 
 	// Get grenade entity.
