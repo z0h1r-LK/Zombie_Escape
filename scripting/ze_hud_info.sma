@@ -1,5 +1,6 @@
 #include <amxmodx>
 #include <ze_core>
+#define LIBRARY_COINS "ze_coins_system"
 
 // HUD Position.
 const Float:HUD_SPEC_X = -1.0
@@ -37,6 +38,23 @@ public plugin_natives()
 {
 	register_library("ze_hud_info")
 	register_native("ze_hud_info_set", "__native_hud_info_set")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_COINS))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
