@@ -11,7 +11,7 @@ stock const ZE_FILENAME[] = "zombie_escape"
 /**
  * Mod Version and Authors.
  */
-stock const ZE_VERSION[] = "1.0 beta 1"
+stock const ZE_VERSION[] = "Rebuild 1.0-beta 2"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
 stock const ZE_UID[] = "2f7830579418644e324b6870d5bf2dc8"
 
