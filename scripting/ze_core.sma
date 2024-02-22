@@ -3,7 +3,7 @@
 #include <sockets>
 #include <fakemeta>
 #include <reapi>
-#include <json>
+// #include <json>
 #include <xs>
 
 #include <ze_stocks>
@@ -478,7 +478,7 @@ public fw_Spawn_Pre(iEnt)
 		if (FClassnameIs(iEnt, g_szEntitesClass[i]))
 		{
 			// Free edict.
-			engfunc(EngFunc_RemoveEntity, iEnt)
+			rg_remove_entity(iEnt)
 			return FMRES_SUPERCEDE
 		}
 	}
