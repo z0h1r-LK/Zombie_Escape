@@ -278,7 +278,7 @@ public fw_GrenadeExploded_Pre(const iEnt)
 	fire_Explode(iEnt)
 
 	// Remove entity.
-	remove_entity(iEnt)
+	rg_remove_entity(iEnt)
 	return HC_SUPERCEDE // Prevent property of Grenade.
 }
 

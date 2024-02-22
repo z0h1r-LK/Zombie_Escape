@@ -184,7 +184,7 @@ public fw_GrenadeThink_Pre(const iEnt)
 	flare_Explode(iEnt)
 
 	// Remove entity.
-	remove_entity(iEnt)
+	rg_remove_entity(iEnt)
 	return HAM_SUPERCEDE // Prevent property of Grenade.
 }
 
