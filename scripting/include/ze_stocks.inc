@@ -179,3 +179,61 @@ stock SQL_IsFail(iFailState, iError, const szError[], const szLogFile[])
 
 	return false
 }
+
+stock AddCommas(iNum, szOutput[], iLen)
+{
+	new szTmp[32], iOutputPos, iNumPos, iNumLen
+	szTmp = NULL_STRING; iOutputPos = iNumPos = iNumLen = 0
+
+	if (iNum < 0)
+	{
+		szOutput[iOutputPos++] = '-'
+		iNum = abs(iNum)
+	}
+
+	iNumLen = num_to_str(iNum, szTmp, charsmax(szTmp))
+
+	if (iNumLen <= 3)
+	{
+		iOutputPos += copy(szOutput[iOutputPos], iLen, szTmp)
+	}
+	else
+	{
+		while ((iNumPos < iNumLen) && (iOutputPos < iLen))
+		{
+			szOutput[iOutputPos++] = szTmp[iNumPos++]
+
+			if((iNumLen - iNumPos) && !((iNumLen - iNumPos) % 3))
+				szOutput[iOutputPos++] = ','
+		}
+
+		szOutput[iOutputPos] = EOS
+	}
+
+	return iOutputPos
+}
+
+stock NumAbbrev(iNum, szOutput[], iLen)
+{
+	if (iNum <= 999)
+	{
+		return num_to_str(iNum, szOutput, iLen)
+	}
+	else
+	{
+		if (iNum >= 1000000000) // Billions.
+		{
+			return formatex(szOutput, iLen, "%.1f%L", iNum / 1000000000.0, LANG_PLAYER, "NABBR_BILLIONS")
+		}
+		else if (iNum >= 1000000) // Millions.
+		{
+			return formatex(szOutput, iLen, "%.1f%L", iNum / 1000000.0, LANG_PLAYER, "NABBR_MILLIONS")
+		}
+		else if (iNum >= 1000) // Thousands.
+		{
+			return formatex(szOutput, iLen, "%.1f%L", iNum / 1000.0, LANG_PLAYER, "NABBR_THOUSANDS")
+		}
+	}
+
+	return 0
+}

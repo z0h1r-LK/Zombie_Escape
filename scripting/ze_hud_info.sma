@@ -22,6 +22,7 @@ const TASK_SHOWHUD = 100
 
 // CVars.
 new g_iMode,
+	g_iStyle,
 	g_iSpecColor[Colors]
 
 // Variables.
@@ -64,6 +65,7 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_hud_info_mode", "1"), g_iMode)
+	bind_pcvar_num(register_cvar("ze_hud_info_style", "1"), g_iStyle)
 	bind_pcvar_num(register_cvar("ze_hud_info_spectator_red", "200"), g_iSpecColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_spectator_green", "200"), g_iSpecColor[Green])
 	bind_pcvar_num(register_cvar("ze_hud_info_spectator_blue", "200"), g_iSpecColor[Blue])
@@ -134,12 +136,70 @@ public ShowHUD(taskid)
 			case 1:
 			{
 				set_hudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], HUD_SPEC_X, HUD_SPEC_Y, 0, 1.0, 1.0, 0.0, 0.1)
-				ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_SPEC", g_szName[target], get_user_health(target), get_user_armor(target), g_szClass[target], ze_get_user_coins(target))
+
+				switch (g_iStyle)
+				{
+					case 0: // Disabled.
+					{
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_SPEC", g_szName[target], get_user_health(target), get_user_armor(target), g_szClass[target], ze_get_user_coins(target))
+					}
+					case 1: // Commas.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						AddCommas(get_user_health(target), szHP, charsmax(szHP))
+						AddCommas(get_user_armor(target), szAP, charsmax(szAP))
+						AddCommas(ze_get_user_coins(target), szEC, charsmax(szEC))
+
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_SPEC_COMMAS", g_szName[target], szHP, szAP, g_szClass[target], szEC)
+					}
+					case 2: // Numeric Abbreviations.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						NumAbbrev(get_user_health(target), szHP, charsmax(szHP))
+						NumAbbrev(get_user_armor(target), szAP, charsmax(szAP))
+						NumAbbrev(ze_get_user_coins(target), szEC, charsmax(szEC))
+
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_SPEC_NUM_ABBR", g_szName[target], szHP, szAP, g_szClass[target], szEC)
+					}
+				}
 			}
 			case 2:
 			{
 				set_dhudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], HUD_SPEC_X, HUD_SPEC_Y, 0, 1.0, 1.0, 0.0, 0.1)
-				show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_SPEC", g_szName[target], get_user_health(target), get_user_armor(target), g_szClass[target], ze_get_user_coins(target))
+
+				switch (g_iStyle)
+				{
+					case 0: // Disabled.
+					{
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_SPEC", g_szName[target], get_user_health(target), get_user_armor(target), g_szClass[target], ze_get_user_coins(target))
+					}
+					case 1: // Commas.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						AddCommas(get_user_health(target), szHP, charsmax(szHP))
+						AddCommas(get_user_armor(target), szAP, charsmax(szAP))
+						AddCommas(ze_get_user_coins(target), szEC, charsmax(szEC))
+
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_SPEC_COMMAS", g_szName[target], szHP, szAP, g_szClass[target], szEC)
+					}
+					case 2: // Numeric Abbreviations.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						NumAbbrev(get_user_health(target), szHP, charsmax(szHP))
+						NumAbbrev(get_user_armor(target), szAP, charsmax(szAP))
+						NumAbbrev(ze_get_user_coins(target), szEC, charsmax(szEC))
+
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_SPEC_NUM_ABBR", g_szName[target], szHP, szAP, g_szClass[target], szEC)
+					}
+				}
 			}
 		}
 	}
@@ -150,12 +210,70 @@ public ShowHUD(taskid)
 			case 1:
 			{
 				set_hudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], HUD_STATS_X, HUD_STATS_Y, 0, 1.0, 1.0, 0.0, 0.1)
-				ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_STATS", g_szName[id], get_user_health(id), get_user_armor(id), g_szClass[id], ze_get_user_coins(id))
+
+				switch (g_iStyle)
+				{
+					case 0: // Disabled.
+					{
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_STATS", g_szName[id], get_user_health(id), get_user_armor(id), g_szClass[target], ze_get_user_coins(target))
+					}
+					case 1: // Commas.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						AddCommas(get_user_health(id), szHP, charsmax(szHP))
+						AddCommas(get_user_armor(id), szAP, charsmax(szAP))
+						AddCommas(ze_get_user_coins(id), szEC, charsmax(szEC))
+
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_STATS_COMMAS", g_szName[id], szHP, szAP, g_szClass[id], szEC)
+					}
+					case 2: // Numeric Shortcuts.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						NumAbbrev(get_user_health(id), szHP, charsmax(szHP))
+						NumAbbrev(get_user_armor(id), szAP, charsmax(szAP))
+						NumAbbrev(ze_get_user_coins(id), szEC, charsmax(szEC))
+
+						ShowSyncHudMsg(id, g_iHudInfoMsg, "%L", LANG_PLAYER, "HUD_INFO_STATS_NUM_ABBR", g_szName[id], szHP, szAP, g_szClass[id], szEC)
+					}
+				}
 			}
 			case 2:
 			{
 				set_dhudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], HUD_STATS_X, HUD_STATS_Y, 0, 1.0, 1.0, 0.0, 0.1)
-				show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_STATS", g_szName[id], get_user_health(id), get_user_armor(id), g_szClass[id], ze_get_user_coins(id))
+
+				switch (g_iStyle)
+				{
+					case 0: // Disabled.
+					{
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_STATS", g_szName[target], get_user_health(target), get_user_armor(target), g_szClass[target], ze_get_user_coins(target))
+					}
+					case 1: // Commas.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						AddCommas(get_user_health(id), szHP, charsmax(szHP))
+						AddCommas(get_user_armor(id), szAP, charsmax(szAP))
+						AddCommas(ze_get_user_coins(id), szEC, charsmax(szEC))
+
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_STATS_COMMAS", g_szName[id], szHP, szAP, g_szClass[id], szEC)
+					}
+					case 2: // Numeric Shortcuts.
+					{
+						static szHP[32], szAP[32], szEC[32]
+						szHP = NULL_STRING, szAP = NULL_STRING, szEC = NULL_STRING
+
+						NumAbbrev(get_user_health(id), szHP, charsmax(szHP))
+						NumAbbrev(get_user_armor(id), szAP, charsmax(szAP))
+						NumAbbrev(ze_get_user_coins(id), szEC, charsmax(szEC))
+
+						show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_INFO_STATS_NUM_ABBR", g_szName[id], szHP, szAP, g_szClass[id], szEC)
+					}
+				}
 			}
 		}
 	}

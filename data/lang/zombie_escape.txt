@@ -66,7 +66,16 @@ CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
 HUD_INFO_SPEC = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
+HUD_INFO_SPEC_COMMAS = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
+HUD_INFO_SPEC_NUM_ABBR = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
+
 HUD_INFO_STATS = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
+HUD_INFO_STATS_COMMAS = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
+HUD_INFO_STATS_NUM_ABBR = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
+
+NABBR_THOUSANDS = "K"
+NABBR_MILLIONS = "M"
+NABBR_BILLIONS = "B"
 
 MENU_ZOMBIES_TITLE = "Zombies Classes"
 MENU_HUMANS_TITLE = "Humans Classes"
