@@ -89,6 +89,7 @@ new g_iFwSpawn,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
 	g_hSocketUpdate,
+	g_msgWeapPickup,
 	bool:g_bRoundEnd,
 	bool:g_bCheckUpdate,
 	bool:g_bFreezePeriod,
@@ -215,6 +216,9 @@ public plugin_init()
 
 	// New Localization file (.txt)
 	register_dictionary("zombie_escape.txt")
+
+	// Initial Value.
+	g_msgWeapPickup = get_user_msgid("WeapPickup")
 }
 
 public plugin_cfg()
@@ -958,6 +962,7 @@ set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
 	rg_remove_all_items(iVictim)
 
 	// Give player Knife only.
+	set_msg_block(g_msgWeapPickup, BLOCK_ONCE)
 	rg_give_item(iVictim, "weapon_knife", GT_APPEND)
 
 	// Call forward ze_user_infected(param1, param2).

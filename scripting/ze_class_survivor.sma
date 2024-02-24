@@ -47,7 +47,8 @@ new g_iHealth,
 	g_szWeaponName[MAX_NAME_LENGTH]
 
 // Variables.
-new g_bitsIsSurvivor
+new g_bitsIsSurvivor,
+	g_msgWeapPickup
 
 // Dynamic Arrays.
 new Array:g_aSurvivorModel
@@ -160,6 +161,9 @@ public plugin_init()
 
 	// Commands.
 	register_clcmd("drop", "cmd_DropWeapon")
+
+	// Initial Value.
+	g_msgWeapPickup = get_user_msgid("WeapPickup")
 }
 
 public cmd_DropWeapon(const id)
@@ -295,6 +299,7 @@ set_User_Survivor(id)
 	rg_remove_all_items(id)
 
 	// Knife allowed.
+	set_msg_block(g_msgWeapPickup, BLOCK_ONCE)
 	rg_give_item(id, "weapon_knife", GT_APPEND)
 
 	// Survivor Weapon.

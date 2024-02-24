@@ -28,6 +28,9 @@ new g_iHumanHealth,
 	Float:g_flHumanSpeed,
 	Float:g_flHumanSpeedFactor
 
+// Variable.
+new g_msgWeapPickup
+
 public plugin_natives()
 {
 	set_module_filter("fw_module_filter")
@@ -121,6 +124,9 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_hud_info_human_red", "0"), g_iHudColor[Red])
 	bind_pcvar_num(register_cvar("ze_hud_info_human_green", "127"), g_iHudColor[Green])
 	bind_pcvar_num(register_cvar("ze_hud_info_human_blue", "255"), g_iHudColor[Blue])
+
+	// Initial Value.
+	g_msgWeapPickup = get_user_msgid("WeapPickup")
 }
 
 public ze_user_humanized(id)
@@ -164,6 +170,7 @@ public ze_user_humanized(id)
 		rg_remove_all_items(id)
 
 		// Give player Knife Weapon.
+		set_msg_block(g_msgWeapPickup, BLOCK_ONCE) // This message already sent by GameDLL.
 		rg_give_item(id, "weapon_knife", GT_APPEND)
 	}
 

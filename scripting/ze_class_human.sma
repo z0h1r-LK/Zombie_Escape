@@ -46,7 +46,8 @@ stock Float:DEFAULT_HUMAN_GRAVITY = 800.0
 new g_szShieldAttackSound[MAX_RESOURCE_PATH_LENGTH] = "player/bhit_helmet-1.wav"
 
 // Variable.
-new g_iNumHumans
+new g_iNumHumans,
+	g_msgWeapPickup
 
 // Cvars.
 new bool:g_bHumanShield,
@@ -136,6 +137,9 @@ public plugin_init()
 	register_clcmd("say_team /hm", "cmd_ShowClassesMenu")
 	register_clcmd("say /hclass", "cmd_ShowClassesMenu")
 	register_clcmd("say_team /hclass", "cmd_ShowClassesMenu")
+
+	// Initial Value.
+	g_msgWeapPickup = get_user_msgid("WeapPickup")
 }
 
 public plugin_cfg()
@@ -217,6 +221,7 @@ public ze_user_humanized(id)
 		rg_remove_all_items(id)
 
 		// Give player Knife Weapon.
+		set_msg_block(g_msgWeapPickup, BLOCK_ONCE) // This message already sent by GameDLL.
 		rg_give_item(id, "weapon_knife", GT_APPEND)
 	}
 
