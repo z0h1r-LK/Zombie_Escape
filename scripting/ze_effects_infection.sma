@@ -26,7 +26,9 @@ enum (<<=1)
 	FLAG_ICON,
 	FLAG_SND_COMING,
 	FLAG_SND_INFECT,
-	FLAG_PARTICLES
+	FLAG_PARTICLES,
+	FLAG_THUNDER,
+	FLAG_TRACERS
 }
 
 // Enum (Array Colors)
@@ -39,45 +41,60 @@ enum any:Colors
 
 // Cvars.
 new g_szFlags[16],
+	g_iThunderSize,
+	g_iThunderNoise,
+	g_iThunderAlpha,
+	g_iTracersCount,
+	g_iTracersRadius,
 	g_iParticleColor,
 	g_iFadeColors[Colors],
 	g_iNoticeColors[Colors],
 	g_iLightColors[Colors],
+	g_iThunderColors[Colors],
 	bool:g_bGreenSkullIcon
 
 // Variables.
 new g_iGibsSpr,
+	g_iBeamSpr,
 	g_iInfectMsg
 
 // Dynamic Array.
 new Array:g_aComingSounds,
-	Array:g_aInfectSounds
+	Array:g_aInfectSounds,
+	Array:g_aThunderSounds
 
 public plugin_precache()
 {
 	// Create new dyn Array.
 	g_aComingSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
 	g_aInfectSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aThunderSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
 
-	// Default infection gibs.
+	// Default infection effects sprites.
 	new szInfectGibs[MAX_RESOURCE_PATH_LENGTH] = "sprites/flare6.spr"
+	new szThunderBeam[MAX_RESOURCE_PATH_LENGTH] = "sprites/laserbeam.spr"
 
-	// Load infection gibs sprite from INI file.
+	// Load sprites from INI file.
 	if (!ini_read_string(ZE_FILENAME, "Sprites", "INFECTION_GIBS", szInfectGibs, charsmax(szInfectGibs)))
 		ini_write_string(ZE_FILENAME, "Sprites", "INFECTION_GIBS", szInfectGibs)
+	if (!ini_read_string(ZE_FILENAME, "Sprites", "THUNDER_SPRITE", szThunderBeam, charsmax(szThunderBeam)))
+		ini_write_string(ZE_FILENAME, "Sprites", "THUNDER_SPRITE", szThunderBeam)
 
 	// Precache Model.
 	g_iGibsSpr = precache_model(szInfectGibs)
+	g_iBeamSpr = precache_model(szThunderBeam)
 
 	// Default infection & coming sounds.
-	new const szInfectSounds[][] = { "ze/zombi_infect_1.wav", "ze/zombie_infect_2.wav" }
-	new const szComingSounds[][] = { "ze/zombi_coming_1.wav", "ze/zombie_coming_2.wav", "ze/zombie_coming_3.wav" }
+	new const szInfectSounds[][] = { "zm_es/zombi_infect_1.wav", "zm_es/zombie_infect_2.wav" }
+	new const szComingSounds[][] = { "zm_es/zombi_coming_1.wav", "zm_es/zombie_coming_2.wav", "zm_es/zombie_coming_3.wav" }
+	new const szThunderSounds[][] = { "ambience/thunder_clap.wav" }
 
 	new i
 
-	// Load Infection and Coming sounds from INI file.
+	// Load Infection, Coming and Thunder Clap sounds from INI file.
 	ini_read_string_array(ZE_FILENAME, "Sounds", "INFECT", g_aInfectSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "COMING", g_aComingSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "THUNDER", g_aThunderSounds)
 
 	if (!ArraySize(g_aInfectSounds))
 	{
@@ -95,6 +112,15 @@ public plugin_precache()
 
 		// Save Coming sounds on INI file.
 		ini_write_string_array(ZE_FILENAME, "Sounds", "COMING", g_aComingSounds)
+	}
+
+	if (!ArraySize(g_aThunderSounds))
+	{
+		for (i = 0; i < sizeof(szThunderSounds); i++)
+			ArrayPushString(g_aThunderSounds, szThunderSounds[i])
+
+		// Save Coming sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "THUNDER", g_aThunderSounds)
 	}
 
 	new szSound[MAX_RESOURCE_PATH_LENGTH], iArraySize
@@ -121,6 +147,17 @@ public plugin_precache()
 		format(szSound, charsmax(szSound), "sound/%s", szSound)
 		precache_generic(szSound)
 	}
+
+	// Get the number of the sounds on dyn array.
+	iArraySize = ArraySize(g_aThunderSounds)
+
+	for (i = 0; i < iArraySize; i++)
+	{
+		ArrayGetString(g_aThunderSounds, i, szSound, charsmax(szSound))
+
+		// Precache Sound.
+		precache_sound(szSound)
+	}
 }
 
 public plugin_init()
@@ -129,7 +166,7 @@ public plugin_init()
 	register_plugin("[ZE] Infection Effects", ZE_VERSION, ZE_AUTHORS)
 
 	// Cvars.
-	bind_pcvar_string(register_cvar("ze_infection_flags", "abcdefgh"), g_szFlags, charsmax(g_szFlags))
+	bind_pcvar_string(register_cvar("ze_infection_flags", "abcdefghijk"), g_szFlags, charsmax(g_szFlags))
 	bind_pcvar_num(register_cvar("ze_infect_notice_red", "200"), g_iNoticeColors[Red])
 	bind_pcvar_num(register_cvar("ze_infect_notice_green", "0"), g_iNoticeColors[Green])
 	bind_pcvar_num(register_cvar("ze_infect_notice_blue", "0"), g_iNoticeColors[Blue])
@@ -141,6 +178,14 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_infect_light_blue", "0"), g_iLightColors[Blue])
 	bind_pcvar_num(register_cvar("ze_infect_particles", "247"), g_iParticleColor)
 	bind_pcvar_num(register_cvar("ze_infect_green_skull", "1"), g_bGreenSkullIcon)
+	bind_pcvar_num(register_cvar("ze_infect_thunder_size", "32"), g_iThunderSize)
+	bind_pcvar_num(register_cvar("ze_infect_thunder_red", "120"), g_iThunderColors[Red])
+	bind_pcvar_num(register_cvar("ze_infect_thunder_green", "120"), g_iThunderColors[Green])
+	bind_pcvar_num(register_cvar("ze_infect_thunder_blue", "120"), g_iThunderColors[Blue])
+	bind_pcvar_num(register_cvar("ze_infect_thunder_noise", "32"), g_iThunderNoise)
+	bind_pcvar_num(register_cvar("ze_infect_thunder_alpha", "200"), g_iThunderAlpha)
+	bind_pcvar_num(register_cvar("ze_infect_tracers_count", "100"), g_iTracersCount)
+	bind_pcvar_num(register_cvar("ze_infect_tracers_radius", "120"), g_iTracersRadius)
 
 	// Set Values.
 	g_iInfectMsg = CreateHudSyncObj()
@@ -151,6 +196,7 @@ public plugin_end()
 	// Free the Memory.
 	ArrayDestroy(g_aComingSounds)
 	ArrayDestroy(g_aInfectSounds)
+	ArrayDestroy(g_aThunderSounds)
 }
 
 public ze_user_infected(iVictim, iInfector)
@@ -162,7 +208,7 @@ public ze_user_infected(iVictim, iInfector)
 	szSound = NULL_STRING
 
 	// Get player's origin.
-	static vOrigin[3]
+	static vOrigin[3]; vOrigin = { 0, 0, 0 }
 	get_user_origin(iVictim, vOrigin, Origin_Client)
 
 	// Notice Message.
@@ -277,6 +323,7 @@ public ze_user_infected(iVictim, iInfector)
 		emit_sound(iVictim, CHAN_BODY, szSound, VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
 	}
 
+	// Particles burst.
 	if (bitsFlags & FLAG_PARTICLES)
 	{
 		message_begin(MSG_PVS, SVC_TEMPENTITY, vOrigin)
@@ -287,6 +334,49 @@ public ze_user_infected(iVictim, iInfector)
 		write_short(32) // Radius.
 		write_byte(g_iParticleColor) // Color.
 		write_byte(2) // Duration.
+		message_end()
+	}
+
+	// Thunder.
+	if (bitsFlags & FLAG_THUNDER)
+	{
+		message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+		write_byte(TE_BEAMPOINTS) // TE id.
+		write_coord(vOrigin[0]) // Start Position X.
+		write_coord(vOrigin[1]) // Start Position Y.
+		write_coord(2048) // Start Position Z.
+		write_coord(vOrigin[0]) // End Position X.
+		write_coord(vOrigin[1]) // End Position Y.
+		write_coord(vOrigin[2]) // End Position Z.
+		write_short(g_iBeamSpr) // Sprite index.
+		write_byte(0) // Frame.
+		write_byte(0) // Frame rate.
+		write_byte(8) // Duration.
+		write_byte(g_iThunderSize) // Width.
+		write_byte(g_iThunderNoise) // Noise amplitude.
+		write_byte(g_iThunderColors[Red]) // Red.
+		write_byte(g_iThunderColors[Green]) // Green.
+		write_byte(g_iThunderColors[Blue]) // Blue.
+		write_byte(g_iThunderAlpha) // Brightness.
+		write_byte(-75) // Scroll Speed.
+		message_end()
+
+		// Play thunder sound for everyone.
+		ArrayGetString(g_aThunderSounds, random_num(0, ArraySize(g_aThunderSounds) - 1), szSound, charsmax(szSound))
+		emit_sound(iVictim, CHAN_WEAPON, szSound, VOL_NORM, ATTN_NONE, 0, PITCH_NORM)
+	}
+
+	// Tracers.
+	if (bitsFlags & FLAG_TRACERS)
+	{
+		message_begin(MSG_PVS, SVC_TEMPENTITY, vOrigin)
+		write_byte(TE_IMPLOSION) // TE id.
+		write_coord(vOrigin[0]) // Position X.
+		write_coord(vOrigin[1]) // Position Y.
+		write_coord(vOrigin[2]) // Position Z.
+		write_byte(g_iTracersRadius) // Radius.
+		write_byte(g_iTracersCount) // Count.
+		write_byte(4) // Duration.
 		message_end()
 	}
 
