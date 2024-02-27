@@ -3,7 +3,7 @@
 #include <sockets>
 #include <fakemeta>
 #include <reapi>
-// #include <json>
+#include <json>
 #include <xs>
 
 #include <ze_stocks>
@@ -250,8 +250,8 @@ public plugin_cfg()
 	// Mod Version.
 	register_cvar("ze_mod_version", ZE_VERSION, FCVAR_SERVER|FCVAR_SPONLY)
 	set_cvar_string("ze_mod_version", ZE_VERSION)
-	register_cvar("ze_mod_uid", ZE_UID, FCVAR_SERVER|FCVAR_SPONLY)
-	set_cvar_string("ze_mod_uid", ZE_UID)
+	register_cvar("ze_mod_md5hash", ZE_MD5HASH, FCVAR_SERVER|FCVAR_SPONLY)
+	set_cvar_string("ze_mod_md5hash", ZE_MD5HASH)
 
 	// Check Update.
 	if (g_bCheckUpdate)
@@ -297,13 +297,10 @@ public cvar_ReqPlayers(pCvar)
 
 public check_Update(taskid)
 {
-	new const szHost[] = "escapers-zone.net"
-	new const szHandler[] = "/CS.php"
-	new const iPort = 80
 	new error
 
 	// Open a Socket.
-	if ((g_hSocketUpdate = socket_open(szHost, iPort, SOCKET_TCP, error)))
+	if ((g_hSocketUpdate = socket_open(ZE_HOME_HOST, ZE_HOME_PORT, SOCKET_TCP, error)))
 	{
 		switch (error)
 		{
@@ -314,7 +311,7 @@ public check_Update(taskid)
 
 		// Send request to Server.
 		new szRequest[256]
-		formatex(szRequest, charsmax(szRequest), "GET %s?MVer=%s HTTP/1.1^r^nHost:%s^r^n^r^n", szHandler, ZE_UID, szHost)
+		formatex(szRequest, charsmax(szRequest), "GET /%s HTTP/1.1^r^nHost:%s^r^n^r^n", ZE_HOME_TOPIC, ZE_HOME_HOST)
 		socket_send2(g_hSocketUpdate, szRequest, strlen(szRequest))
 
 		// Check from reponse.
@@ -332,27 +329,46 @@ public check_Reponse(taskid)
 	// Data received?
 	if (socket_is_readable(g_hSocketUpdate))
 	{
-		new szReponse[2048]
+		new szReponse[512]
 		socket_recv(g_hSocketUpdate, szReponse, charsmax(szReponse))
 
-		if (strfind(szReponse, "update-available") > -1)
+		new iPos
+		if ((iPos = strfind(szReponse, "{")) > -1)
 		{
-			new const szMessage[] =
-			"\
-			^n ^n ^n\
-			| ***--- Zombie Escape Rebuild ---***^n\
-			| There is a new update!^n\
-			| • Official Website: https://escapers-zone.net/^n\
-			| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
-			^n ^n ^n\
-			"
-
-			x_bUpdateAvailable = 1
-			server_print(szMessage)
+			// Copy JSON content.
+			copy(szReponse, charsmax(szReponse), szReponse[iPos])
 		}
-		else if (strfind(szReponse, "up-to-date") > -1)
+
+		new JSON:hJson
+		if ((hJson = json_parse(szReponse)) == Invalid_JSON)
 		{
-			server_print("[Zombie-Escape] Your Mod is up to date :)")
+			server_print("[Zombie-Escape] Error while parsing JSON string (-1)")
+		}
+		else
+		{
+			new szMD5Hash[34]
+			if (json_object_get_string(hJson, "md5hash", szMD5Hash, charsmax(szMD5Hash)) > 0)
+			{
+				if (!equal(szMD5Hash, ZE_MD5HASH))
+				{
+					new const szMessage[] =
+					"\
+					^n^n^n\
+					| ***--- Zombie Escape Rebuild ---***^n\
+					| There is a new update!^n\
+					| • Official Website: https://escapers-zone.net/^n\
+					| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
+					^n^n^n\
+					"
+
+					x_bUpdateAvailable = 1
+					server_print(szMessage)
+				}
+				else
+				{
+					server_print("[Zombie-Escape] Your Mod is up to date :)")
+				}
+			}
 		}
 
 		// Close socket.

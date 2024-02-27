@@ -14,7 +14,14 @@ stock const ZE_ET_FILENAME[] = "ze_extra_items"
  */
 stock const ZE_VERSION[] = "Rebuild 1.0-beta 2"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
-stock const ZE_UID[] = "2f7830579418644e324b6870d5bf2dc8"
+stock const ZE_MD5HASH[] = "44cc621c19aa72a5e5a92e6c98b778c8"
+
+/**
+ * Update check, Host info.
+ */
+stock const ZE_HOME_HOST[] = "escapers-zone.net"
+stock const ZE_HOME_TOPIC[] = "latest.json"
+stock const ZE_HOME_PORT = 80
 
 /**
  * Maximum Knockback speed.
