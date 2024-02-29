@@ -131,7 +131,7 @@ public MySQL_Init()
 	get_pcvar_string(register_cvar("amx_sql_user", "root", FCVAR_PROTECTED), szUser, charsmax(szUser))
 	get_pcvar_string(register_cvar("amx_sql_pass", "", FCVAR_PROTECTED), szPass, charsmax(szPass))
 	get_pcvar_string(register_cvar("amx_sql_db", "amx", FCVAR_PROTECTED), szDB, charsmax(szDB))
-	new const iTimeOut = get_pcvar_num(register_cvar("amx_sql_timeout", "60"))
+	new const iTimeOut = get_pcvar_num(register_cvar("amx_sql_timeout", "60", FCVAR_PROTECTED))
 
 	g_hTuple = SQL_MakeDbTuple(szHost, szUser, szPass, szDB, iTimeOut)
 
