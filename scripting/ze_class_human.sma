@@ -457,15 +457,14 @@ public __native_hclass_get_name(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[HUMAN_NAME], get_param(3))
-	return true
+	return set_string(2, aArray[HUMAN_NAME], get_param(3))
 }
 
 public __native_hclass_get_desc(const plugin_id, const num_params)
@@ -475,15 +474,14 @@ public __native_hclass_get_desc(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[HUMAN_DESC], get_param(3))
-	return true
+	return set_string(2, aArray[HUMAN_DESC], get_param(3))
 }
 
 public __native_hclass_get_model(const plugin_id, const num_params)
@@ -493,15 +491,14 @@ public __native_hclass_get_model(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[HUMAN_MODEL], get_param(3))
-	return true
+	return set_string(2, aArray[HUMAN_MODEL], get_param(3))
 }
 
 public Float:__native_hclass_get_health(const plugin_id, const num_params)

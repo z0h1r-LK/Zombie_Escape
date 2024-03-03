@@ -404,15 +404,14 @@ public __native_zclass_get_name(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[ZOMBIE_NAME], get_param(3))
-	return true
+	return set_string(2, aArray[ZOMBIE_NAME], get_param(3))
 }
 
 public __native_zclass_get_desc(const plugin_id, const num_params)
@@ -422,15 +421,14 @@ public __native_zclass_get_desc(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[ZOMBIE_DESC], get_param(3))
-	return true
+	return set_string(2, aArray[ZOMBIE_DESC], get_param(3))
 }
 
 public __native_zclass_get_model(const plugin_id, const num_params)
@@ -440,15 +438,14 @@ public __native_zclass_get_model(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return false
+		return 0
 	}
 
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, i, aArray)
 
 	// Copy Name on new Buffer.
-	set_string(2, aArray[ZOMBIE_MODEL], get_param(3))
-	return true
+	return set_string(2, aArray[ZOMBIE_MODEL], get_param(3))
 }
 
 public __native_zclass_get_melee(const plugin_id, const num_params)

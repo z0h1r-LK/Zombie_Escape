@@ -71,8 +71,7 @@ native ze_hclass_is_valid(iClassID);
  * @param szBuffer[]  Buffer to copy name to.
  * @param iLength     Maximum buffer size.
  *
- * @return            true  | If copied successfully.
- *                    false | If failure.
+ * @return            Number of cells written.
  *
  * @error             If the class ID is invalid.
  */
@@ -85,8 +84,7 @@ native ze_hclass_get_name(iClassID, szBuffer[], iLength);
  * @param szBuffer[]  Buffer to copy description to.
  * @param iLength     Maximum buffer size.
  *
- * @return            true  | If copied successfully.
- *                    false | If failure.
+ * @return            Number of cells written.
  *
  * @error             If the class ID is invalid.
  */
@@ -99,8 +97,7 @@ native ze_hclass_get_desc(iClassID, szBuffer[], iLength);
  * @param szBuffer[]  Buffer to copy model name to.
  * @param iLength     Maximum buffer size.
  *
- * @return            true  | If copied successfully.
- *                    false | If failure.
+ * @return            Number of cells written.
  *
  * @error             If the class ID is invalid.
  */
