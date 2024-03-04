@@ -4,6 +4,11 @@
 #define _items_manager_included
 
 /**
+ * -=| Macroses |=-
+ */
+#define ze_register_item(%0,%1,%2) ze_item_register(%0,%1,%2)
+
+/**
  * -=| Forwards |=-
  */
 
