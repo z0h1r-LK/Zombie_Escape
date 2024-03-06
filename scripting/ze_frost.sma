@@ -181,6 +181,20 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 		g_iRendering[id][i] = 0
 }
 
+public ze_game_started()
+{
+	new iEnt = NULLENT
+	while ((iEnt = rg_find_ent_by_class(iEnt, "armoury_entity")))
+	{
+		if (is_nullent(iEnt))
+			continue
+
+		// Flashbang?
+		if (get_member(iEnt, m_Armoury_iItem) == ARMOURY_FLASHBANG)
+			entity_set_model(iEnt, g_w_szFrostModel)
+	}
+}
+
 public ze_user_humanized(id)
 {
 	// Unfreeze victim.

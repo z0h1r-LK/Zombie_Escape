@@ -120,6 +120,20 @@ public plugin_init()
 	bind_pcvar_float(register_cvar("ze_flare_damage", "500.0"), g_flFlareDamage)
 }
 
+public ze_game_started()
+{
+	new iEnt = NULLENT
+	while ((iEnt = rg_find_ent_by_class(iEnt, "armoury_entity")))
+	{
+		if (is_nullent(iEnt))
+			continue
+
+		// SmokeGrenade?
+		if (get_member(iEnt, m_Armoury_iItem) == ARMOURY_SMOKEGRENADE)
+			entity_set_model(iEnt, g_w_szFlareModel)
+	}
+}
+
 public ze_user_humanized(id)
 {
 	if (module_exists(LIBRARY_WPNMODELS))
