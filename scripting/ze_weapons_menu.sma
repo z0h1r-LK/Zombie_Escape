@@ -3,6 +3,8 @@
 #include <reapi>
 
 #include <ze_core>
+#include <ze_levels>
+#define LIBRARY_LEVEL "ze_levels"
 
 // Defines.
 #define MN_AUTO_SELECT 7
@@ -18,7 +20,8 @@ enum _:WPN_DATA
 	WPN_CUSTOM = 0,
 	WPN_NAME[MAX_NAME_LENGTH],
 	WPN_CLASS[MAX_NAME_LENGTH],
-	WPN_AMMO
+	WPN_AMMO,
+	WPN_LEVEL
 }
 
 // Weapon Section.
@@ -105,6 +108,23 @@ public plugin_natives()
 	register_native("ze_auto_buy_enabled", "__native_auto_buy_enabled")
 	register_native("ze_set_auto_buy", "__native_set_auto_buy")
 	register_native("ze_show_weapons_menu", "__native_show_weapons_menu")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
+}
+
+public fw_module_filter(const module[], LibType:type)
+{
+	if (equal(module, LIBRARY_LEVEL))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
@@ -289,7 +309,7 @@ public show_Available_Menu(id)
 
 public show_Primary_Weapons(id)
 {
-	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLen
+	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLevel, iLen
 
 	// Menu Title.
 	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%L\d:^n^n", LANG_PLAYER, "MENU_PRIMARY_TITLE")
@@ -297,6 +317,10 @@ public show_Primary_Weapons(id)
 	// Get number of weapons on page.
 	new iWpn = g_iMenuData[id][MD_PRI_PAGE]
 	new iMaxLoops = min(iWpn + 7, g_iPrimaryNum)
+	new fLevels = module_exists(LIBRARY_LEVEL)
+
+	if (fLevels)
+		iLevel = ze_get_user_level(id)
 
 	// Add guns name to Menu.
 	new iNum = 1
@@ -304,8 +328,21 @@ public show_Primary_Weapons(id)
 	{
 		ArrayGetArray(g_aPrimaryWeapons, i, pArray)
 
-		// #. Weapon Name
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+		if (fLevels)
+		{
+			if (iLevel < pArray[WPN_LEVEL])
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \d%s \r[%L\d: \y%i\r]^n", iNum++, pArray[WPN_NAME], LANG_PLAYER, "MENU_LEVEL", pArray[WPN_LEVEL])
+			}
+			else
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+			}
+		}
+		else // #. Weapon Name
+		{
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+		}
 	}
 
 	szMenu[iLen++] = '^n'
@@ -382,8 +419,10 @@ public handler_Primary_Weapons(id, iKey)
 				{
 					show_Primary_Weapons(id)
 				}
-
-				show_Secondary_Weapons(id)
+				else
+				{
+					show_Secondary_Weapons(id)
+				}
 			}
 			else
 			{
@@ -397,7 +436,7 @@ public handler_Primary_Weapons(id, iKey)
 
 public show_Secondary_Weapons(id)
 {
-	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLen
+	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLevel, iLen
 
 	// Menu Title.
 	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%L\d:^n^n", LANG_PLAYER, "MENU_SECONDARY_TITLE")
@@ -405,6 +444,10 @@ public show_Secondary_Weapons(id)
 	// Get number of weapons on page.
 	new iWpn = g_iMenuData[id][MD_SEC_PAGE]
 	new iMaxLoops = min(iWpn + 7, g_iSecondaryNum)
+	new fLevels = module_exists(LIBRARY_LEVEL)
+
+	if (fLevels)
+		iLevel = ze_get_user_level(id)
 
 	// Add guns name to Menu.
 	new iNum = 1
@@ -412,8 +455,21 @@ public show_Secondary_Weapons(id)
 	{
 		ArrayGetArray(g_aSecondaryWeapons, i, pArray)
 
-		// #. Weapon Name
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+		if (fLevels)
+		{
+			if (iLevel < pArray[WPN_LEVEL])
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \d%s \r[%L\d: \y%i\r]^n", iNum++, pArray[WPN_NAME], LANG_PLAYER, "MENU_LEVEL", pArray[WPN_LEVEL])
+			}
+			else
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+			}
+		}
+		else // #. Weapon Name
+		{
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%d. \w%s^n", iNum++, pArray[WPN_NAME])
+		}
 	}
 
 	szMenu[iLen++] = '^n'
@@ -511,6 +567,15 @@ public choose_Weapon(id, iIndex, iSection)
 		{
 			ArrayGetArray(g_aPrimaryWeapons, iIndex, pArray)
 
+			if (module_exists(LIBRARY_LEVEL))
+			{
+				if (ze_get_user_level(id) < pArray[WPN_LEVEL])
+				{
+					ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+					return 0
+				}
+			}
+
 			if (pArray[WPN_CUSTOM])
 			{
 				if ((rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])) == NULLENT)
@@ -538,6 +603,15 @@ public choose_Weapon(id, iIndex, iSection)
 		{
 			new pItem
 			ArrayGetArray(g_aSecondaryWeapons, iIndex, pArray)
+
+			if (module_exists(LIBRARY_LEVEL))
+			{
+				if (ze_get_user_level(id) < pArray[WPN_LEVEL])
+				{
+					ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+					return 0
+				}
+			}
 
 			if (pArray[WPN_CUSTOM])
 			{
@@ -634,7 +708,7 @@ read_Weapons(const szFile[])
 			return 0
 		}
 
-		new pArray[WPN_DATA], szWpnName[64], szWpnClass[64], szWpnCustom[64], szWpnAmmo[32]
+		new pArray[WPN_DATA], szWpnName[64], szWpnClass[64], szWpnCustom[64], szWpnAmmo[32], szWpnLevel[32]
 
 		while (!feof(hFile))
 		{
@@ -664,9 +738,10 @@ read_Weapons(const szFile[])
 			szWpnName = NULL_STRING
 			szWpnClass = NULL_STRING
 			szWpnAmmo = NULL_STRING
+			szWpnLevel = NULL_STRING
 
 			// Parse the text.
-			if (parse(szRead, szSection, charsmax(szSection), szWpnName, charsmax(szWpnName), szWpnClass, charsmax(szWpnClass), szWpnAmmo, charsmax(szWpnAmmo), szWpnCustom, charsmax(szWpnCustom)) < 4)
+			if (parse(szRead, szSection, charsmax(szSection), szWpnName, charsmax(szWpnName), szWpnClass, charsmax(szWpnClass), szWpnAmmo, charsmax(szWpnAmmo), szWpnCustom, charsmax(szWpnCustom), szWpnLevel, charsmax(szWpnLevel)) < 4)
 			{
 				server_print("[ZE] Line #%i: Some arguments are not found !", iLine)
 				continue
@@ -678,6 +753,7 @@ read_Weapons(const szFile[])
 			remove_quotes(szWpnClass)
 			remove_quotes(szWpnCustom)
 			remove_quotes(szWpnAmmo)
+			remove_quotes(szWpnLevel)
 
 			switch (szSection[0])
 			{
@@ -687,6 +763,7 @@ read_Weapons(const szFile[])
 					copy(pArray[WPN_NAME], charsmax(pArray) - WPN_NAME, szWpnName)
 					copy(pArray[WPN_CLASS], charsmax(pArray) - WPN_CLASS, szWpnClass)
 					pArray[WPN_AMMO] = str_to_num(szWpnAmmo)
+					pArray[WPN_LEVEL] = str_to_num(szWpnLevel)
 
 					ArrayPushArray(g_aPrimaryWeapons, pArray)
 					g_iPrimaryNum++
@@ -697,6 +774,7 @@ read_Weapons(const szFile[])
 					copy(pArray[WPN_NAME], charsmax(pArray) - WPN_NAME, szWpnName)
 					copy(pArray[WPN_CLASS], charsmax(pArray) - WPN_CLASS, szWpnClass)
 					pArray[WPN_AMMO] = str_to_num(szWpnAmmo)
+					pArray[WPN_LEVEL] = str_to_num(szWpnLevel)
 
 					ArrayPushArray(g_aSecondaryWeapons, pArray)
 					g_iSecondaryNum++

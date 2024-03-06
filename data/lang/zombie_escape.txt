@@ -91,3 +91,6 @@ MSG_ZOMBIE_INFO = "HP: !g%.2f!y | Speed: !g%.2f!y | Gravity: !g%.2f!y | Knockbac
 
 STATIC = "Static"
 DYNAMIC = "Dynamic"
+
+MENU_LEVEL = "Level"
+MSG_LVL_NOT_ENOUGH = "You don't have enough level!"
