@@ -6,7 +6,7 @@
 
 // Contants.
 new const g_szVaultName[] = "ZE_Coins"
-new const g_szLogFile[] = "MySQL_Logs"
+new const g_szLogFile[] = "SQL_Coins.log"
 new const g_szTable[] = "\
 CREATE TABLE IF NOT EXISTS `ze_coins` ( \
 `AuthID` varchar(64) NOT NULL, \
