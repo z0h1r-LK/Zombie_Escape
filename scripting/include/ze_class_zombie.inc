@@ -23,12 +23,13 @@
  * @param flSpeed      Zombie Speed.
  * @param flGravity    Zombie Gravity.
  * @param flKnockback  Zombie Knockback.
+ * @param iLevel       Zombie required level (0 = Ignore)
  *
  * @return             A valid class ID on registered, ZE_CLASS_INVALID when failure.
  *
  * @error              If class without Name or Name already exist.
  */
-native ze_zclass_register(const szName[], const szDesc[], const szModel[], const szMelee[], Float:flHealth, Float:flSpeed, Float:flGravity, Float:flKnockback);
+native ze_zclass_register(const szName[], const szDesc[], const szModel[], const szMelee[], Float:flHealth, Float:flSpeed, Float:flGravity, Float:flKnockback, iLevel = 0);
 
 /**
  * Gets current class for specific player.

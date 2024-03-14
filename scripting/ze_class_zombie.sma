@@ -2,10 +2,12 @@
 #include <reapi>
 
 #include <ze_core>
+#include <ze_levels>
 #include <ze_class_const>
-#define LIBRARY_NEMESIS "ze_class_nemesis"
+#define LIBRARY_LEVELS "ze_levels"
 #define LIBRARY_HUDINFO "ze_hud_info"
 #define LIBRARY_KNOCKBACK "ze_kb_system"
+#define LIBRARY_NEMESIS "ze_class_nemesis"
 #define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Macro.
@@ -21,7 +23,8 @@ enum _:ZOMBIE_ATTRIB
 	Float:ZOMBIE_HEALTH,
 	Float:ZOMBIE_SPEED,
 	Float:ZOMBIE_GRAVITY,
-	Float:ZOMBIE_KNOCKBACK
+	Float:ZOMBIE_KNOCKBACK,
+	ZOMBIE_LEVEL
 }
 
 // Colors indexes.
@@ -37,10 +40,11 @@ stock const DEFAULT_ZOMBIE_NAME[] = "Regular Zombie"
 stock const DEFAULT_ZOMBIE_DESC[] = "-= Balanced =-"
 stock const DEFAULT_ZOMBIE_MODEL[] = "terror"
 stock const DEFAULT_ZOMBIE_MELEE[] = "models/v_knife.mdl"
-stock Float:DEFAULT_ZOMBIE_HEALTH = 10000.0
-stock Float:DEFAULT_ZOMBIE_SPEED = 320.0
-stock Float:DEFAULT_ZOMBIE_GRAVITY = 640.0
-stock Float:DEFAULT_ZOMBIE_KNOCKBACK = 200.0
+stock const Float:DEFAULT_ZOMBIE_HEALTH = 10000.0
+stock const Float:DEFAULT_ZOMBIE_SPEED = 320.0
+stock const Float:DEFAULT_ZOMBIE_GRAVITY = 640.0
+stock const Float:DEFAULT_ZOMBIE_KNOCKBACK = 200.0
+stock const DEFAULT_ZOMBIE_LEVEL = 0
 
 // Variable.
 new g_iNumZombies
@@ -71,6 +75,7 @@ public plugin_natives()
 	register_native("ze_zclass_get_speed", "__native_zclass_get_speed")
 	register_native("ze_zclass_get_gravity", "__native_zclass_get_gravity")
 	register_native("ze_zclass_get_knockback", "__native_zclass_get_knockback")
+	register_native("ze_zclass_get_level", "__native_zclass_get_level")
 	register_native("ze_zclass_set_current", "__native_zclass_set_current")
 	register_native("ze_zclass_set_next", "__native_zclass_set_next")
 	register_native("ze_zclass_set_name", "__native_zclass_set_name")
@@ -79,6 +84,7 @@ public plugin_natives()
 	register_native("ze_zclass_set_speed", "__native_zclass_set_speed")
 	register_native("ze_zclass_set_gravity", "__native_zclass_set_gravity")
 	register_native("ze_zclass_set_knockback", "__native_zclass_set_knockback")
+	register_native("ze_zclass_set_level", "__native_zclass_set_level")
 	register_native("ze_zclass_show_menu", "__native_zclass_show_menu")
 
 	set_module_filter("module_filter")
@@ -90,7 +96,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK) || equal(module, LIBRARY_WPNMODELS))
+	if (equal(module, LIBRARY_NEMESIS) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_KNOCKBACK) || equal(module, LIBRARY_WPNMODELS) || equal(module, LIBRARY_LEVELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -140,6 +146,7 @@ public plugin_cfg()
 		aArray[ZOMBIE_SPEED] = DEFAULT_ZOMBIE_SPEED
 		aArray[ZOMBIE_GRAVITY] = DEFAULT_ZOMBIE_GRAVITY
 		aArray[ZOMBIE_KNOCKBACK] = DEFAULT_ZOMBIE_KNOCKBACK
+		aArray[ZOMBIE_LEVEL] = DEFAULT_ZOMBIE_LEVEL
 
 		// Copy Array on dyn Array.
 		ArrayPushArray(g_aZombieClass, aArray)
@@ -215,17 +222,23 @@ public ze_user_infected(iVictim, iInfector)
 
 public show_Zombies_Menu(const id)
 {
-	new szLang[MAX_MENU_LENGTH]
+	new szLang[MAX_MENU_LENGTH], iLevel
 
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ZOMBIES_TITLE")
 	new iMenu = menu_create(szLang, "handler_Zombies_Menu")
+	new fLevel = module_exists(LIBRARY_LEVELS)
+
+	if (fLevel)
+		iLevel = ze_get_user_level(id)
 
 	for (new aArray[ZOMBIE_ATTRIB], iItemData[2], i = 0; i < g_iNumZombies; i++)
 	{
 		ArrayGetArray(g_aZombieClass, i, aArray)
 
-		if (i == g_iCurrent[id])
+		if (fLevel && iLevel < aArray[ZOMBIE_LEVEL])
+			formatex(szLang, charsmax(szLang), "\d%s • %s \r[\r%L\d: \y%i\r]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "MENU_LEVEL", aArray[ZOMBIE_LEVEL])
+		else if (i == g_iCurrent[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "CURRENT")
 		else if (i == g_iNext[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "NEXT")
@@ -255,8 +268,7 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 	{
 		case MENU_TIMEOUT, MENU_EXIT:
 		{
-			menu_destroy(iMenu)
-			return PLUGIN_HANDLED
+			goto CloseMenu
 		}
 		default:
 		{
@@ -267,6 +279,12 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 			new i = iItemData[0]
 			ArrayGetArray(g_aZombieClass, i, aArray)
 
+			if (module_exists(LIBRARY_LEVELS) && ze_get_user_level(id) < aArray[ZOMBIE_LEVEL])
+			{
+				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+				goto CloseMenu
+			}
+
 			g_iNext[id] = i
 			g_iPage[id] = iKey / 7
 
@@ -276,6 +294,7 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 		}
 	}
 
+	CloseMenu:
 	menu_destroy(iMenu)
 	return PLUGIN_HANDLED
 }
@@ -350,6 +369,12 @@ public __native_zclass_register(const plugin_id, const num_params)
 	{
 		aArray[ZOMBIE_KNOCKBACK] = get_param_f(8)
 		ini_write_float(ZE_FILENAME_ZCLASS, szName, "KNOCKBACK", aArray[ZOMBIE_KNOCKBACK])
+	}
+
+	if (!ini_read_int(ZE_FILENAME_ZCLASS, szName, "LEVEL", aArray[ZOMBIE_LEVEL]))
+	{
+		aArray[ZOMBIE_LEVEL] = get_param(9)
+		ini_write_int(ZE_FILENAME_ZCLASS, szName, "LEVEL", aArray[ZOMBIE_LEVEL])
 	}
 
 	new szModel[MAX_RESOURCE_PATH_LENGTH]
@@ -526,6 +551,21 @@ public Float:__native_zclass_get_knockback(const plugin_id, const num_params)
 	return aArray[ZOMBIE_KNOCKBACK]
 }
 
+public __native_zclass_get_level(const plugin_id, const num_params)
+{
+	new i = get_param(1)
+
+	if (FIsWrongClass(i))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
+		return NULLENT
+	}
+
+	new aArray[ZOMBIE_ATTRIB]
+	ArrayGetArray(g_aZombieClass, i, aArray)
+	return aArray[ZOMBIE_LEVEL]
+}
+
 public __native_zclass_set_current(const plugin_id, const num_params)
 {
 	new id = get_param(1)
@@ -674,6 +714,23 @@ public __native_zclass_set_knockback(const plugin_id, const num_params)
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, i, aArray)
 	aArray[ZOMBIE_KNOCKBACK] = get_param_f(2)
+	ArraySetArray(g_aZombieClass, i, aArray)
+	return true
+}
+
+public __native_zclass_set_level(const plugin_id, const num_params)
+{
+	new i = get_param(1)
+
+	if (FIsWrongClass(i))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
+		return false
+	}
+
+	new aArray[ZOMBIE_ATTRIB]
+	ArrayGetArray(g_aZombieClass, i, aArray)
+	aArray[ZOMBIE_LEVEL] = get_param(2)
 	ArraySetArray(g_aZombieClass, i, aArray)
 	return true
 }
