@@ -223,8 +223,11 @@ public fw_TakeDamage_Post(const iVictim, iInflector, iAttacker, Float:flDamage, 
 	if (!g_bDmgEnabled)
 		return
 
-	// Is Zombie?
-	if (iVictim == iAttacker || !ze_is_user_zombie(iVictim) || ze_is_user_zombie(iAttacker))
+	// Damage himself or player not on game?
+	if (iVictim == iAttacker || !is_user_connected(iVictim) || !is_user_connected(iAttacker))
+		return
+
+	if (!ze_is_user_zombie(iVictim) || ze_is_user_zombie(iAttacker))
 		return
 
 	// This for avoid loop without stop!
