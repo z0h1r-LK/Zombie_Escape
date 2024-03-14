@@ -2,8 +2,10 @@
 #include <reapi>
 
 #include <ze_core>
+#include <ze_levels>
 #include <ze_class_const>
 #include <ze_class_survivor>
+#define LIBRARY_LEVELS "ze_levels"
 #define LIBRARY_HUDINFO "ze_hud_info"
 #define LIBRARY_SURVIVOR "ze_class_survivor"
 #define LIBRARY_WPNMODELS "ze_weap_models_api"
@@ -21,7 +23,8 @@ enum _:HUMAN_ATTRIB
 	Float:HUMAN_ARMOR,
 	HUMAN_SPEED_FACTOR,
 	Float:HUMAN_SPEED,
-	Float:HUMAN_GRAVITY
+	Float:HUMAN_GRAVITY,
+	HUMAN_LEVEL
 }
 
 // Colors indexes.
@@ -36,11 +39,12 @@ enum _:Colors
 stock const DEFAULT_HUMAN_NAME[] = "Regular Human"
 stock const DEFAULT_HUMAN_DESC[] = "-= Balanced =-"
 stock const DEFAULT_HUMAN_MODEL[] = "gign"
-stock Float:DEFAULT_HUMAN_HEALTH = 10000.0
-stock Float:DEFAULT_HUMAN_ARMOR = 0.0
-stock DEFAULT_HUMAN_SPEED_FACTOR = 1
-stock Float:DEFAULT_HUMAN_SPEED = 25.0
-stock Float:DEFAULT_HUMAN_GRAVITY = 800.0
+stock const Float:DEFAULT_HUMAN_HEALTH = 10000.0
+stock const Float:DEFAULT_HUMAN_ARMOR = 0.0
+stock const DEFAULT_HUMAN_SPEED_FACTOR = 1
+stock const Float:DEFAULT_HUMAN_SPEED = 25.0
+stock const Float:DEFAULT_HUMAN_GRAVITY = 800.0
+stock const DEFAULT_HUMAN_LEVEL = 0
 
 // Shield Attack Sound.
 new g_szShieldAttackSound[MAX_RESOURCE_PATH_LENGTH] = "player/bhit_helmet-1.wav"
@@ -77,6 +81,7 @@ public plugin_natives()
 	register_native("ze_hclass_is_speed_factor", "__native_hclass_is_speed_factor")
 	register_native("ze_hclass_get_speed", "__native_hclass_get_speed")
 	register_native("ze_hclass_get_gravity", "__native_hclass_get_gravity")
+	register_native("ze_hclass_get_level", "__native_hclass_get_level")
 	register_native("ze_hclass_set_current", "__native_hclass_set_current")
 	register_native("ze_hclass_set_next", "__native_hclass_set_next")
 	register_native("ze_hclass_set_name", "__native_hclass_set_name")
@@ -86,6 +91,7 @@ public plugin_natives()
 	register_native("ze_hclass_set_speed_factor", "__native_hclass_set_speed_factor")
 	register_native("ze_hclass_set_speed", "__native_hclass_set_speed")
 	register_native("ze_hclass_set_gravity", "__native_hclass_set_gravity")
+	register_native("ze_hclass_set_level", "__native_hclass_set_level")
 	register_native("ze_hclass_show_menu", "__native_hclass_show_menu")
 
 	set_module_filter("fw_module_filter")
@@ -97,7 +103,7 @@ public plugin_natives()
 
 public fw_module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_SURVIVOR) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_WPNMODELS))
+	if (equal(module, LIBRARY_SURVIVOR) || equal(module, LIBRARY_HUDINFO) || equal(module, LIBRARY_WPNMODELS) || equal(module, LIBRARY_LEVELS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -157,6 +163,7 @@ public plugin_cfg()
 		aArray[HUMAN_SPEED_FACTOR] = 1
 		aArray[HUMAN_SPEED] = DEFAULT_HUMAN_SPEED
 		aArray[HUMAN_GRAVITY] = DEFAULT_HUMAN_GRAVITY
+		aArray[HUMAN_LEVEL] = DEFAULT_HUMAN_LEVEL
 
 		// Copy Array on dyn Array.
 		ArrayPushArray(g_aHumanClass, aArray)
@@ -269,17 +276,23 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 
 public show_Humans_Menu(const id)
 {
-	new szLang[MAX_MENU_LENGTH]
+	new szLang[MAX_MENU_LENGTH], iLevel
 
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_HUMANS_TITLE")
 	new iMenu = menu_create(szLang, "handler_Humans_Menu")
+	new fLevel = module_exists(LIBRARY_LEVELS)
+
+	if (fLevel)
+		iLevel = ze_get_user_level(id)
 
 	for (new aArray[HUMAN_ATTRIB], iItemData[2], i = 0; i < g_iNumHumans; i++)
 	{
 		ArrayGetArray(g_aHumanClass, i, aArray)
 
-		if (i == g_iCurrent[id])
+		if (fLevel && iLevel < aArray[HUMAN_LEVEL])
+			formatex(szLang, charsmax(szLang), "\d%s • %s \r[\r%L\d: \y%i\r]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "MENU_LEVEL", aArray[HUMAN_LEVEL])
+		else if (i == g_iCurrent[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "CURRENT")
 		else if (i == g_iNext[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "NEXT")
@@ -309,8 +322,7 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 	{
 		case MENU_TIMEOUT, MENU_EXIT:
 		{
-			menu_destroy(iMenu)
-			return PLUGIN_HANDLED
+			goto CloseMenu
 		}
 		default:
 		{
@@ -321,6 +333,12 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 			new i = iItemData[0]
 			ArrayGetArray(g_aHumanClass, i, aArray)
 
+			if (module_exists(LIBRARY_LEVELS) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
+			{
+				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+				goto CloseMenu
+			}
+
 			g_iNext[id] = i
 			g_iPage[id] = iKey / 7
 
@@ -330,6 +348,7 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 		}
 	}
 
+	CloseMenu:
 	menu_destroy(iMenu)
 	return PLUGIN_HANDLED
 }
@@ -404,6 +423,12 @@ public __native_hclass_register(const plugin_id, const num_params)
 	{
 		aArray[HUMAN_GRAVITY] = get_param_f(8)
 		ini_write_float(ZE_FILENAME_HCLASS, szName, "GRAVITY", aArray[HUMAN_GRAVITY])
+	}
+
+	if (!ini_read_int(ZE_FILENAME_HCLASS, szName, "LEVEL", aArray[HUMAN_LEVEL]))
+	{
+		aArray[HUMAN_LEVEL] = get_param(9)
+		ini_write_int(ZE_FILENAME_HCLASS, szName, "LEVEL", aArray[HUMAN_LEVEL])
 	}
 
 	new szModel[MAX_RESOURCE_PATH_LENGTH]
@@ -576,6 +601,21 @@ public Float:__native_hclass_get_gravity(const plugin_id, const num_params)
 	return aArray[HUMAN_GRAVITY]
 }
 
+public __native_hclass_get_level(const plugin_id, const num_params)
+{
+	new const i = get_param(1)
+
+	if (FIsWrongClass(i))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
+		return ZE_CLASS_INVALID
+	}
+
+	new aArray[HUMAN_ATTRIB]
+	ArrayGetArray(g_aHumanClass, i, aArray)
+	return aArray[HUMAN_LEVEL]
+}
+
 public __native_hclass_set_current(const plugin_id, const num_params)
 {
 	new const id = get_param(1)
@@ -741,6 +781,23 @@ public __native_hclass_set_gravity(const plugin_id, const num_params)
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, i, aArray)
 	aArray[HUMAN_GRAVITY] = get_param_f(2)
+	ArraySetArray(g_aHumanClass, i, aArray)
+	return true
+}
+
+public __native_hclass_set_level(const plugin_id, const num_params)
+{
+	new const i = get_param(1)
+
+	if (FIsWrongClass(i))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
+		return false
+	}
+
+	new aArray[HUMAN_ATTRIB]
+	ArrayGetArray(g_aHumanClass, i, aArray)
+	aArray[HUMAN_LEVEL] = get_param(2)
 	ArraySetArray(g_aHumanClass, i, aArray)
 	return true
 }

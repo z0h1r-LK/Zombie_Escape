@@ -14,6 +14,7 @@
  *
  * @note Maximum Name and Model length is 32 characters,
  *       Maximum Description and Melee length is 64 characters.
+ *       Level System:
  *
  * @param szName[]     Human Name.
  * @param szDesc[]     Human Description.
@@ -23,12 +24,13 @@
  * @param fSpeedFactor Human Speed type (1 = Speed Factor [Weapon Speed + flSpeed] | 0 = Static Speed [flSpeed])
  * @param flSpeed      Human Speed.
  * @param flGravity    Human Gravity.
+ * @param iLevel       Human required level (0 = Ignore).
  *
  * @return             A valid class ID on registered, ZE_CLASS_INVALID when failure.
  *
  * @error              If class without Name or Name already exist.
  */
-native ze_hclass_register(const szName[], const szDesc[], const szModel[], Float:flHealth, Float:flArmor, bool:fSpeedFactor, Float:flSpeed, Float:flGravity);
+native ze_hclass_register(const szName[], const szDesc[], const szModel[], Float:flHealth, Float:flArmor, bool:fSpeedFactor, Float:flSpeed, Float:flGravity, iLevel = 0);
 
 /**
  * Gets current class for specific player.
@@ -161,6 +163,17 @@ native Float:ze_hclass_get_speed(iClassID);
 native Float:ze_hclass_get_gravity(iClassID);
 
 /**
+ * Gets a class Level.
+ *
+ * @param iClassID    A valid class ID.
+ *
+ * @return            Level value on success, ZE_CLASS_INVALID when failure.
+ *
+ * @error             If this class ID is invalid.
+ */
+native ze_hclass_get_level(iClassID);
+
+/**
  * Sets a class for specific player.
  *
  * @param id          Client index.
@@ -268,6 +281,19 @@ native ze_hclass_set_speed(iClassID, Float:flSpeed);
  * @error             If this class ID is invalid.
  */
 native ze_hclass_set_gravity(iClassID, Float:flGravity);
+
+/**
+ * Sets new Level for specific class.
+ *
+ * @param iClassID    A valid class ID.
+ * @param iLevel      Level to be set.
+ *
+ * @return            true  | If changed successfully.
+ *                    false | If failure.
+ *
+ * @error             If this class IS is invalid.
+ */
+native ze_hclass_set_level(iClassID, iLevel);
 
 /**
  * Show Zombies Classes Menu for specific player.
