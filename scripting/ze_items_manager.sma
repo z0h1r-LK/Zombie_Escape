@@ -42,6 +42,7 @@ public x_iMaxItems,
 public plugin_natives()
 {
 	register_native("ze_item_register", "__native_item_register")
+	register_native("ze_register_item", "__native_item_register")
 	register_native("ze_item_get_name", "__native_item_get_name")
 	register_native("ze_item_get_cost", "__native_item_get_cost")
 	register_native("ze_item_get_limit", "__native_item_get_limit")

@@ -4,11 +4,6 @@
 #define _items_manager_included
 
 /**
- * -=| Macroses |=-
- */
-#define ze_register_item(%0,%1,%2) ze_item_register(%0,%1,%2)
-
-/**
  * -=| Forwards |=-
  */
 
@@ -57,6 +52,7 @@ forward ze_select_item_post(id, iItem, bool:bIgnoreCost);
  * @error              Register item without name or item name already used.
  */
 native ze_item_register(const szName[], iCost, iLimit);
+native ze_register_item(const szName[], iCost, iLimit);
 
 /**
  * Returns an item name.
