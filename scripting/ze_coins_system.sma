@@ -68,6 +68,7 @@ public plugin_init()
 
 	// Initial Value.
 	g_hTuple = Empty_Handle
+	g_tTempVault = Invalid_Trie
 	g_iVaultCoins = INVALID_HANDLE
 }
 
@@ -82,11 +83,13 @@ public plugin_cfg()
 		}
 		case 2: // nVault.
 		{
-			RequestFrame("nVault_Init")
+			// Open the Vault.
+			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
+				set_fail_state("Error in opening the nVault (-1)")
 		}
 		case 3: // MySQL.
 		{
-			RequestFrame("MySQL_Init")
+			MySQL_Init()
 		}
 	}
 }
@@ -113,13 +116,6 @@ public plugin_end()
 				SQL_FreeHandle(g_hTuple)
 		}
 	}
-}
-
-public nVault_Init()
-{
-	// Open the Vault.
-	if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
-		set_fail_state("Error in opening the nVault (-1)")
 }
 
 public MySQL_Init()
