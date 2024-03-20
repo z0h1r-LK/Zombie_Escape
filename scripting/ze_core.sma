@@ -230,6 +230,7 @@ public plugin_cfg()
 
 	// Execute our configuration (.cfg)
 	server_cmd("exec ^"%s/%s.cfg^"", szCfgDir, ZE_FILENAME)
+	server_exec()
 
 	// Game Description.
 	formatex(szGameDesc, charsmax(szGameDesc), "%L", LANG_PLAYER, "GAME_DESC")
