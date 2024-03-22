@@ -1003,6 +1003,9 @@ force_set_user_Human(const id)
 	// Call forward ze_user_humanized(param1).
 	ExecuteForward(g_iForwards[FORWARD_USER_HUMANIZED], _/* Ignore return value */, id)
 
+	// Switch player CT team.
+	rg_set_user_team(id, TEAM_CT, MODEL_UNASSIGNED)
+
 	// Check Last Human and Zombie.
 	check_LastPlayer()
 }
@@ -1019,6 +1022,9 @@ force_set_user_Zombie(const iVictim, iAttacker = 0)
 
 	// Call forward ze_user_infected(param1, param2).
 	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED], _/* Ignore return value */, iVictim, iAttacker)
+
+	// Switch player TERRORIST team.
+	rg_set_user_team(iVictim, TEAM_TERRORIST, MODEL_UNASSIGNED)
 
 	// Check Last Human and Zombie.
 	check_LastPlayer()
