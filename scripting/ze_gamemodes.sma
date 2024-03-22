@@ -7,7 +7,7 @@
 #include <ze_gamemodes_const>
 
 // Macro.
-#define FIsGameInvalid(%0) (ZE_GAME_INVALID>=%0>=g_iNumGames)
+#define FIsGameInvalid(%0) (ZE_GAME_INVALID>=%0>=x_iNumGames)
 
 // HUD Event Positions
 const Float:HUD_EVENT_X = -1.0
@@ -52,14 +52,14 @@ new g_iStartDelay,
 new g_iNext,
 	g_iCurrent,
 	g_iDefault,
-	g_iNumGames,
 	g_iFwReturn,
 	g_iCountdown,
-	g_iMsgCountdown
+	g_iMsgCountdown,
+	g_xRoundNum,
+	g_xGameChosen
 
 // XVars.
-new g_xRoundNum,
-	g_xGameChosen
+public x_iNumGames = 0;
 
 // Array.
 new g_iForwards[FORWARDS]
@@ -134,7 +134,7 @@ public ze_game_started_pre()
 
 	// Pause all game modes plug-ins.
 	new aArray[GAMEMODES]
-	for (new i = 0; i < g_iNumGames; i++)
+	for (new i = 0; i < x_iNumGames; i++)
 	{
 		ArrayGetArray(g_aGamemodes, i, aArray)
 		pause("ac", aArray[GAME_FILE])
@@ -205,7 +205,7 @@ public choose_Gamemode()
 
 		while (++iChance < MAX_ATTEMPT)
 		{
-			for (i = 0; i < g_iNumGames; i++)
+			for (i = 0; i < x_iNumGames; i++)
 			{
 				if (start_Gamemode(i))
 				{
@@ -296,7 +296,7 @@ public __native_gamemode_register(const plugin_id, const num_params)
 
 	new aArray[GAMEMODES]
 
-	for (new i = 0; i < g_iNumGames; i++)
+	for (new i = 0; i < x_iNumGames; i++)
 	{
 		ArrayGetArray(g_aGamemodes, i, aArray)
 
@@ -320,7 +320,7 @@ public __native_gamemode_register(const plugin_id, const num_params)
 	ArrayPushArray(g_aGamemodes, aArray)
 
 	// Gamemode index.
-	return ++g_iNumGames - 1
+	return ++x_iNumGames - 1
 }
 
 public __native_gamemode_set_default(const plugin_id, const num_params)
@@ -393,7 +393,7 @@ public __native_gamemode_get_id(const plugin_id, const num_params)
 		return ZE_GAME_INVALID
 	}
 
-	for (new aArray[GAMEMODES], i = 0; i < g_iNumGames; i++)
+	for (new aArray[GAMEMODES], i = 0; i < x_iNumGames; i++)
 	{
 		ArrayGetArray(g_aGamemodes, i, aArray)
 		if (equal(szName, aArray[GAME_NAME]))
@@ -432,5 +432,5 @@ public __native_gamemode_start(const plugin_id, const num_params)
 
 public __native_gamemode_get_count(const plugin_id, const num_params)
 {
-	return g_iNumGames
+	return x_iNumGames
 }
