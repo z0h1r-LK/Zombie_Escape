@@ -48,6 +48,10 @@ public plugin_natives()
 	register_native("ze_item_get_limit", "__native_item_get_limit")
 	register_native("ze_item_add_text", "__native_item_add_text")
 	register_native("ze_item_force_buy", "__native_item_force_buy")
+	register_native("ze_item_is_valid", "__native_item_is_valid")
+	register_native("ze_item_set_name", "__native_item_set_name")
+	register_native("ze_item_set_cost", "__native_item_set_cost")
+	register_native("ze_item_set_limit", "__native_item_set_limit")
 	register_native("ze_item_show_menu", "__native_item_show_menu")
 }
 
@@ -346,6 +350,70 @@ public __native_item_force_buy(const plugin_id, const num_params)
 
 	buy_Item(id, iItem, bIgnoreCost)
 	return true
+}
+
+public __native_item_set_name(const plugin_id, const num_params)
+{
+	new iItem = get_param(1)
+
+	if (!FIsItemValid(iItem))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Item id (%d)", iItem)
+		return 0
+	}
+
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(2, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't change item name without a name.")
+		return 0
+	}
+
+	for (new iItem = 0; iItem < x_iMaxItems; iItem++)
+	{
+		if (equal(szName, g_aItems[iItem][ITEM_NAME]))
+		{
+			log_error(AMX_ERR_NATIVE, "[ZE] Can't change an item with duplicate name.")
+			return 0
+		}
+	}
+
+	return copy(g_aItems[iItem][ITEM_NAME], charsmax(g_aItems[]), szName)
+}
+
+public __native_item_set_cost(const plugin_id, const num_params)
+{
+	new iItem = get_param(1)
+
+	if (!FIsItemValid(iItem))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Item id (%d)", iItem)
+		return false
+	}
+
+	g_aItems[iItem][ITEM_COST] = get_param(2)
+	return true
+}
+
+public __native_item_set_limit(const plugin_id, const num_params)
+{
+	new iItem = get_param(1)
+
+	if (!FIsItemValid(iItem))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Item id (%d)", iItem)
+		return false
+	}
+
+	g_aItems[iItem][ITEM_LIMIT] = get_param(3)
+	return true
+}
+
+public __native_item_is_valid(const plugin_id, const num_params)
+{
+	if (FIsItemValid(get_param(1)))
+		return true
+	return false
 }
 
 public __native_item_show_menu(const plugin_id, const num_params)

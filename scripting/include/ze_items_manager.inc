@@ -111,9 +111,59 @@ native ze_item_add_text(const text[], any:...);
  * @return             true  | If operation successfully.
  *                     false | If handled by forward or item id invalid or player not on game.
  *
- * @error              If this player not on game and item id is invalid.
+ * @error              If this player not on game or item id is invalid.
  */
 native ze_item_force_buy(id, iItem, bool:bIgnoreCost = false);
+
+/**
+ * Set an item new name.
+ *
+ * @note Maximum name length is 32 characters.
+ *
+ * @param iItem        Item id.
+ * @param szName[]     New item name.
+ *
+ * @return             Number of cells written.
+ *
+ * @error              Invalid item id or no item name entered or name already duplicated.
+ */
+native ze_item_set_name(iItem, const szName[]);
+
+/**
+ * Sets an item new cost.
+ *
+ * @param iItem        Item id.
+ * @param iCost        Cost to be set.
+ *
+ * @return             true  | If new cost assigned.
+ *                     false | If item id is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_set_cost(iItem, iCost);
+
+/**
+ * Sets an item new limit.
+ *
+ * @param iItem        Item id.
+ * @param iLimit       Limit to be set.
+ *
+ * @return             true  | If new cost assigned.
+ *                     false | If item id is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_set_limit(iItem, iLimit);
+
+/**
+ * Check If item id is valid or not.
+ *
+ * @param id           Item id.
+ *
+ * @return             true  | If item id is valid.
+ *                     false | If item id is invalid.
+ */
+native ze_item_is_valid(id);
 
 /**
  * Show menu for specific player.
