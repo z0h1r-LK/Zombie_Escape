@@ -203,7 +203,7 @@ public ze_user_infected(iVictim, iInfector)
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
 {
 	// Not player?
-	if (!is_user_connected(iAttacker))
+	if (iVictim == iAttacker || !is_user_connected(iAttacker))
 		return
 
 	// Victim is Zombie?
