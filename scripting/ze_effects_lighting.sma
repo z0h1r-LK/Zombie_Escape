@@ -33,6 +33,7 @@ public plugin_init()
 	new const pCvarLighting = register_cvar("ze_lighting", "")
 	new const pCvarNvgFlags = register_cvar("ze_nvg_flags", "")
 
+	set_pcvar_string(pCvarNvgFlags, "") // Fix nvg stopping working after next map or server restart.
 	bind_pcvar_string(pCvarLighting, g_szLight, charsmax(g_szLight))
 
 	hook_cvar_change(pCvarLighting, "cvar_Lightnig")
