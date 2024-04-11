@@ -576,9 +576,10 @@ public choose_Weapon(id, iIndex, iSection)
 				}
 			}
 
+			new pItem
 			if (pArray[WPN_CUSTOM])
 			{
-				if ((rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])) == NULLENT)
+				if ((pItem = rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])) == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
@@ -586,7 +587,7 @@ public choose_Weapon(id, iIndex, iSection)
 			}
 			else
 			{
-				if ((rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)) == NULLENT)
+				if ((pItem = rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)) == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
@@ -595,13 +596,13 @@ public choose_Weapon(id, iIndex, iSection)
 
 			// Set player Ammo.
 			rg_set_user_bpammo(id, WeaponIdType:get_weaponid(pArray[WPN_CLASS]), pArray[WPN_AMMO])
+			rg_set_iteminfo(pItem, ItemInfo_iMaxAmmo1, pArray[WPN_AMMO])
 
 			g_iMenuData[id][MD_PREV_PRIMARY] = iIndex
 			g_iMenuData[id][MD_PRIMARY_CHOSEN] = true
 		}
 		case SECTION_SECONDARY:
 		{
-			new pItem
 			ArrayGetArray(g_aSecondaryWeapons, iIndex, pArray)
 
 			if (module_exists(LIBRARY_LEVEL))
@@ -613,24 +614,18 @@ public choose_Weapon(id, iIndex, iSection)
 				}
 			}
 
+			new pItem
 			if (pArray[WPN_CUSTOM])
 			{
-				pItem = rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])
-
-				if (pItem == NULLENT)
+				if ((pItem = rg_give_custom_item(id, pArray[WPN_CLASS], GT_REPLACE, pArray[WPN_CUSTOM])) == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
 				}
-
-				// Set player Ammo.
-				set_member(pItem, m_Weapon_iDefaultAmmo, pArray[WPN_AMMO])
 			}
 			else
 			{
-				pItem = rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)
-
-				if (pItem == NULLENT)
+				if ((pItem = rg_give_item(id, pArray[WPN_CLASS], GT_REPLACE)) == NULLENT)
 				{
 					log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
 					return 0
@@ -639,6 +634,7 @@ public choose_Weapon(id, iIndex, iSection)
 
 			// Set player Ammo.
 			rg_set_user_bpammo(id, WeaponIdType:get_weaponid(pArray[WPN_CLASS]), pArray[WPN_AMMO])
+			rg_set_iteminfo(pItem, ItemInfo_iMaxAmmo1, pArray[WPN_AMMO])
 
 			g_iMenuData[id][MD_PREV_SECONDARY] = iIndex
 			g_iMenuData[id][MD_SECONDARY_CHOSEN] = true
