@@ -26,7 +26,8 @@
 enum _:FORWARDS
 {
 	FORWARD_FIRE_BURN_START = 0,
-	FORWARD_FIRE_BURN_END
+	FORWARD_FIRE_BURN_END,
+	FORWARD_GRENADE_EXPLODED
 }
 
 // Fire-Nade Models.
@@ -184,6 +185,7 @@ public plugin_init()
 	// Create Forwards.
 	g_iForwards[FORWARD_FIRE_BURN_START] = CreateMultiForward("ze_fire_burn_start", ET_CONTINUE, FP_CELL)
 	g_iForwards[FORWARD_FIRE_BURN_END] = CreateMultiForward("ze_fire_burn_end", ET_CONTINUE, FP_CELL)
+	g_iForwards[FORWARD_GRENADE_EXPLODED] = CreateMultiForward("ze_grenade_exploded", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
 
 	// Set Values.
 	g_iMsgDamage = get_user_msgid("Damage")
@@ -302,6 +304,9 @@ public fire_Explode(const iEnt)
 
 	// Get entity's origin.
 	get_entvar(iEnt, var_origin, vOrigin)
+
+	// Call forward ze_fire_exploded(param, array[3])
+	ExecuteForward(g_iForwards[FORWARD_GRENADE_EXPLODED], _/* Ignore return value */, iEnt, FIRE_NADE, PrepareArray(_:vOrigin, 3))
 
 	// Search victims.
 	new iPlayers[MAX_PLAYERS]

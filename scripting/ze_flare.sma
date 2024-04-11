@@ -27,7 +27,8 @@ new Float:g_flFlareDamage
 
 // Variables.
 new g_iRingSpr,
-	g_iTrailSpr
+	g_iTrailSpr,
+	g_iForward
 
 // Dynamic Arrays.
 new Array:g_aFlareExplodeSounds
@@ -118,6 +119,9 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_float(register_cvar("ze_flare_damage", "500.0"), g_flFlareDamage)
+
+	// Create Forward.
+	g_iForward = CreateMultiForward("ze_grenade_exploded", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
 }
 
 public ze_game_started()
@@ -208,6 +212,9 @@ public flare_Explode(const iEnt)
 
 	// Get entity's origin.
 	get_entvar(iEnt, var_origin, vOrigin)
+
+	// Call forward ze_flare_exploded(param, array[3])
+	ExecuteForward(g_iForward, _/* Ignore return value */, iEnt, FLARE_NADE, PrepareArray(_:vOrigin, 3))
 
 	new Float:flDamage, iAttacker = get_entvar(iEnt, var_owner)
 

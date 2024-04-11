@@ -22,7 +22,8 @@
 enum _:FORWARDS
 {
 	FORWARD_FROST_FREEZE = 0,
-	FORWARD_FROST_UNFREEZE
+	FORWARD_FROST_UNFREEZE,
+	FORWARD_FROST_EXPLODED
 }
 
 // Rendering.
@@ -154,6 +155,7 @@ public plugin_init()
 	// Create new Forwards.
 	g_iForwards[FORWARD_FROST_FREEZE] = CreateMultiForward("ze_frost_freeze_start", ET_CONTINUE, FP_CELL)
 	g_iForwards[FORWARD_FROST_UNFREEZE] = CreateMultiForward("ze_frost_freeze_end", ET_CONTINUE, FP_CELL)
+	g_iForwards[FORWARD_FROST_EXPLODED] = CreateMultiForward("ze_grenade_exploded", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
 
 	// Set Values.
 	g_iMsgDamage = get_user_msgid("Damage")
@@ -296,6 +298,9 @@ public frost_Explode(const iEnt)
 
 	// Get entity's origin.
 	get_entvar(iEnt, var_origin, vOrigin)
+
+	// Call forward ze_frost_exploded(param, array[3]).
+	ExecuteForward(g_iForwards[FORWARD_FROST_EXPLODED], _/* Ignore return value */, iEnt, FROST_NADE, PrepareArray(_:vOrigin, 3))
 
 	// Search victims.
 	new iPlayers[MAX_PLAYERS], victim
