@@ -293,7 +293,7 @@ public __native_item_get_name(const plugin_id, const num_params)
 		return 0
 	}
 
-	return set_string(1, g_aItems[iItem][ITEM_NAME], get_param(3))
+	return set_string(2, g_aItems[iItem][ITEM_NAME], get_param(3))
 }
 
 public __native_item_get_cost(const plugin_id, const num_params)
