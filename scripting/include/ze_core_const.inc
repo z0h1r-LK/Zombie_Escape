@@ -76,6 +76,16 @@ enum
 }
 
 /**
+ * Types of grenades, Used in ze_grenade_exploded():
+ */
+enum NadeType
+{
+	FROST_NADE = 0,
+	FIRE_NADE,
+	FLARE_NADE
+}
+
+/**
  * XVARs Name.
  */
 #define X_Core_RoundNum        "x_iRoundNum"

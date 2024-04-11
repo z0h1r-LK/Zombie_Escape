@@ -211,6 +211,17 @@ forward ze_zombie_appear(const iZombies[], iZombiesNum);
 forward ze_zombie_release();
 
 /**
+ * Called when grenade (Frost, Fire or Flare) exploded.
+ *
+ * @param ent        Entity index.
+ * @param iGrenade   Grenade type (*_NADE enum)
+ * @param vOrigin[3] Origin of the entity.
+ *
+ * @noreturn
+ */
+forward ze_grenade_exploded(ent, NadeType:iGrenade, Float:vOrigin[3]);
+
+/**
  * -=| Natives |=-
  */
 
