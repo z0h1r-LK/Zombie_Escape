@@ -12,9 +12,9 @@ stock const ZE_ET_FILENAME[] = "ze_extra_items"
 /**
  * Mod Version and Authors.
  */
-stock const ZE_VERSION[] = "Rebuild 1.0-beta 2"
+stock const ZE_VERSION[] = "Rebuild 1.0-beta 3"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
-stock const ZE_MD5HASH[] = "44cc621c19aa72a5e5a92e6c98b778c8"
+stock const ZE_MD5HASH[] = "fee53df017da228327e7192c28cc5ad3"
 
 /**
  * Update check, Host info.
