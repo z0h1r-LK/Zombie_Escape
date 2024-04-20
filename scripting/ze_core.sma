@@ -372,7 +372,8 @@ public check_Reponse(taskid)
 			}
 		}
 
-		// Close socket.
+		// Frees handle.
+		json_free(hJson)
 		socket_close(g_hSocketUpdate)
 	}
 }
