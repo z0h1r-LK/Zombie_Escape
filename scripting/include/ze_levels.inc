@@ -8,6 +8,30 @@
  */
 
 /**
+ * Called after XP points of the player updated.
+ *
+ * @param id      Client index.
+ * @param iXP     New XP of the player.
+ *
+ * @noreturn
+ */
+forward ze_fw_user_xp(id, iXP);
+
+/**
+ * Called after Level of the player updated.
+ *
+ * @param id      Client index.
+ * @param iLevel  New Level of the player.
+ *
+ * @noreturn
+ */
+forward ze_fw_user_level(id, iLevel);
+
+/**
+ * -=| Natives |=-
+ */
+
+/**
  * Get player's XP point(s).
  *
  * @param id     Client index.
