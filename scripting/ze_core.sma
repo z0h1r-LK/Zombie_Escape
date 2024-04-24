@@ -1150,7 +1150,7 @@ public __native_set_user_speed(const plugin_id, const num_params)
 	g_flUserSpeed[id] = get_param_f(2)
 
 	// Change speed of the player.
-	fw_ResetMaxSpeed_Post(id)
+	rg_reset_maxspeed(id)
 	return true
 }
 
@@ -1168,6 +1168,6 @@ public __native_reset_user_speed(const plugin_id, const num_params)
 	flag_unset(g_bitsSpeedFactor, id)
 
 	// Change speed of the player.
-	fw_ResetMaxSpeed_Post(id)
+	rg_reset_maxspeed(id)
 	return true
 }
