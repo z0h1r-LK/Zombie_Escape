@@ -525,3 +525,17 @@ native ze_set_user_fire_ex(id, Float:flPeriod);
  *                  Translation key does not exist.
  */
 native ze_hud_info_set(id, const szClass[], const iColor[3], bMl = false);
+
+/**
+ * Forces finish the round.
+ *
+ * @note ZE_TEAM_UNA or ZE_TEAM_SPECTATOR the round will end in a Draw.
+ *
+ * @param team    Team Name (enum ZE_TEAM_*)
+ *
+ * @return        1  | Round ended successfully.
+ *                0  | Round not over yet.
+ *                -1 | Error in team ID.
+ * @error         Invalid team ID.
+ */
+native ze_round_end(team);

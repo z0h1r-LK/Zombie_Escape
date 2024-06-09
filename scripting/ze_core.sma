@@ -125,6 +125,8 @@ public plugin_natives()
 	register_native("ze_set_user_speed", "__native_set_user_speed")
 	register_native("ze_reset_user_speed", "__native_reset_user_speed")
 
+	register_native("ze_round_end", "__native_round_end")
+
 	g_iFwSpawn = register_forward(FM_Spawn, "fw_Spawn_Pre")
 
 	set_module_filter("fw_module_filter")
@@ -1170,4 +1172,22 @@ public __native_reset_user_speed(const plugin_id, const num_params)
 	// Change speed of the player.
 	rg_reset_maxspeed(id)
 	return true
+}
+
+public __native_round_end(const plugin_id, const num_params)
+{
+	new team = get_param(1)
+
+	switch (team)
+	{
+		case ZE_TEAM_HUMAN:
+			return rg_round_end(g_flRoundEndDelay, WINSTATUS_CTS, ROUND_CTS_WIN, "", "", true)
+		case ZE_TEAM_ZOMBIE:
+			return rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
+		case ZE_TEAM_UNA, ZE_TEAM_SPECTATOR:
+			return rg_round_end(g_flRoundEndDelay, WINSTATUS_DRAW, ROUND_NONE, "", "", true)
+	}
+
+	log_error(AMX_ERR_NATIVE, "[ZE] Invalid Team ID (%d)", team)
+	return -1
 }
