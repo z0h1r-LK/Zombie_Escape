@@ -76,6 +76,9 @@ public plugin_init()
 
 public client_putinserver(id)
 {
+	if (is_user_hltv(id))
+		return
+
 	// Get player's name.
 	get_user_name(id, g_szName[id], charsmax(g_szName[]))
 
@@ -86,11 +89,7 @@ public client_putinserver(id)
 public client_infochanged(id)
 {
 	// Player disconnected?
-	if (!is_user_connected(id))
-		return
-
-	// HLTV Proxy?
-	if (!is_user_hltv(id))
+	if (!is_user_connected(id) || is_user_hltv(id))
 		return
 
 	// Get new name of the player.
@@ -99,6 +98,9 @@ public client_infochanged(id)
 
 public client_disconnected(id, bool:drop, message[], maxlen)
 {
+	if (is_user_hltv(id))
+		return
+
 	g_szName[id] = NULL_STRING
 	g_szClass[id] = NULL_STRING
 
