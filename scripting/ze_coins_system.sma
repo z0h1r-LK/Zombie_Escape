@@ -7,12 +7,7 @@
 // Contants.
 new const g_szVaultName[] = "ZE_Coins"
 new const g_szLogFile[] = "SQL_Coins.log"
-new const g_szTable[] = "\
-CREATE TABLE IF NOT EXISTS `ze_coins` ( \
-`AuthID` varchar(64) NOT NULL, \
-`Amount` int(32) NOT NULL DEFAULT 0, \
-PRIMARY KEY (AuthID)); \
-"
+
 // CVars.
 new g_iSaveType,
 	g_iDmgReward,
@@ -37,7 +32,7 @@ new g_szAuth[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
 // Trie.
 new Trie:g_tTempVault
 
-// MySQL handle.
+// SQL handle.
 new Handle:g_hTuple
 
 public plugin_natives()
@@ -87,9 +82,9 @@ public plugin_cfg()
 			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
 				set_fail_state("Error in opening the nVault (-1)")
 		}
-		case 3: // MySQL.
+		case 3: // SQL.
 		{
-			MySQL_Init()
+			SQL_Init()
 		}
 	}
 }
@@ -110,7 +105,7 @@ public plugin_end()
 			if (g_iVaultCoins != INVALID_HANDLE)
 				nvault_close(g_iVaultCoins)
 		}
-		case 3: // MySQL.
+		case 3: // SQL.
 		{
 			if (g_hTuple != Empty_Handle)
 				SQL_FreeHandle(g_hTuple)
@@ -118,16 +113,28 @@ public plugin_end()
 	}
 }
 
-public MySQL_Init()
+public SQL_Init()
 {
-	new szHost[64], szUser[64], szPass[64], szDB[64]
+	new szHost[64], szUser[64], szPass[64], szDB[64], szType[16]
 
-	// amx_sql.cfg
+	// sql.cfg
 	get_pcvar_string(register_cvar("amx_sql_host", "127.0.0.1", FCVAR_PROTECTED), szHost, charsmax(szHost))
 	get_pcvar_string(register_cvar("amx_sql_user", "root", FCVAR_PROTECTED), szUser, charsmax(szUser))
 	get_pcvar_string(register_cvar("amx_sql_pass", "", FCVAR_PROTECTED), szPass, charsmax(szPass))
 	get_pcvar_string(register_cvar("amx_sql_db", "amx", FCVAR_PROTECTED), szDB, charsmax(szDB))
+	get_pcvar_string(register_cvar("amx_sql_type", "mysql", FCVAR_PROTECTED), szType, charsmax(szType))
 	new const iTimeOut = get_pcvar_num(register_cvar("amx_sql_timeout", "60", FCVAR_PROTECTED))
+
+	new szDriver[16]
+	SQL_GetAffinity(szDriver, charsmax(szDriver))
+
+	if (!equali(szType, szDriver))
+	{
+		if (!SQL_SetAffinity(szType))
+		{
+			set_fail_state("[SQL] Failed to set affinity from %s to %s.", szDriver, szType);
+		}
+	}
 
 	g_hTuple = SQL_MakeDbTuple(szHost, szUser, szPass, szDB, iTimeOut)
 
@@ -138,7 +145,7 @@ public MySQL_Init()
 
 	if (hSQLConnection != Empty_Handle)
 	{
-		log_amx("[MySQL][Coins] Successfully connected to host: %s (ALL IS OK).", szHost)
+		log_amx("[SQL][Coins] Successfully connected to SQL database: %s (ALL IS OK).", szDB)
 
 		// Frees SQL handle.
 		SQL_FreeHandle(hSQLConnection)
@@ -146,11 +153,21 @@ public MySQL_Init()
 	else
 	{
 		// Disable plugin.
-		set_fail_state("[MySQL][Coins] Failed to connect to MySQL database: %s.", szError)
+		set_fail_state("[SQL][Coins] Failed to connect to SQL database: %s.", szError)
+	}
+
+	new szTable[200]
+	if (equali(szType, "mysql"))
+	{
+		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` varchar(64) NOT NULL DEFAULT '', `Amount` int(32) NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
+	}
+	else if (equali(szType, "sqlite"))
+	{
+		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` TEXT NOT NULL DEFAULT '', `Amount` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
 	}
 
 	// Create Table.
-	SQL_ThreadQuery(g_hTuple, "query_CreateTable", g_szTable)
+	SQL_ThreadQuery(g_hTuple, "query_CreateTable", szTable)
 }
 
 public query_CreateTable(iFailState, Handle:hQuery, szError[], iError, szData[], iSize, Float:flQueueTime)
@@ -288,7 +305,7 @@ public read_Coins(const id)
 				g_iCoins[id] = g_iStartCoins
 			}
 		}
-		case 3: // MySQL.
+		case 3: // SQL.
 		{
 			new szQuery[128], szData[4]
 			formatex(szQuery, charsmax(szQuery), "SELECT * FROM `ze_coins` WHERE `AuthID` = '%s';", g_szAuth[id])
@@ -333,7 +350,7 @@ public write_Coins(const id)
 			num_to_str(g_iCoins[id], szCoins, charsmax(szCoins))
 			nvault_pset(g_iVaultCoins, g_szAuth[id], szCoins)
 		}
-		case 3: // MySQL.
+		case 3: // SQL.
 		{
 			new szQuery[128]
 			formatex(szQuery, charsmax(szQuery), "REPLACE INTO `ze_coins` (`AuthID`, `Amount`) VALUES ('%s', %d);", g_szAuth[id], g_iCoins[id])
