@@ -3,7 +3,6 @@
 #include <reapi>
 
 #include <ze_core>
-#include <ini_file>
 #include <ze_gamemodes_const>
 
 // Macro.
@@ -30,7 +29,7 @@ enum any:FORWARDS
 enum any:GAMEMODES
 {
 	GAME_NAME[MAX_NAME_LENGTH] = 0,
-	GAME_FILE[256]
+	GAME_FILE[PLATFORM_MAX_PATH]
 }
 
 // Colors.
