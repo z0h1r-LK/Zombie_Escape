@@ -61,6 +61,9 @@ public plugin_init()
 	bind_pcvar_float(register_cvar("ze_coins_dmg_req", "800.0"), g_flReqDamage)
 	bind_pcvar_num(register_cvar("ze_earn_coins_message", "1"), g_bEarnMessage)
 
+	// Command.
+	register_srvcmd("flush_coins", "cmd_FlushCoins", ADMIN_RCON, "Delete all players data (Saved coins).")
+
 	// Initial Value.
 	g_hTuple = Empty_Handle
 	g_tTempVault = Invalid_Trie
@@ -229,6 +232,63 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 
 	g_iCoins[iAttacker] += g_iZombieKilled
 	ze_colored_print(iAttacker, "%L", LANG_PLAYER, "MSG_COINS_KILLED", g_iZombieKilled)
+}
+
+public cmd_FlushCoins(const id, level, cid)
+{
+	if (!cmd_access(id, level, cid, 1))
+		return PLUGIN_HANDLED
+
+	switch (g_iSaveType)
+	{
+		case 1: // Trie.
+		{
+			TrieClear(g_tTempVault)
+			server_print("[Coins] All data of the players has been deleted from Memory !")
+		}
+		case 2: // nVault.
+		{
+			// Close the vault.
+			nvault_close(g_iVaultCoins)
+
+			// Flush the Vault.
+			new szFile[PLATFORM_MAX_PATH], iLen
+			iLen = get_datadir(szFile, charsmax(szFile))
+			formatex(szFile[iLen], charsmax(szFile) - iLen, "/vault/%s.vault", g_szVaultName)
+			fclose(fopen(szFile, "wb"))   // This will flush the Vault.
+			server_print("[nVault][Coins] All data from vault '%s.vault' has been deleted successfully !", g_szVaultName)
+
+			// Open the Vault.
+			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
+				set_fail_state("Error in opening the nVault (-1)")
+		}
+		case 3: // SQL.
+		{
+			new szQuery[64], szType[16]
+			SQL_GetAffinity(szType, charsmax(szType))
+
+			if (equali(szType, "sqlite"))
+			{
+				formatex(szQuery, charsmax(szQuery), "DELETE FROM ze_coins; VACUUM;")
+			}
+			else if (equali(szType, "mysql"))
+			{
+				formatex(szQuery, charsmax(szQuery), "DELETE FROM `ze_coins`;")
+			}
+
+			SQL_ThreadQuery(g_hTuple, "query_DeleteData", szQuery)
+		}
+	}
+
+	return PLUGIN_CONTINUE
+}
+
+public query_DeleteData(iFailState, Handle:hQuery, szError[], iError, szData[], iSize, Float:flQueueTime)
+{
+	if (SQL_IsFail(iFailState, iError, szError, g_szLogFile))
+		return
+
+	server_print("[SQL][Coins] All data from table 'ze_coins' has been deleted Successfully !")
 }
 
 public fw_TakeDamage_Post(const iVictim, iInflector, iAttacker, Float:flDamage, bitsDamageType)
