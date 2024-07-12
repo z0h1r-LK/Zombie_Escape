@@ -10,6 +10,7 @@ new const g_szLogFile[] = "SQL_Coins.log"
 
 // CVars.
 new g_iSaveType,
+	g_iAuthType,
 	g_iDmgReward,
 	g_iWinsReward,
 	g_iStartCoins,
@@ -52,6 +53,7 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_coins_save", "1"), g_iSaveType)
+	bind_pcvar_num(register_cvar("ze_coins_auth", "1"), g_iAuthType)
 	bind_pcvar_num(register_cvar("ze_coins_wins", "10"), g_iWinsReward)
 	bind_pcvar_num(register_cvar("ze_coins_infect", "2"), g_iInfectReward)
 	bind_pcvar_num(register_cvar("ze_coins_killed", "15"), g_iZombieKilled)
@@ -187,7 +189,34 @@ public client_authorized(id, const authid[])
 		return
 
 	// Get player's steamid.
-	copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
+	switch (g_iAuthType)
+	{
+		case 0: // Name.
+		{
+			copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
+		}
+		case 1: // AuthID.
+		{
+			get_user_name(id, g_szAuth[id], charsmax(g_szAuth[]))
+			g_szAuth[id][MAX_NAME_LENGTH] = EOS
+		}
+	}
+
+	// Load player's coins.
+	read_Coins(id)
+}
+
+public client_infochanged(id)
+{
+	if (!is_user_connected(id) || is_user_hltv(id))
+		return
+
+	if (g_iAuthType != 0) // AuthID?
+		return
+
+	// Get new name of the player.
+	get_user_info(id, "name", g_szAuth[id], charsmax(g_szAuth[]))
+	g_szAuth[id][MAX_NAME_LENGTH] = EOS
 
 	// Load player's coins.
 	read_Coins(id)
