@@ -193,12 +193,12 @@ public client_authorized(id, const authid[])
 	{
 		case 0: // Name.
 		{
-			copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
+			get_user_name(id, g_szAuth[id], charsmax(g_szAuth[]))
+			g_szAuth[id][MAX_NAME_LENGTH] = EOS
 		}
 		case 1: // AuthID.
 		{
-			get_user_name(id, g_szAuth[id], charsmax(g_szAuth[]))
-			g_szAuth[id][MAX_NAME_LENGTH] = EOS
+			copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
 		}
 	}
 
@@ -265,7 +265,7 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 
 public cmd_FlushCoins(const id, level, cid)
 {
-	if (!cmd_access(id, level, cid, 1))
+	if (!cmd_access(id, level, cid, 0))
 		return PLUGIN_HANDLED
 
 	switch (g_iSaveType)
