@@ -1,6 +1,7 @@
 #include <amxmodx>
 #include <amxmisc>
 #include <sockets>
+#include <hamsandwich>
 #include <fakemeta>
 #include <reapi>
 #include <json>
@@ -70,6 +71,7 @@ new const g_szEntitesClass[][] =
 
 // Cvars.
 new g_iReqPlayers,
+	g_iBlockTanks,
 	bool:g_bBlockSuicide,
 	bool:g_bBlockMoneyHUD,
 	bool:g_bBlockHpArRrHUD,
@@ -177,6 +179,12 @@ public plugin_init()
 	RegisterHookChain(RG_CSGameRules_CheckWinConditions, "fw_CheckWinConditions_Post", 1)
 	RegisterHookChain(RG_RoundEnd, "fw_RoundEnd_Post", 1)
 
+	// Hams.
+	RegisterHam(Ham_Use, "func_tank", "fw_CTankUse_Pre")
+	RegisterHam(Ham_Use, "func_tanklaser", "fw_CTankUse_Pre")
+	RegisterHam(Ham_Use, "func_tankmortar", "fw_CTankUse_Pre")
+	RegisterHam(Ham_Use, "func_tankrocket", "fw_CTankUse_Pre")
+
 	// FakeMeta.
 	register_forward(FM_ClientKill, "fw_ClientKill_Pre")
 	unregister_forward(FM_Spawn, g_iFwSpawn)
@@ -195,6 +203,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_blood", "1"), g_bBlockBloodEffs)
 	bind_pcvar_num(register_cvar("ze_block_MOTD", "1"), g_bBlockStartupMOTD)
 	bind_pcvar_num(register_cvar("ze_block_hintmsg", "1"), g_bBlockHintMessage)
+	bind_pcvar_num(register_cvar("ze_block_tank", "1"), g_iBlockTanks)
 
 	bind_pcvar_num(register_cvar("ze_check_update", "1"), g_bCheckUpdate)
 
@@ -937,6 +946,35 @@ public fw_RoundEnd_Post(WinStatus:status, ScenarioEventEndRound:event, Float:tmD
 
 	// Update Team Score.
 	rg_update_teamscores(g_iHumanWins, g_iZombieWins, false)
+}
+
+public fw_CTankUse_Pre(const entity, idCaller, iActivator, iUseType)
+{
+	if (g_iBlockTanks != 0 && iUseType == USE_SET)
+	{
+		if (is_user_alive(idCaller))
+		{
+			switch (g_iBlockTanks)
+			{
+				case 1: // Zombie Only.
+				{
+					if (flag_get_boolean(g_bitsIsZombie, idCaller))
+						return HAM_SUPERCEDE
+				}
+				case 2: // Human Only.
+				{
+					if (!flag_get_boolean(g_bitsIsZombie, idCaller))
+						return HAM_SUPERCEDE
+				}
+				case 3: // Both
+				{
+					return HAM_SUPERCEDE
+				}
+			}
+		}
+	}
+
+	return HAM_IGNORED
 }
 
 /**
