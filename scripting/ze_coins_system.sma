@@ -164,11 +164,11 @@ public SQL_Init()
 	new szTable[200]
 	if (equali(szType, "mysql"))
 	{
-		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` varchar(64) NOT NULL DEFAULT '', `Amount` int(32) NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
+		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` varchar(64) NOT NULL, `Amount` int(32) NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
 	}
 	else if (equali(szType, "sqlite"))
 	{
-		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` TEXT NOT NULL DEFAULT '', `Amount` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
+		szTable = "CREATE TABLE IF NOT EXISTS `ze_coins` ( `AuthID` TEXT NOT NULL, `Amount` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (AuthID));"
 	}
 
 	// Create Table.
