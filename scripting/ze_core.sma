@@ -334,13 +334,13 @@ public check_Update(taskid)
 
 public check_Reponse(taskid)
 {
-	// Remove Other Tasks.
-	remove_task(TASK_SVREPONSE)
-	remove_task(TASK_CONNECTFAIL)
-
 	// Data received?
 	if (socket_is_readable(g_hSocketUpdate))
 	{
+		// Remove Other Tasks.
+		remove_task(TASK_SVREPONSE)
+		remove_task(TASK_CONNECTFAIL)
+
 		new szReponse[512]
 		socket_recv(g_hSocketUpdate, szReponse, charsmax(szReponse))
 
