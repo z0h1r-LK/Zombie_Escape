@@ -13,6 +13,9 @@
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumHumans)
 
+// Menu Timeout
+const ZE_MENU_TIMEOUT = 30   // -1 = No time.
+
 // Human Attributes.
 enum _:HUMAN_ATTRIB
 {
@@ -39,7 +42,7 @@ enum _:Colors
 stock const DEFAULT_HUMAN_NAME[] = "Regular Human"
 stock const DEFAULT_HUMAN_DESC[] = "-= Balanced =-"
 stock const DEFAULT_HUMAN_MODEL[] = "gign"
-stock const Float:DEFAULT_HUMAN_HEALTH = 10000.0
+stock const Float:DEFAULT_HUMAN_HEALTH = 255.0
 stock const Float:DEFAULT_HUMAN_ARMOR = 0.0
 stock const DEFAULT_HUMAN_SPEED_FACTOR = 1
 stock const Float:DEFAULT_HUMAN_SPEED = 25.0
@@ -154,7 +157,7 @@ public plugin_cfg()
 	{
 		new aArray[HUMAN_ATTRIB]
 
-		// Default Zombie.
+		// Default Human.
 		copy(aArray[HUMAN_NAME], charsmax(aArray) - HUMAN_NAME, DEFAULT_HUMAN_NAME)
 		copy(aArray[HUMAN_DESC], charsmax(aArray) - HUMAN_DESC, DEFAULT_HUMAN_DESC)
 		copy(aArray[HUMAN_MODEL], charsmax(aArray) - HUMAN_MODEL, DEFAULT_HUMAN_MODEL)
@@ -257,7 +260,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 	{
 		static Float:flArmor; flArmor = get_entvar(iVictim, var_armorvalue)
 
-		if (flArmor - flDamage <= 0.0)
+		if (flArmor - flDamage < 0.0)
 		{
 			set_entvar(iVictim, var_armorvalue, 0.0)
 		}
@@ -281,7 +284,7 @@ public show_Humans_Menu(const id)
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_HUMANS_TITLE")
 	new iMenu = menu_create(szLang, "handler_Humans_Menu")
-	new fLevel = module_exists(LIBRARY_LEVELS)
+	new const fLevel = module_exists(LIBRARY_LEVELS)
 
 	if (fLevel)
 		iLevel = ze_get_user_level(id)
@@ -313,7 +316,7 @@ public show_Humans_Menu(const id)
 	menu_setprop(iMenu, MPROP_EXITNAME, szLang)
 
 	// Show the Menu for player.
-	menu_display(id, iMenu, g_iPage[id], 20)
+	menu_display(id, iMenu, g_iPage[id], ZE_MENU_TIMEOUT)
 }
 
 public handler_Humans_Menu(const id, iMenu, iKey)
@@ -330,7 +333,7 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 			menu_item_getinfo(iMenu, iKey, .info = iItemData, .infolen = charsmax(iItemData))
 
 			// Get Zombie Attributes.
-			new i = iItemData[0]
+			new const i = iItemData[0]
 			ArrayGetArray(g_aHumanClass, i, aArray)
 
 			if (module_exists(LIBRARY_LEVELS) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
