@@ -139,7 +139,7 @@ public ze_user_humanized(id)
 	// Health.
 	if (g_iHumanHealth > 0)
 	{
-		new Float:fHealth = float(g_iHumanHealth)
+		new const Float:fHealth = float(g_iHumanHealth)
 		set_entvar(id, var_health, fHealth)
 		set_entvar(id, var_max_health, fHealth)
 	}
@@ -212,7 +212,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 	{
 		static Float:flArmor; flArmor = get_entvar(iVictim, var_armorvalue)
 
-		if (flArmor - flDamage <= 0.0)
+		if (flArmor - flDamage < 0.0)
 		{
 			set_entvar(iVictim, var_armorvalue, 0.0)
 		}
