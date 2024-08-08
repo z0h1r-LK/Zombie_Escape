@@ -466,8 +466,8 @@ public client_Disconnected()
 			if (x_bGameChosen)
 			{
 				// Get the number of the Humans and Zombies.
-				new iHumansNum = get_member_game(m_iNumCT)
-				new iZombiesNum = get_member_game(m_iNumTerrorist)
+				new const iHumansNum = get_member_game(m_iNumCT)
+				new const iZombiesNum = get_member_game(m_iNumTerrorist)
 
 				if (iHumansNum && !iZombiesNum)
 				{
@@ -480,8 +480,8 @@ public client_Disconnected()
 				else
 				{
 					// Get number of alive Humans and Zombies.
-					new iAliveHumansNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT")
-					new iAliveZombiesNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST")
+					new const iAliveHumansNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT")
+					new const iAliveZombiesNum = get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST")
 
 					if (iAliveHumansNum && !iAliveZombiesNum)
 					{
@@ -497,14 +497,14 @@ public client_Disconnected()
 	}
 }
 
-public fw_ClientKill_Pre(id)
+public fw_ClientKill_Pre(const id)
 {
 	if (g_bBlockSuicide)
 		return FMRES_SUPERCEDE
 	return FMRES_IGNORED
 }
 
-public fw_Spawn_Pre(iEnt)
+public fw_Spawn_Pre(const iEnt)
 {
 	for (new i = 0; i < sizeof(g_szEntitesClass); i++)
 	{
@@ -563,6 +563,9 @@ public fw_NewRound_Event()
 	// Freeze Time.
 	g_bFreezePeriod = true
 
+	// New Round.
+	g_bRoundEnd = false
+
 	// Remove all Tasks.
 	remove_task(TASK_ROUNDTIME)
 
@@ -572,15 +575,12 @@ public fw_NewRound_Event()
 	if (g_iFwReturn >= ZE_STOP)
 		return
 
-	new iPlayersNum = get_PlayersNum()
+	new const iPlayersNum = get_PlayersNum()
 	if (iPlayersNum < g_iReqPlayers)
 	{
 		ze_colored_print(0, "%L", LANG_PLAYER, "NO_ENOUGH_PLAYERS", iPlayersNum, g_iReqPlayers)
 		return
 	}
-
-	// New Round.
-	g_bRoundEnd = false
 
 	// Call forward ze_game_started()
 	ExecuteForward(g_iForwards[FORWARD_GAMESTARTED])
@@ -634,7 +634,7 @@ public fw_RoundEnd_Event()
 	g_bRoundEnd = true
 }
 
-public fw_TempEntity_Msg(msg_id, dest, player)
+public fw_TempEntity_Msg(const msg_id, const dest, const player)
 {
 	if (!g_bBlockBloodEffs)
 		return PLUGIN_CONTINUE
@@ -660,7 +660,7 @@ public fw_TempEntity_Msg(msg_id, dest, player)
 	return PLUGIN_CONTINUE
 }
 
-public fw_TextMsg_Msg(msg_id, dest, player)
+public fw_TextMsg_Msg(const msg_id, const dest, const player)
 {
 	static szMsg[32], i
 	get_msg_arg_string(2, szMsg, charsmax(szMsg))
@@ -676,7 +676,7 @@ public fw_TextMsg_Msg(msg_id, dest, player)
 	return PLUGIN_CONTINUE
 }
 
-public fw_SendAudio_Msg(msg_id, dest, player)
+public fw_SendAudio_Msg(const msg_id, const dest, const player)
 {
 	static szAudio[24], i
 	get_msg_arg_string(2, szAudio, charsmax(szAudio))
@@ -692,7 +692,7 @@ public fw_SendAudio_Msg(msg_id, dest, player)
 	return PLUGIN_CONTINUE
 }
 
-public fw_HideWeapon_Msg(msg_id, dest, player)
+public fw_HideWeapon_Msg(const msg_id, const dest, const player)
 {
 	static iFlags
 
@@ -707,7 +707,7 @@ public fw_HideWeapon_Msg(msg_id, dest, player)
 	return PLUGIN_CONTINUE
 }
 
-public fw_TeamScore_Msg(msg_id, dest, player)
+public fw_TeamScore_Msg(const msg_id, const dest, const player)
 {
 	new szTeamName[2]
 	get_msg_arg_string(1, szTeamName, charsmax(szTeamName))
@@ -721,7 +721,7 @@ public fw_TeamScore_Msg(msg_id, dest, player)
 	}
 }
 
-public fw_MOTD_Msg(msg_id, dest, player)
+public fw_MOTD_Msg(const msg_id, const dest, const player)
 {
 	if (g_bMOTD[player] && g_bBlockStartupMOTD)
 	{
@@ -803,7 +803,7 @@ public fw_PlayerKilled_Post(const iVictim, const iAttacker, const iGibs)
 public fw_TakeDamage_Post(const iVictim, const iInflector, const iAttacker, const Float:flDamage, const bitsDamageType)
 {
 	// Damage himself?
-	if (iVictim == iAttacker || !is_user_connected(iVictim) || !is_user_connected(iAttacker))
+	if (iVictim == iAttacker || !is_user_connected(iVictim))
 		return
 
 	// Pain Shock Free.
@@ -895,7 +895,7 @@ public fw_ResetMaxSpeed_Post(const id)
 	}
 }
 
-public fw_HasRestrictItem_Pre(const id, ItemID:iItem)
+public fw_HasRestrictItem_Pre(const id, const ItemID:iItem)
 {
 	// Is not Alive?
 	if (!is_user_alive(id))
@@ -1059,6 +1059,7 @@ force_set_user_Zombie(const iVictim, iAttacker = 0)
 	rg_remove_all_items(iVictim)
 
 	// Give player Knife only.
+	set_msg_block(g_msgWeapPickup, BLOCK_ONCE)
 	rg_give_item(iVictim, "weapon_knife", GT_APPEND)
 
 	// Call forward ze_user_infected(param1, param2).
@@ -1101,7 +1102,7 @@ public __native_set_user_human(const plugin_id, const num_params)
 
 public __native_set_user_zombie(const plugin_id, const num_params)
 {
-	new victim = get_param(1)
+	new const victim = get_param(1)
 
 	if (!is_user_connected(victim))
 	{
@@ -1109,7 +1110,7 @@ public __native_set_user_zombie(const plugin_id, const num_params)
 		return false
 	}
 
-	new attacker = get_param(2)
+	new const attacker = get_param(2)
 
 	if (attacker > 0)
 	{
@@ -1135,7 +1136,7 @@ public __native_is_last_zombie(const plugin_id, const num_params)
 
 public __native_force_set_user_human(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -1149,7 +1150,7 @@ public __native_force_set_user_human(const plugin_id, const num_params)
 
 public __native_force_set_user_zombie(const plugin_id, const num_params)
 {
-	new victim = get_param(1)
+	new const victim = get_param(1)
 
 	if (!is_user_connected(victim))
 	{
@@ -1157,7 +1158,7 @@ public __native_force_set_user_zombie(const plugin_id, const num_params)
 		return false
 	}
 
-	new attacker = get_param(2)
+	new const attacker = get_param(2)
 
 	if (attacker > 0)
 	{
@@ -1174,7 +1175,7 @@ public __native_force_set_user_zombie(const plugin_id, const num_params)
 
 public __native_set_user_speed(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -1196,7 +1197,7 @@ public __native_set_user_speed(const plugin_id, const num_params)
 
 public __native_reset_user_speed(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -1214,7 +1215,7 @@ public __native_reset_user_speed(const plugin_id, const num_params)
 
 public __native_round_end(const plugin_id, const num_params)
 {
-	new team = get_param(1)
+	new const team = get_param(1)
 
 	switch (team)
 	{
