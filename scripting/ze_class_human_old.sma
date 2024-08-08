@@ -1,7 +1,9 @@
 #include <amxmodx>
 #include <reapi>
 #include <ze_core>
+#include <ze_class_survivor>
 #define LIBRARY_HUDINFO "ze_hud_info"
+#define LIBRARY_SURVIVOR "ze_class_survivor"
 #define LIBRARY_WPNMODELS "ze_weap_models_api"
 
 // Define.
@@ -39,7 +41,7 @@ public plugin_natives()
 
 public fw_module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_WPNMODELS) || equal(module, LIBRARY_HUDINFO))
+	if (equal(module, LIBRARY_SURVIVOR) || equal(module, LIBRARY_WPNMODELS) || equal(module, LIBRARY_HUDINFO))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -131,6 +133,9 @@ public plugin_init()
 
 public ze_user_humanized(id)
 {
+	// Ignore Survivor!
+	if (module_exists(LIBRARY_SURVIVOR) && ze_is_user_survivor(id)) return
+
 	// Health.
 	if (g_iHumanHealth > 0)
 	{
