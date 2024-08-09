@@ -113,8 +113,7 @@ public plugin_precache()
 	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aNemesisModel, i, szPlayerModel, charsmax(szPlayerModel))
-		format(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
-		precache_model(szModel)
+		precache_model(fmt("models/player/%s/%s.mdl", szPlayerModel, szPlayerModel))
 	}
 
 	iFiles = ArraySize(g_aNemesisClaws)
@@ -187,6 +186,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 		{
 			// Kill player.
 			ExecuteHamB(Ham_Killed, iVictim, iInfector, GIB_ALWAYS)
+			return ZE_BREAK // Block infection event and damage.
 		}
 
 		return ZE_STOP // Block infection event, Keep damage taken.
@@ -262,18 +262,18 @@ public ze_fire_burn_start(id)
  */
 set_User_Nemesis(const id)
 {
-	// Is not Zombie?
-	if (!ze_is_user_zombie(id))
-		ze_set_user_zombie(id)
-
 	// Is not Nemesis?
 	if (!is_user_nemesis(id))
 		flag_set(g_bitsIsNemesis, id)
 
+	// Is not Zombie?
+	if (!ze_is_user_zombie(id))
+		ze_set_user_zombie(id)
+
 	// HP.
 	if (g_iHealth > 0)
 	{
-		new Float:fHealth = float(g_iHealth)
+		new const Float:fHealth = float(g_iHealth)
 		set_entvar(id, var_health, fHealth)
 		set_entvar(id, var_max_health, fHealth)
 	}
@@ -346,7 +346,7 @@ public unset_User_Nemesis(const id)
  */
 public bool:__native_is_user_nemesis(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	static id; id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -359,7 +359,7 @@ public bool:__native_is_user_nemesis(const plugin_id, const num_params)
 
 public __native_set_user_nemesis(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -373,7 +373,7 @@ public __native_set_user_nemesis(const plugin_id, const num_params)
 
 public __native_remove_user_nemesis(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
