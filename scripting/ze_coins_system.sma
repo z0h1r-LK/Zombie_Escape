@@ -79,13 +79,14 @@ public plugin_cfg()
 		case 1: // Trie.
 		{
 			// Create new hash map.
-			g_tTempVault = TrieCreate()
+			if ((g_tTempVault = TrieCreate()) == Invalid_Trie)
+				set_fail_state("[ZE] Error in creating Trie (-1)")
 		}
 		case 2: // nVault.
 		{
 			// Open the Vault.
 			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
-				set_fail_state("Error in opening the nVault (-1)")
+				set_fail_state("[ZE] Error in opening the nVault (-1)")
 		}
 		case 3: // SQL.
 		{
