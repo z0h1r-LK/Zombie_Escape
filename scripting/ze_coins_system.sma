@@ -459,7 +459,7 @@ public query_SetData(iFailState, Handle:hQuery, szError[], iError, szData[], iSi
  */
 public __native_get_user_coins(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -472,7 +472,7 @@ public __native_get_user_coins(const plugin_id, const num_params)
 
 public __native_set_user_coins(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
