@@ -4,8 +4,10 @@
 #include <ze_core>
 #include <ze_class_human>
 #include <ze_class_zombie>
-#define LIBRARY_HUMAN "ze_class_human"
-#define LIBRARY_ZOMBIE "ze_class_zombie"
+#define LIBRARY_HUMAN   "ze_class_human"
+#define LIBRARY_ZOMBIE  "ze_class_zombie"
+#define LIBRARY_WEAPONS "ze_weapons_menu"
+#define LIBRARY_ITEMS   "ze_items_manager"
 
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
@@ -25,7 +27,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_HUMAN) || equal(module, LIBRARY_ZOMBIE))
+	if (equal(module, LIBRARY_HUMAN) || equal(module, LIBRARY_ZOMBIE) || equal(module, LIBRARY_ITEMS) || equal(module, LIBRARY_WEAPONS))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -90,31 +92,37 @@ public show_Menu_Main(const id)
 	// Menu Title.
 	iLen = formatex(szMenu, charsmax(szMenu), "\r%L \y%L:^n^n", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_MAIN_TITLE")
 
-	// 1. Weapons Menu.
-	if (is_user_alive(id))
+	if (module_exists(LIBRARY_WEAPONS))
 	{
-		if (ze_auto_buy_enabled(id))
+		// 1. Weapons Menu.
+		if (is_user_alive(id))
 		{
-			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L^n", LANG_PLAYER, "MENU_RE_WEAPONS")
+			if (ze_auto_buy_enabled(id))
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L^n", LANG_PLAYER, "MENU_RE_WEAPONS")
+			}
+			else
+			{
+				iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \w%L^n", LANG_PLAYER, "MENU_WEAPONS")
+			}
 		}
 		else
 		{
-			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \w%L^n", LANG_PLAYER, "MENU_WEAPONS")
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L^n", LANG_PLAYER, "MENU_WEAPONS")
 		}
 	}
-	else
-	{
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r1. \d%L^n", LANG_PLAYER, "MENU_WEAPONS")
-	}
 
-	// 2. Extra Items.
-	if (is_user_alive(id))
+	if (module_exists(LIBRARY_ITEMS))
 	{
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \y%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
-	}
-	else
-	{
-		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \d%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
+		// 2. Extra Items.
+		if (is_user_alive(id))
+		{
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \y%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
+		}
+		else
+		{
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r2. \d%L^n", LANG_PLAYER, "MENU_EXTRAITEMS")
+		}
 	}
 
 	// New Line.
@@ -164,19 +172,25 @@ public handler_Menu_Main(const id, iKey)
 	{
 		case 0: // 1. Weapons Menu.
 		{
-			if (ze_auto_buy_enabled(id))
+			if (module_exists(LIBRARY_WEAPONS))
 			{
-				ze_set_auto_buy(id)
-			}
-			else
-			{
-				ze_show_weapons_menu(id)
+				if (ze_auto_buy_enabled(id))
+				{
+					ze_set_auto_buy(id)
+				}
+				else
+				{
+					ze_show_weapons_menu(id)
+				}
 			}
 		}
 		case 1: // 2. Extra Items.
 		{
 			// Show Extra-Items menu for player.
-			ze_item_show_menu(id)
+			if (module_exists(LIBRARY_ITEMS))
+			{
+				ze_item_show_menu(id)
+			}
 		}
 		case 2: // 3. Human Classes.
 		{
