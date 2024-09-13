@@ -539,3 +539,13 @@ native ze_hud_info_set(id, const szClass[], const iColor[3], bMl = false);
  * @error         Invalid team ID.
  */
 native ze_round_end(team);
+
+/**
+ * Check if Zombies are frozen or not.
+ *
+ * @note This native check Zombies are frozen in release time.
+ *
+ * @return       true  | If Zombies are Frozen.
+ *               false | Otherwise.
+ */
+native ze_is_zombie_frozen();

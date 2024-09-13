@@ -76,8 +76,15 @@ new Trie:g_tChosen
 // Dynamic Arrays.
 new Array:g_aSounds
 
+// Hook Handle.
+new HookChain:g_hPMHook,
+	HookChain:g_hPMAirHook,
+	HookChain:g_hTraceAttack
+
 public plugin_natives()
 {
+	register_native("ze_is_zombie_frozen", "__native_is_zombie_frozen")
+
 	set_module_filter("module_filter")
 	set_native_filter("native_filter")
 }
@@ -144,9 +151,10 @@ public plugin_init()
 	register_plugin("[ZE] Gamemode: Escape", ZE_VERSION, ZE_AUTHORS)
 
 	// Hook Chain.
-	RegisterHookChain(RG_PM_Move, "fw_PM_Movement", 0)
-	RegisterHookChain(RG_PM_AirMove, "fw_PM_Movement", 0)
-	RegisterHookChain(RG_CBasePlayer_TraceAttack, "fw_TraceAttack_Pre", 0)
+	g_hPMHook = RegisterHookChain(RG_PM_Move, "fw_PM_Movement")
+	g_hPMAirHook = RegisterHookChain(RG_PM_AirMove, "fw_PM_Movement")
+	g_hTraceAttack = RegisterHookChain(RG_CBasePlayer_TraceAttack, "fw_TraceAttack_Pre")
+	rp_hook_status()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_escape_enable", "1"), g_bEnabled)
@@ -238,26 +246,18 @@ public ze_fire_burn_start(id)
 	return ZE_CONTINUE
 }
 
-public fw_PM_Movement(id)
+public fw_PM_Movement(const id)
 {
-	if (g_bFreezeZombie)
-	{
-		// Player is Zombie?
-		if (!ze_is_user_zombie(id))
-			return HC_CONTINUE
+	// Player is Zombie?
+	if (!ze_is_user_zombie(id))
+		return
 
-		// Freeze the player.
-		set_pmove(pm_maxspeed, 1.00)
-	}
-
-	return HC_CONTINUE
+	// Freeze the player.
+	set_pmove(pm_maxspeed, 1.00)
 }
 
 public fw_TraceAttack_Pre(const iVictim, iAttacker, Float:flDamage, Float:vDirection[3], pTrace, bitsDamageType)
 {
-	if (!g_bFreezeZombie)
-		return HC_CONTINUE
-
 	// Zombie?
 	if (!ze_is_user_zombie(iVictim))
 		return HC_CONTINUE
@@ -280,6 +280,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 
 public ze_game_started_pre()
 {
+	rp_hook_status()
 	g_bReleaseTime = false
 	g_bFreezeZombie = false
 
@@ -367,6 +368,7 @@ public ze_gamemode_chosen(game_id, target)
 
 	if (g_bFreezeMode)
 	{
+		rp_hook_status(true)
 		g_bFreezeZombie = true
 	}
 
@@ -501,16 +503,46 @@ public release_Zombies()
 	ExecuteForward(g_iForwards[FORWARD_ZOMBIE_RELEASE])
 
 	// Release Zombie.
+	rp_hook_status()
 	g_bReleaseTime = false
 	g_bFreezeZombie = false
 }
 
 public ze_roundend(iWinTeam)
 {
+	rp_hook_status()
+
 	// Remove task.
 	remove_task(TASK_RELEASEDHUD)
 	remove_task(TASK_RELEASETIME)
 
 	// Disable XVar.
 	set_xvar_num(g_xRespawnAsZombie)
+}
+
+/**
+ * -=| Function |=-
+ */
+rp_hook_status(const bool:status = false)
+{
+	if (status)
+	{
+		EnableHookChain(g_hPMHook)
+		EnableHookChain(g_hPMAirHook)
+		EnableHookChain(g_hTraceAttack)
+	}
+	else
+	{
+		DisableHookChain(g_hPMHook)
+		DisableHookChain(g_hPMAirHook)
+		DisableHookChain(g_hTraceAttack)
+	}
+}
+
+/**
+ * -=| Natives |=-
+ */
+public __native_is_zombie_frozen(const plugin_id, const num_params)
+{
+	return g_bFreezeZombie
 }
