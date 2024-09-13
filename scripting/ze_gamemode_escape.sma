@@ -196,13 +196,22 @@ public plugin_end()
 	TrieDestroy(g_tChosen)
 }
 
-public client_authorized(id, const szAuthID[])
+public client_putinserver(id)
 {
 	// HLTV Proxy?
 	if (is_user_hltv(id))
 		return
 
-	copy(g_szAuth[id], charsmax(g_szAuth[]), szAuthID)
+	set_task(0.2, "delayGetAuthID", id)
+}
+
+public delayGetAuthID(const id)
+{
+	// Player disconnected?
+	if (!is_user_connected(id))
+		return
+
+	get_user_authid(id, g_szAuth[id], charsmax(g_szAuth[]))
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
