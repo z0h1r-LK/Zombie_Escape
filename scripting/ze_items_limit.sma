@@ -1,9 +1,8 @@
 #include <amxmodx>
-
 #include <ze_core>
 
 // Array.
-new g_iLimit[MAX_PLAYERS+1][ZE_MAX_ITEMS]
+new g_iLimit[MAX_PLAYERS+1][ZE_MAX_ITEMS], g_iGlobalLimit[ZE_MAX_ITEMS]
 
 public plugin_init()
 {
@@ -18,6 +17,8 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 
 public ze_game_started()
 {
+	arrayset(g_iGlobalLimit, 0, sizeof(g_iGlobalLimit))
+
 	for (new id = 1; id <= MaxClients; id++)
 	{
 		arrayset(g_iLimit[id], 0, sizeof(g_iLimit[]))
@@ -27,15 +28,27 @@ public ze_game_started()
 public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 {
 	new const iLimit = ze_item_get_limit(iItem)
+	new const iGLimit = ze_item_get_glimit(iItem)
 
-	if (iLimit > 0)
+	if (iLimit > 0 || iGLimit > 0)
 	{
 		if (bInMenu)
 		{
-			ze_item_add_text("\r[%d/%d]", g_iLimit[id][iItem], iLimit)
+			if (iLimit > 0 && iGLimit > 0)
+			{
+				ze_item_add_text("\r[%i/%i]\d[%i/%i]", g_iLimit[id][iItem], iLimit, g_iGlobalLimit[iItem], iGLimit)
+			}
+			else if (iGLimit > 0)
+			{
+				ze_item_add_text("\d[%i/%i]", g_iGlobalLimit[iItem], iGLimit)
+			}
+			else
+			{
+				ze_item_add_text("\r[%i/%i]", g_iLimit[id][iItem], iLimit)
+			}
 		}
 
-		if (g_iLimit[id][iItem] >= iLimit)
+		if ((iLimit > 0 && g_iLimit[id][iItem] >= iLimit) || (iGLimit > 0 && g_iGlobalLimit[iItem] >= iGLimit))
 		{
 			if (!bInMenu)
 			{
@@ -52,9 +65,15 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 public ze_select_item_post(id, iItem)
 {
 	new const iLimit = ze_item_get_limit(iItem)
+	new const iGLimit = ze_item_get_glimit(iItem)
 
 	if (iLimit > 0)
 	{
 		g_iLimit[id][iItem]++
+	}
+
+	if (iGLimit > 0)
+	{
+		g_iGlobalLimit[iItem]++
 	}
 }

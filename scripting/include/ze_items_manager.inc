@@ -92,6 +92,18 @@ native ze_item_get_cost(iItem);
 native ze_item_get_limit(iItem);
 
 /**
+ * Returns an item global limit.
+ *
+ * @param id           Item id.
+ *
+ * @return             Item limit    | If item id is valid.
+ *                     ZE_ITEM_WRONG | If item is is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_get_glimit(iItem);
+
+/**
  * Add additional text in item name on Menu.
  *
  * @param text[]       Text to be added.
@@ -148,12 +160,25 @@ native ze_item_set_cost(iItem, iCost);
  * @param iItem        Item id.
  * @param iLimit       Limit to be set.
  *
- * @return             true  | If new cost assigned.
+ * @return             true  | If new limit assigned.
  *                     false | If item id is invalid.
  *
  * @error              If item id is invalid.
  */
 native ze_item_set_limit(iItem, iLimit);
+
+/**
+ * Sets an item new global limit.
+ *
+ * @param iItem        Item id.
+ * @param iLimit       Global limit to be set.
+ *
+ * @return             true  | If new limit assigned.
+ *                     false | If item id is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_set_glimit(iItem, iLimit);
 
 /**
  * Check If item id is valid or not.
