@@ -53,6 +53,9 @@ new bool:g_bPower,
 	Float:g_flDucking,
 	Float:g_flDistance
 
+// Variable.
+new bool:g_bReleaseTime
+
 // Array
 new Float:g_flKnockback[MAX_PLAYERS+1]
 
@@ -106,10 +109,20 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_flKnockback[id] = 0.0
 }
 
+public ze_zombie_appear(const iZombies[], iZombiesNum)
+{
+	g_bReleaseTime = true
+}
+
+public ze_zombie_release()
+{
+	g_bReleaseTime = false
+}
+
 public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDirection[3], tr, const bitsDamageType)
 {
 	// Non-player damage or self damage
-	if (iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
+	if (g_bReleaseTime || iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
 		return
 
 	// Victim isn't zombie or attacker isn't human
