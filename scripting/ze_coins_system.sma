@@ -194,6 +194,9 @@ public client_putinserver(id)
 
 public delayReadData(const id)
 {
+	if (!is_user_connected(id))
+		return
+
 	switch (g_iAuthType)
 	{
 		case 0: // Name.
