@@ -8,7 +8,8 @@ enum _:ITEM_DATA
 {
 	ITEM_NAME[MAX_NAME_LENGTH] = 0,
 	ITEM_COST,
-	ITEM_LIMIT
+	ITEM_LIMIT,
+	ITEM_GLIMIT
 }
 
 enum _:FORWARDS
@@ -41,17 +42,20 @@ public x_iMaxItems,
 
 public plugin_natives()
 {
+	register_library("ze_items_manager")
 	register_native("ze_item_register", "__native_item_register")
 	register_native("ze_register_item", "__native_item_register")
 	register_native("ze_item_get_name", "__native_item_get_name")
 	register_native("ze_item_get_cost", "__native_item_get_cost")
 	register_native("ze_item_get_limit", "__native_item_get_limit")
+	register_native("ze_item_get_glimit", "__native_item_get_glimit")
 	register_native("ze_item_add_text", "__native_item_add_text")
 	register_native("ze_item_force_buy", "__native_item_force_buy")
 	register_native("ze_item_is_valid", "__native_item_is_valid")
 	register_native("ze_item_set_name", "__native_item_set_name")
 	register_native("ze_item_set_cost", "__native_item_set_cost")
 	register_native("ze_item_set_limit", "__native_item_set_limit")
+	register_native("ze_item_set_glimit", "__native_item_set_glimit")
 	register_native("ze_item_show_menu", "__native_item_show_menu")
 }
 
@@ -262,7 +266,7 @@ public __native_item_register(const plugin_id, const num_params)
 		iCost = 0
 
 	// Limit
-	new iLimit
+	new iLimit, iGLimit
 	if ((iLimit = get_param(3)) < 0)
 		iLimit = 0
 
@@ -273,11 +277,14 @@ public __native_item_register(const plugin_id, const num_params)
 		ini_write_int(ZE_ET_FILENAME, szName, "COST", iCost)
 	if (!ini_read_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit))
 		ini_write_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit)
+	if (!ini_read_int(ZE_ET_FILENAME, szName, "GLOBAL_LIMIT", iGLimit))
+		ini_write_int(ZE_ET_FILENAME, szName, "GLOBAL_LIMIT", iGLimit)
 
 	// Copy item data on Array.
 	copy(g_aItems[x_iMaxItems][ITEM_NAME], charsmax(g_aItems[]) - ITEM_NAME, szItemName)
 	g_aItems[x_iMaxItems][ITEM_COST] = iCost
 	g_aItems[x_iMaxItems][ITEM_LIMIT] = iLimit
+	g_aItems[x_iMaxItems][ITEM_GLIMIT] = iGLimit
 
 	// New Item.
 	return ++x_iMaxItems - 1
@@ -320,6 +327,19 @@ public __native_item_get_limit(const plugin_id, const num_params)
 	}
 
 	return g_aItems[iItem][ITEM_LIMIT]
+}
+
+public __native_item_get_glimit(const plugin_id, const num_params)
+{
+	new const iItem = get_param(1)
+
+	if (!FIsItemValid(iItem))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Item id (%d)", iItem)
+		return ZE_GAME_INVALID
+	}
+
+	return g_aItems[iItem][ITEM_GLIMIT]
 }
 
 public __native_item_add_text(const plugin_id, const num_params)
@@ -406,6 +426,20 @@ public __native_item_set_limit(const plugin_id, const num_params)
 	}
 
 	g_aItems[iItem][ITEM_LIMIT] = get_param(3)
+	return true
+}
+
+public __native_item_set_glimit(const plugin_id, const num_params)
+{
+	new iItem = get_param(1)
+
+	if (!FIsItemValid(iItem))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Item id (%d)", iItem)
+		return false
+	}
+
+	g_aItems[iItem][ITEM_GLIMIT] = get_param(3)
 	return true
 }
 
