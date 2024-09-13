@@ -11,6 +11,8 @@
 #define MN_NEXT_BACK 8
 #define MN_EXIT 9
 
+#define CS_MENU_DELAY 0.5  // float.
+
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
 
@@ -105,6 +107,7 @@ public x_bWeaponsDisabled = 0;
 
 public plugin_natives()
 {
+	register_library("ze_weapons_menu")
 	register_native("ze_auto_buy_enabled", "__native_auto_buy_enabled")
 	register_native("ze_set_auto_buy", "__native_set_auto_buy")
 	register_native("ze_show_weapons_menu", "__native_show_weapons_menu")
@@ -271,7 +274,7 @@ public ze_user_humanized(id)
 	}
 	else
 	{
-		show_Available_Menu(id)
+		set_task(CS_MENU_DELAY, "show_Available_Menu", id) // Delay before display Menu for Human.
 		g_iMenuData[id][MD_BUY_TIME] = get_gametime() + g_iBuyTime
 	}
 
@@ -299,6 +302,9 @@ public ze_user_humanized(id)
 
 public show_Available_Menu(id)
 {
+	if (!is_user_alive(id) || ze_is_user_zombie(id)) // For safe and avoid bugs.
+		return
+
 	if (!g_iMenuData[id][MD_PRIMARY_CHOSEN])
 		show_Primary_Weapons(id)
 	else if (!g_iMenuData[id][MD_SECONDARY_CHOSEN])
