@@ -159,7 +159,7 @@ public SQL_Init()
 	else
 	{
 		// Disable plugin.
-		set_fail_state("[SQL][Coins] Failed to connect to SQL database: %s.", szError)
+		set_fail_state("[SQL][Coins] Failed to connect to SQL database: %s (Error: %s).", szDB, szError)
 	}
 
 	new szTable[200]
