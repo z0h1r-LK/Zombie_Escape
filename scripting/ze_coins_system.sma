@@ -181,15 +181,19 @@ public query_CreateTable(iFailState, Handle:hQuery, szError[], iError, szData[],
 	SQL_IsFail(iFailState, iError, szError, g_szLogFile)
 }
 
-public client_authorized(id, const authid[])
+public client_putinserver(id)
 {
-	if (is_user_hltv(id))
-		return
-
 	if (!g_iSaveType)
 		return
 
-	// Get player's steamid.
+	if (is_user_hltv(id))
+		return
+
+	set_task(0.2, "delayReadData", id)
+}
+
+public delayReadData(const id)
+{
 	switch (g_iAuthType)
 	{
 		case 0: // Name.
@@ -199,7 +203,7 @@ public client_authorized(id, const authid[])
 		}
 		case 1: // AuthID.
 		{
-			copy(g_szAuth[id], charsmax(g_szAuth[]), authid)
+			get_user_authid(id, g_szAuth[id], charsmax(g_szAuth[]))
 		}
 	}
 
