@@ -75,8 +75,8 @@ public plugin_precache()
 		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
 
 	// Precache Sounds.
-	precache_generic(g_szSelectSound)
-	precache_generic(g_szDisplaySound)
+	precache_generic(fmt("sound/%s", g_szSelectSound))
+	precache_generic(fmt("sound/%s", g_szDisplaySound))
 }
 
 public plugin_init()
