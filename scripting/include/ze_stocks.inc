@@ -142,6 +142,9 @@ stock get_PlayersNum()
 		if (is_user_hltv(id))
 			continue;
 
+		if (get_member(id, m_iTeam) == TEAM_SPECTATOR)
+			continue;
+
 		iNum++;
 	}
 
