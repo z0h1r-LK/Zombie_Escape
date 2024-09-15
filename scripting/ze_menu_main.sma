@@ -47,13 +47,9 @@ public plugin_precache()
 	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
 		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
 
-	new szSound[MAX_RESOURCE_PATH_LENGTH]
-
 	// Precache Sounds.
-	formatex(szSound, charsmax(szSound), "sound/%s", g_szSelectSound)
-	precache_generic(szSound)
-	formatex(szSound, charsmax(szSound), "sound/%s", g_szDisplaySound)
-	precache_generic(szSound)
+	precache_generic(fmt("sound/%s", g_szSelectSound))
+	precache_generic(fmt("sound/%s", g_szDisplaySound))
 }
 
 public plugin_init()
