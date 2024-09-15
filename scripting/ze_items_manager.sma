@@ -4,6 +4,9 @@
 // Macro.
 #define FIsItemValid(%0) (ZE_ITEM_WRONG<(%0)<x_iMaxItems)
 
+// Menu Timeout.
+const CS_MENU_TIMEOUT = 45
+
 enum _:ITEM_DATA
 {
 	ITEM_NAME[MAX_NAME_LENGTH] = 0,
@@ -120,14 +123,11 @@ public cmd_ShowItemsMenu(const id)
 
 public show_Items_Menu(const id)
 {
-	new szLang[64]
-
 	// Menu Title.
-	formatex(szLang, charsmax(szLang), "%L %L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ITEMS_TITLE")
+	new iMenu = menu_create(fmt("%L %L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ITEMS_TITLE"), "handler_Items_Menu")
 
-	new iMenu = menu_create(szLang, "handler_Items_Menu")
 	new iItemData[2]
-	for (new iItem = 0; iItem < x_iMaxItems; iItem++)
+	for (new szLang[64], iItem = 0; iItem < x_iMaxItems; iItem++)
 	{
 		g_szText = NULL_STRING
 
@@ -168,15 +168,15 @@ public show_Items_Menu(const id)
 	}
 
 	// Next, Back, Exit.
-	formatex(szLang, charsmax(szLang), "%L", LANG_PLAYER, "NEXT")
-	menu_setprop(iMenu, MPROP_NEXTNAME, szLang)
-	formatex(szLang, charsmax(szLang), "%L", LANG_PLAYER, "BACK")
-	menu_setprop(iMenu, MPROP_BACKNAME, szLang)
-	formatex(szLang, charsmax(szLang), "%L", LANG_PLAYER, "EXIT")
-	menu_setprop(iMenu, MPROP_EXITNAME, szLang)
+	menu_setprop(iMenu, MPROP_NEXTNAME, fmt("%L", LANG_PLAYER, "NEXT"))
+	menu_setprop(iMenu, MPROP_BACKNAME, fmt("%L", LANG_PLAYER, "BACK"))
+	menu_setprop(iMenu, MPROP_EXITNAME, fmt("%L", LANG_PLAYER, "EXIT"))
+
+	if (menu_pages(iMenu) < g_iMenuPage[id]+1)
+		g_iMenuPage[id] = 0
 
 	// Show menu for the player.
-	menu_display(id, iMenu, g_iMenuPage[id])
+	menu_display(id, iMenu, g_iMenuPage[id], CS_MENU_TIMEOUT)
 }
 
 public handler_Items_Menu(id, iMenu, iKey)
@@ -186,9 +186,12 @@ public handler_Items_Menu(id, iMenu, iKey)
 		client_cmd(id, "spk ^"%s^"", g_szSelectSound)
 	}
 
-	if (iKey == MENU_EXIT)
+	switch (iKey)
 	{
-		goto CLOSE_MENU
+		case MENU_TIMEOUT, MENU_EXIT:
+		{
+			goto CLOSE_MENU
+		}
 	}
 
 	if (x_bItemsDisabled)
@@ -204,13 +207,11 @@ public handler_Items_Menu(id, iMenu, iKey)
 	}
 
 	new iItemData[2]
-	menu_item_getinfo(iMenu, iKey, .info = iItemData, .infolen = charsmax(iItemData))
-
-	// Get item index.
-	new iItem = iItemData[0]
+	menu_item_getinfo(iMenu, iKey, _, iItemData, charsmax(iItemData))
 
 	// Buy item.
-	buy_Item(id, iItem, false)
+	buy_Item(id, iItemData[0], false)
+	g_iMenuPage[id] = iKey / 7
 
 	// Free the Memory.
 	CLOSE_MENU:
