@@ -55,6 +55,26 @@ native ze_item_register(const szName[], iCost, iLimit);
 native ze_register_item(const szName[], iCost, iLimit);
 
 /**
+ * Registers an item on Menu.
+ *
+ * @note Maximum item name length is 32 characters,
+ *       Check amxconst.inc and MAX_NAME_LENGTH
+ *       Level-XP System is required, Download it (escapers-zone.net)
+ *
+ * @param szName[]     Item Name.
+ * @param iCost        Item Cost.
+ * @param iLimit       Item Limit (0 = Unlimited).
+ * @param iLevel       Item Level (0 = Free).
+ * @paral iGLimit      Item Global Limit (0 = Unlimited).
+ *
+ * @return             A valid item id | If registered successfully.
+ *                     ZE_ITEM_WRONG   | If item without name or item name already exist.
+ *
+ * @error              Register item without name or item name already used.
+ */
+native ze_item_register_ex(const szName[], iCost, iLimit, iLevel = 0, iGLimit = 0);
+
+/**
  * Returns an item name.
  *
  * @param id           Item id.
@@ -85,11 +105,23 @@ native ze_item_get_cost(iItem);
  * @param id           Item id.
  *
  * @return             Item limit    | If item id is valid.
- *                     ZE_ITEM_WRONG | If item is is invalid.
+ *                     ZE_ITEM_WRONG | If item id is invalid.
  *
  * @error              If item id is invalid.
  */
 native ze_item_get_limit(iItem);
+
+/**
+ * Returns an item level.
+ *
+ * @param id           Item id.
+ *
+ * @return             Item level    | If item id is valid.
+ *                     ZE_ITEM_WRONG | If item id is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_get_level(iItem);
 
 /**
  * Returns an item global limit.
@@ -109,7 +141,7 @@ native ze_item_get_glimit(iItem);
  * @param text[]       Text to be added.
  * @param ...          Variable number of formatting parameters.
  *
- * @noreturn
+ * @return             Number of cells written.
  */
 native ze_item_add_text(const text[], any:...);
 
@@ -166,6 +198,19 @@ native ze_item_set_cost(iItem, iCost);
  * @error              If item id is invalid.
  */
 native ze_item_set_limit(iItem, iLimit);
+
+/**
+ * Sets an item level.
+ *
+ * @param id           Item id.
+ * @param iLevel       Level to be set.
+ *
+ * @return             true  | If new level assigned.
+ *                     false | If item id is invalid.
+ *
+ * @error              If item id is invalid.
+ */
+native ze_item_set_level(iItem, iLevel);
 
 /**
  * Sets an item new global limit.
