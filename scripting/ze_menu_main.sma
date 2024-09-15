@@ -1,5 +1,6 @@
 #include <amxmodx>
 #include <amxmisc>
+#include <reapi>
 
 #include <ze_core>
 #include <ze_class_human>
@@ -139,6 +140,18 @@ public show_Menu_Main(const id)
 	// New Line.
 	szMenu[iLen++] = '^n'
 
+	// 5. Leave Spectators
+	switch (get_member(id, m_iTeam))
+	{
+		case TEAM_SPECTATOR, TEAM_UNASSIGNED:
+		{
+			iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r5. \y%L^n", LANG_PLAYER, "MENU_LEAVE_SPECS")
+		}
+	}
+
+	// New Line.
+	szMenu[iLen++] = '^n'
+
 	// 0. Exit.
 	iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r0. \w%L", LANG_PLAYER, "MENU_EXIT")
 
@@ -200,6 +213,16 @@ public handler_Menu_Main(const id, iKey)
 			if (module_exists(LIBRARY_ZOMBIE))
 			{
 				ze_zclass_show_menu(id)
+			}
+		}
+		case 4: // 5. Leave Spectators.
+		{
+			switch (get_member(id, m_iTeam))
+			{
+				case TEAM_SPECTATOR, TEAM_UNASSIGNED:
+				{
+					rg_set_user_team(id, TEAM_CT, MODEL_UNASSIGNED, true, true)
+				}
 			}
 		}
 		case 9: // 0. Exit.

@@ -42,6 +42,7 @@ MENU_RE_WEAPONS = "Weapons \r[Auto Buy]"
 MENU_EXTRAITEMS = "Extra Items"
 MENU_HCLASSES = "Human Classes"
 MENU_ZCLASSES = "Zombie Classes"
+MENU_LEAVE_SPECS = "Leave Spectators"
 
 MENU_NEXT = "Next"
 MENU_BACK = "Back"
