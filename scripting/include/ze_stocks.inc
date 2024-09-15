@@ -3,10 +3,7 @@
 #endif
 #define _ze_stocks_included
 
-#include <amxmodx>
-#include <amxmisc>
-#include <fakemeta>
-#include <reapi>
+#include <amxmisc> // <- amxmodx.inc already included here.
 
 // Macroses.
 #define flag_get(%0,%1)         %0 & BIT(%1)
@@ -77,9 +74,7 @@ stock GetRequiredZombies(iAliveNum)
 stock precache_sky(const szSkyName[])
 {
 	new const szSuffix[6][3] = {"up", "dn", "ft", "bk", "lf", "rt"};
-	new szTgaFile[MAX_NAME_LENGTH+3];
-
-	for(new i = 0; i < 6; i++)
+	for(new szTgaFile[MAX_NAME_LENGTH+3], i = 0; i < 6; i++)
 	{
 		// Get full path of the File.
 		formatex(szTgaFile, charsmax(szTgaFile), "gfx/env/%s%s.tga", szSkyName, szSuffix[i]);
