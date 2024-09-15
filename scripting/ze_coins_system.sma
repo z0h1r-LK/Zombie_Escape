@@ -325,7 +325,9 @@ public query_DeleteData(iFailState, Handle:hQuery, szError[], iError, szData[], 
 	if (SQL_IsFail(iFailState, iError, szError, g_szLogFile))
 		return
 
-	server_print("[SQL][Coins] All data from table 'ze_coins' has been deleted Successfully !")
+	new szDB[64]
+	get_cvar_string("amx_sql_db", szDB, charsmax(szDB))
+	server_print("[SQL][Coins] All data from table 'ze_coins' from database '%s' has been deleted Successfully !", szDB)
 }
 
 public fw_TakeDamage_Post(const iVictim, iInflector, iAttacker, Float:flDamage, bitsDamageType)
@@ -404,11 +406,9 @@ public read_Coins(const id)
 		}
 		case 3: // SQL.
 		{
-			new szQuery[128], szData[4]
-			formatex(szQuery, charsmax(szQuery), "SELECT * FROM `ze_coins` WHERE `AuthID` = '%s';", g_szAuth[id])
-
+			new szData[4]
 			num_to_str(id, szData, charsmax(szData))
-			SQL_ThreadQuery(g_hTuple, "query_SelectData", szQuery, szData, charsmax(szData))
+			SQL_ThreadQuery(g_hTuple, "query_SelectData", fmt("SELECT * FROM `ze_coins` WHERE `AuthID` = '%s';", g_szAuth[id]), szData, charsmax(szData))
 		}
 	}
 }
@@ -449,9 +449,7 @@ public write_Coins(const id)
 		}
 		case 3: // SQL.
 		{
-			new szQuery[128]
-			formatex(szQuery, charsmax(szQuery), "REPLACE INTO `ze_coins` (`AuthID`, `Amount`) VALUES ('%s', %d);", g_szAuth[id], g_iCoins[id])
-			SQL_ThreadQuery(g_hTuple, "query_SetData", szQuery)
+			SQL_ThreadQuery(g_hTuple, "query_SetData", fmt("REPLACE INTO `ze_coins` (`AuthID`, `Amount`) VALUES ('%s', %d);", g_szAuth[id], g_iCoins[id]))
 		}
 	}
 }
