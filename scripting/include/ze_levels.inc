@@ -75,6 +75,7 @@ native ze_get_user_level(id);
  * Set or Add Level for player.
  *
  * @param id     Client index.
+ * @param level  Level to be add or set.
  *
  * @return       Level on success, NULLENT when failure.
  *
