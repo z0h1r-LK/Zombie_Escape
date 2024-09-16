@@ -271,7 +271,7 @@ public __native_item_register(const plugin_id, const num_params)
 		iCost = 0
 
 	// Limit
-	new iLimit, iGLimit
+	new iLimit, iGLimit, iLevel
 	if ((iLimit = get_param(3)) < 0)
 		iLimit = 0
 
@@ -282,6 +282,8 @@ public __native_item_register(const plugin_id, const num_params)
 		ini_write_int(ZE_ET_FILENAME, szName, "COST", iCost)
 	if (!ini_read_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit))
 		ini_write_int(ZE_ET_FILENAME, szName, "LIMIT", iLimit)
+	if (!ini_read_int(ZE_ET_FILENAME, szName, "LEVEL", iLevel))
+		ini_write_int(ZE_ET_FILENAME, szName, "LEVEL", iLevel)
 	if (!ini_read_int(ZE_ET_FILENAME, szName, "GLOBAL_LIMIT", iGLimit))
 		ini_write_int(ZE_ET_FILENAME, szName, "GLOBAL_LIMIT", iGLimit)
 
@@ -289,6 +291,7 @@ public __native_item_register(const plugin_id, const num_params)
 	copy(g_aItems[x_iMaxItems][ITEM_NAME], charsmax(g_aItems[]) - ITEM_NAME, szItemName)
 	g_aItems[x_iMaxItems][ITEM_COST] = iCost
 	g_aItems[x_iMaxItems][ITEM_LIMIT] = iLimit
+	g_aItems[x_iMaxItems][ITEM_LEVEL] = iLevel
 	g_aItems[x_iMaxItems][ITEM_GLIMIT] = iGLimit
 
 	// New Item.
