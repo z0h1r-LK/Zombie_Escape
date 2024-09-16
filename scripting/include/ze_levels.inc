@@ -76,6 +76,7 @@ native ze_get_user_level(id);
  *
  * @param id     Client index.
  * @param level  Level to be add or set.
+ * @param add    true = Add level | false = Set level.
  *
  * @return       Level on success, NULLENT when failure.
  *
