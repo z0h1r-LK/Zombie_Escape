@@ -1,5 +1,5 @@
 #include <amxmodx>
-
+#include <reapi>
 #include <ze_core>
 #include <ze_class_survivor>
 #define LIBRARY_NEMESIS "ze_class_nemesis"

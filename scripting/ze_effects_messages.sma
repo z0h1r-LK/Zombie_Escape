@@ -1,5 +1,5 @@
 #include <amxmodx>
-
+#include <reapi>
 #include <ze_core>
 
 // Defines.

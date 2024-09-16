@@ -1,4 +1,5 @@
 #include <amxmodx>
+#include <reapi>
 #include <ze_core>
 #define LIBRARY_COINS "ze_coins_system"
 

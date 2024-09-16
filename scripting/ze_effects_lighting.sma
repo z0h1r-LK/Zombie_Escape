@@ -1,5 +1,6 @@
 #include <amxmodx>
 #include <engine>
+#include <reapi>
 #include <ze_core>
 
 // Flags.
