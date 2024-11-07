@@ -95,3 +95,101 @@ DYNAMIC = "Dynamic"
 
 MENU_LEVEL = "Level"
 MSG_LVL_NOT_ENOUGH = "You don't have enough level!"
+
+[pl]
+GAME_DESC = "Zombie Escape"
+CHAT_PREFIX = "[!gZE!y]"
+MENU_PREFIX = "\r[ZE]\w"
+
+HUD_ESCAPE = "** Normalna Ucieczka **"
+HUD_NEMESIS = "** Tryb Nemesis **"
+HUD_SURVIVOR = "** Ucieczka Ocalalych **"
+HUD_SWARM = "** Horda Zombie **"
+
+HUD_ESCAPE_FAIL = "-=| Ucieczka Nieudana |=-"
+HUD_ESCAPE_SUCCESS = "-=| Ucieczka Udana |=-"
+
+HUD_SCOREMESSAGE = "| Ludzie: %i - %i :Zombie |"
+HUD_COUNTDOWN = "Zombie pojawia sie za  %i Sekund !"
+
+HUD_RELEASETIME = "Zombie zostana uwolnione za %i Sekund !"
+HUD_RELEASED = "Zombie(s) Released!"
+
+MSG_READY = "!tgOTOWY!y? !tNie zapomnij !y= !gWSPOLPRACA/OBRONA = ZWYCIESTWO!"
+NO_ENOUGH_PLAYERS = "!tZa malo graczy!y, Wymagana ilosc graczy: !g%i/%i!y"
+
+MENU_PRIMARY_TITLE = "Bron Glowna"
+MENU_SECONDARY_TITLE = "Bron Dodatkowa"
+MENU_AUTOSELECT = "Zapamietac?"
+
+MSG_WEAPONS_DISABLED = "Menu broni wylaczone!"
+MSG_BUYTIME_OVER = "Czas kupowania minol!"
+MSG_ALREADY_BOUGHT = "Juz kupiles bron!"
+MSG_CANT_BUY_WEAPON = "Zombie nie moga kupic broni!"
+MSG_BUY_ENABLED = "Menu broni zostalo wlaczone!"
+
+MENU_ITEMS_TITLE = "Dodatkowe itemy"
+
+MSG_ITEMS_DISABLED = "Menu dodadtkowych itemow wylaczone!"
+MSG_NO_ITEMS = "Nie ma zadnych dodatkowych itemow w menu."
+MSG_LIMIT_REACHED = "Przekorczyles limit itemow"
+
+MENU_MAIN_TITLE = "Glowne Menu"
+MENU_WEAPONS = "Bronie"
+MENU_RE_WEAPONS = "Bronie \r[Automatyczny zakup]"
+MENU_EXTRAITEMS = "Dodatkowe itemy"
+MENU_HCLASSES = "Klasy Ludzi"
+MENU_ZCLASSES = "Klasy Zombie"
+MENU_LEAVE_SPECS = "Wyjdz z spectatora"
+
+MENU_NEXT = "Nastepny"
+MENU_BACK = "Poprzedni"
+MENU_EXIT = "Wyjdz"
+
+ON = "On"
+OFF = "Off"
+
+CMD_NOT = "Komenda niedostepna!"
+CMD_NOT_ALIVE = "Jestes martwy!"
+
+HUD_INFECT_NOTICE = "%s zostal zainfekowany przez %s"
+
+MSG_COINS_WINS = "!tUcieczka Udana!y | Zdobyles !g+%d!y monet!"
+MSG_COINS_KILLED = "!tZombie Zabity!y | Zdobyles !g+%d!y monet!"
+MSG_COINS_INFECTED = "!tCzlowiek Zarazony !y | Zdobyles !g+%d!y monet!"
+MSG_NO_COINS_ENOUGH = "You don't have enough coins!"
+
+CLASS_HUMAN = "Czlowiek"
+CLASS_ZOMBIE = "Zombie"
+CLASS_NEMESIS = "Nemesis"
+CLASS_SURVIVOR = "Ocalaly"
+
+HUD_INFO_SPEC = "Nick: %s^nHP: %d | Pancerz: %d | Klasa: %s | Monety: %d"
+HUD_INFO_SPEC_COMMAS = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
+HUD_INFO_SPEC_NUM_ABBR = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
+
+HUD_INFO_STATS = "Nick: %s^nHP: %d | Pancerz: %d | Klasa: %s | Monety: %d"
+HUD_INFO_STATS_COMMAS = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
+HUD_INFO_STATS_NUM_ABBR = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
+
+NABBR_THOUSANDS = "K"
+NABBR_MILLIONS = "M"
+NABBR_BILLIONS = "B"
+
+MENU_ZOMBIES_TITLE = "Klasy Zombie"
+MENU_HUMANS_TITLE = "Klasy Ludzi"
+
+NEXT = "Nastepny"
+CURRENT = "Obecny"
+
+MSG_HUMAN_NAME = "Nick: !t%s"
+MSG_HUMAN_INFO = "HP: !g%.2f!y | Tarcza: !g%.2f!y | Szybkosc (!g%L!y): !g%.2f!y | Grawitacja: !g%.2f!y"
+
+MSG_ZOMBIE_NAME = "Nick: !t%s"
+MSG_ZOMBIE_INFO = "HP: !g%.2f!y | Szybkosc: !g%.2f!y | Grawitacja: !g%.2f!y | Odrzut: !g%.2f!y"
+
+STATIC = "Statyczny"
+DYNAMIC = "Dynamiczny"
+
+MENU_LEVEL = "Poziom"
+MSG_LVL_NOT_ENOUGH = "Nie masz wystarczajacego poziomu!"
