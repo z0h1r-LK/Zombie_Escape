@@ -193,3 +193,101 @@ DYNAMIC = "Dynamiczny"
 
 MENU_LEVEL = "Poziom"
 MSG_LVL_NOT_ENOUGH = "Nie masz wystarczajacego poziomu!"
+
+[tr]
+GAME_DESC = "Zombi Escape"
+CHAT_PREFIX = "[!gZE!y]"
+MENU_PREFIX = "\r[ZE]\w"
+
+HUD_ESCAPE = "** Escape Modu **"
+HUD_NEMESIS = "** Nemesis Modu **"
+HUD_SURVIVOR = "** Survivor Modu **"
+HUD_SWARM = "** Swarm Modu **"
+
+HUD_ESCAPE_FAIL = "-=| Kacis Basarisiz |=-"
+HUD_ESCAPE_SUCCESS = "-=| Kacis Basarili |=-"
+
+HUD_SCOREMESSAGE = "| Insan: %i - %i :Zombi |"
+HUD_COUNTDOWN = "Zombilerin ortaya cikmasina %i saniye!"
+
+HUD_RELEASETIME = "Zombilerin ortaya cikmasina %i saniye !"
+HUD_RELEASED = "Zombiler Salindi!"
+
+MSG_READY = "!tHazir misin!y? !tSunu unutma !y= !gSIPER/DEFANS = ZAFER!"
+NO_ENOUGH_PLAYERS = "!tYeteri kadar oyuncu yok!y, Gerekli oyuncu: !g%i/%i!y"
+
+MENU_PRIMARY_TITLE = "Birincil Silahlar"
+MENU_SECONDARY_TITLE = "İkincil Silahlar"
+MENU_AUTOSELECT = "Secim Hatirlansin?"
+
+MSG_WEAPONS_DISABLED = "Silah menu devre disi!"
+MSG_BUYTIME_OVER = "Satin alma suresi sona erdi!"
+MSG_ALREADY_BOUGHT = "Birincil ve ikincil silahlarini zaten aldin!"
+MSG_CANT_BUY_WEAPON = "Zombiler nasil silah alsin!"
+MSG_BUY_ENABLED = "Silah menu tekrardan aktiflestirildi!"
+
+MENU_ITEMS_TITLE = "Ekstra Itemler"
+
+MSG_ITEMS_DISABLED = "Ekstra Item menu devre disi!"
+MSG_NO_ITEMS = "Ekstra Item menusunde hic item yok."
+MSG_LIMIT_REACHED = "Item limitini astin"
+
+MENU_MAIN_TITLE = "Ana Menu"
+MENU_WEAPONS = "Silahlar"
+MENU_RE_WEAPONS = "Silahlar \r[Otomatik Satin Alma]"
+MENU_EXTRAITEMS = "Ekstra Itemler"
+MENU_HCLASSES = "Insan Siniflari"
+MENU_ZCLASSES = "Zombi Siniflari"
+MENU_LEAVE_SPECS = "Izleyiciden Ayril"
+
+MENU_NEXT = "Diger"
+MENU_BACK = "Geri"
+MENU_EXIT = "Cikis"
+
+ON = "Acik"
+OFF = "Kapali"
+
+CMD_NOT = "Komut devre disi!"
+CMD_NOT_ALIVE = "Canli degilsin!"
+
+HUD_INFECT_NOTICE = "%s, %s tarafindan enfekte edildi"
+
+MSG_COINS_WINS = "!tKacis basarili!y | !g+%d!y EC !tkazandin!"
+MSG_COINS_KILLED = "!tZombi Olduruldu!y | !g+%d!y EC !tkazandin!"
+MSG_COINS_INFECTED = "!tInsan Enfekte Edildi!y | !g+%d!y EC !tkazandin!"
+MSG_NO_COINS_ENOUGH = "Yeteri kadar coinin yok!"
+
+CLASS_HUMAN = "Insan"
+CLASS_ZOMBIE = "Zombi"
+CLASS_NEMESIS = "Nemesis"
+CLASS_SURVIVOR = "Survivor"
+
+HUD_INFO_SPEC = "Isim: %s^nSaglik: %d | Zirh: %d | Sinif: %s | EC: %d"
+HUD_INFO_SPEC_COMMAS = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
+HUD_INFO_SPEC_NUM_ABBR = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
+
+HUD_INFO_STATS = "Isim: %s^nSaglik: %d | Zirh: %d | Sinif: %s | EC: %d"
+HUD_INFO_STATS_COMMAS = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
+HUD_INFO_STATS_NUM_ABBR = "Name: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
+
+NABBR_THOUSANDS = "K"
+NABBR_MILLIONS = "M"
+NABBR_BILLIONS = "B"
+
+MENU_ZOMBIES_TITLE = "Zombi Siniflari"
+MENU_HUMANS_TITLE = "Insan Siniflari"
+
+NEXT = "Diger"
+CURRENT = "Suanki"
+
+MSG_HUMAN_NAME = "Isim: !t%s"
+MSG_HUMAN_INFO = "Saglik: !g%.2f!y | Kalkan: !g%.2f!y | Hiz (!g%L!y): !g%.2f!y | Yercekimi: !g%.2f!y"
+
+MSG_ZOMBIE_NAME = "Isim: !t%s"
+MSG_ZOMBIE_INFO = "Saglik: !g%.2f!y | Hiz: !g%.2f!y | Yercekimi: !g%.2f!y | : Geri tepme: !g%.2f!y"
+
+STATIC = "Statik"
+DYNAMIC = "Dinamik"
+
+MENU_LEVEL = "Seviye"
+MSG_LVL_NOT_ENOUGH = "Yeterli seviyen yok!"
