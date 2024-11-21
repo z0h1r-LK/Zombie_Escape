@@ -122,7 +122,6 @@ public plugin_end()
 
 public ze_game_started_pre()
 {
-	g_iNext = ZE_GAME_INVALID
 	g_iCurrent = ZE_GAME_INVALID
 
 	// Remove countdown task.
@@ -197,6 +196,7 @@ public choose_Gamemode()
 	if (g_iNext != ZE_GAME_INVALID)
 	{
 		start_Gamemode(g_iNext, 0, true)
+		g_iNext = ZE_GAME_INVALID
 	}
 	else
 	{
