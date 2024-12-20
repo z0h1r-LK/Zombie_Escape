@@ -136,6 +136,16 @@ native ze_item_get_level(iItem);
 native ze_item_get_glimit(iItem);
 
 /**
+ * Returns the number of the purchases.
+ *
+ * @param id     Client index.
+ *
+ * @return       Number of purchases, -1 While player not on game.
+ * @error        If this player not on game.
+ */
+native ze_item_get_num_pur(id);
+
+/**
  * Add additional text in item name on Menu.
  *
  * @param text[]       Text to be added.
@@ -224,6 +234,19 @@ native ze_item_set_level(iItem, iLevel);
  * @error              If item id is invalid.
  */
 native ze_item_set_glimit(iItem, iLimit);
+
+/**
+ * Sets or add the number of items.
+ *
+ * @param id     Client index
+ * @param iSet   Number of purchases to be set.
+ * @param bAdd   true = Set value | false = Add value.
+ *
+ * @return       true  | If value assigned successfully.
+ *               false | If player not on game.
+ * @error        If this player not on game.
+ */
+native ze_item_set_num_pur(id, iSet, bool:bAdd = false);
 
 /**
  * Check If item id is valid or not.

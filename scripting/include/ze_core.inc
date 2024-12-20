@@ -408,6 +408,19 @@ native ze_res_ambience_register(const szName[], const szSound[], iLength);
 native ze_res_ambience_play(const iHandle, bool:bLoop = true);
 
 /**
+ * Plays menu sounds (Sent menu sound to client).
+ *
+ * @param id      Client index.
+ * @param iPosit  Menu sound (ZE_MENU_* enum).
+ *
+ * @return        1 | If cmd sent successfully.
+ *                0 | If player not on game.
+ *
+ * @error         If this player not on game.
+ */
+native ze_res_menu_sound(id, MenuSounds:iPosit);
+
+/**
  * Get number of coins for specific player.
  *
  * @param id      Client index.

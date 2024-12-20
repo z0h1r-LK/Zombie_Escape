@@ -22,12 +22,9 @@ enum _:FORWARDS
 	FORWARD_SELECT_ITEM_POST
 }
 
-// Menu Sounds.
-new g_szSelectSound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
-new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
-
 // CVars.
-new bool:g_bMenuSounds
+new g_iMaxPurchases,
+	bool:g_bMenuSounds
 
 // Variables.
 new g_iFwReturn
@@ -35,6 +32,7 @@ new g_iFwReturn
 // Array.
 new g_iForwards[FORWARDS],
 	g_iMenuPage[MAX_PLAYERS+1],
+	g_iPurchases[MAX_PLAYERS+1],
 	g_aItems[ZE_MAX_ITEMS][ITEM_DATA]
 
 // String.
@@ -55,6 +53,7 @@ public plugin_natives()
 	register_native("ze_item_get_limit", "__native_item_get_limit")
 	register_native("ze_item_get_level", "__native_item_get_level")
 	register_native("ze_item_get_glimit", "__native_item_get_glimit")
+	register_native("ze_item_get_num_pur", "__native_item_get_num_pur")
 	register_native("ze_item_add_text", "__native_item_add_text")
 	register_native("ze_item_force_buy", "__native_item_force_buy")
 	register_native("ze_item_is_valid", "__native_item_is_valid")
@@ -63,20 +62,8 @@ public plugin_natives()
 	register_native("ze_item_set_limit", "__native_item_set_limit")
 	register_native("ze_item_set_level", "__native_item_set_level")
 	register_native("ze_item_set_glimit", "__native_item_set_glimit")
+	register_native("ze_item_set_num_pur", "__native_item_set_num_pur")
 	register_native("ze_item_show_menu", "__native_item_show_menu")
-}
-
-public plugin_precache()
-{
-	// Read menu sounds from INI file.
-	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound, charsmax(g_szSelectSound)))
-		ini_write_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound)
-	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
-		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
-
-	// Precache Sounds.
-	precache_generic(fmt("sound/%s", g_szSelectSound))
-	precache_generic(fmt("sound/%s", g_szDisplaySound))
 }
 
 public plugin_init()
@@ -86,6 +73,7 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSounds)
+	bind_pcvar_num(register_cvar("ze_purchase_limits", "0"), g_iMaxPurchases)
 
 	// Commands.
 	register_clcmd("say /items", "cmd_ShowItemsMenu")
@@ -103,6 +91,15 @@ public plugin_end()
 	DestroyForward(g_iForwards[FORWARD_SELECT_ITEM_POST])
 }
 
+public client_disconnected(id, bool:drop, message[], maxlen)
+{
+	if (is_user_hltv(id))
+		return
+
+	g_iMenuPage[id] = 0
+	g_iPurchases[id] = 0
+}
+
 public cmd_ShowItemsMenu(const id)
 {
 	if (x_bItemsDisabled)
@@ -115,6 +112,15 @@ public cmd_ShowItemsMenu(const id)
 	{
 		ze_colored_print(id, "%L", LANG_PLAYER, "CMD_NOT_ALIVE")
 		return PLUGIN_HANDLED
+	}
+
+	if (g_iMaxPurchases > 0)
+	{
+		if (g_iPurchases[id] >= g_iMaxPurchases)
+		{
+			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_MAX_PURCHASES", g_iMaxPurchases)
+			return PLUGIN_HANDLED
+		}
 	}
 
 	show_Items_Menu(id)
@@ -231,6 +237,7 @@ buy_Item(const id, iItem, bool:bIgnoreCost)
 		return false
 
 	// Call forward ze_select_item_post(param1, param2)
+	g_iPurchases[id]++
 	ExecuteForward(g_iForwards[FORWARD_SELECT_ITEM_POST], g_iFwReturn, id, iItem, bIgnoreCost)
 	return true
 }
@@ -433,6 +440,19 @@ public __native_item_get_glimit(const plugin_id, const num_params)
 	return g_aItems[iItem][ITEM_GLIMIT]
 }
 
+public __native_item_get_num_pur(const plugin_id, const num_params)
+{
+	new const id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return -1
+	}
+
+	return g_iPurchases[id]
+}
+
 public __native_item_add_text(const plugin_id, const num_params)
 {
 	get_string(1, g_szText, charsmax(g_szText))
@@ -553,6 +573,23 @@ public __native_item_is_valid(const plugin_id, const num_params)
 	if (FIsItemValid(get_param(1)))
 		return true
 	return false
+}
+
+public __native_item_set_num_pur(const plugin_id, const num_params)
+{
+	new const id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return false
+	}
+
+	if (bool: get_param(3))
+		g_iPurchases[id] += get_param(2)
+	else
+		g_iPurchases[id] = get_param(2)
+	return true
 }
 
 public __native_item_show_menu(const plugin_id, const num_params)

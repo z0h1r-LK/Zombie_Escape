@@ -86,6 +86,15 @@ enum NadeType
 }
 
 /**
+ * Zombie Escape: Menu Sounds
+ */
+enum MenuSounds
+{
+	ZE_MENU_SELECT = 0,
+	ZE_MENU_DISPLAY
+}
+
+/**
  * XVARs Name.
  */
 #define X_Core_RoundNum        "x_iRoundNum"

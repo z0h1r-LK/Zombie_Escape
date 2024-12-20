@@ -28,6 +28,10 @@ enum _:AMBIENCE_DATA
 	AMB_LENGTH
 }
 
+// Menu Sounds.
+new g_szSelectSound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
+
 // Cvars.
 new Float:g_flAmbDelay
 
@@ -78,6 +82,8 @@ public plugin_natives()
 	register_library("ze_resources")
 	register_native("ze_res_ambience_register", "__native_res_ambience_register")
 	register_native("ze_res_ambience_play", "__native_res_ambience_play")
+
+	register_native("ze_res_menu_sound", "__native_res_menu_sound")
 
 	// Create new dyn Array.
 	g_aAmbienceSounds = ArrayCreate(AMBIENCE_DATA, 1)
@@ -320,6 +326,16 @@ public plugin_precache()
 		ArrayGetString(g_aDieSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
+
+	// Read menu sounds from INI file.
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound, charsmax(g_szSelectSound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound)
+	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
+		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
+
+	// Precache Sounds.
+	precache_generic(fmt("sound/%s", g_szSelectSound))
+	precache_generic(fmt("sound/%s", g_szDisplaySound))
 }
 
 public plugin_init()
@@ -659,3 +675,24 @@ public __native_res_ambience_play(plugin_id, num_params)
 	}
 }
 #endif
+
+public __native_res_menu_sound(const plugin_id, const num_params)
+{
+	new const id = get_param(1)
+
+	if (!is_user_connected(id))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+		return 0
+	}
+
+	switch (get_param(2))
+	{
+		case ZE_MENU_SELECT:
+			client_cmd(id, "spk ^"%s^"", g_szSelectSound)
+		case ZE_MENU_DISPLAY:
+			client_cmd(id, "spk ^"%s^"", g_szDisplaySound)
+	}
+
+	return 1
+}

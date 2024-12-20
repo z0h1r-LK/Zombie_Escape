@@ -31,6 +31,7 @@ MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
 MSG_BUY_ENABLED = "Weapons Menu has been re-enabled!"
 
 MENU_ITEMS_TITLE = "Extra-Items"
+MSG_MAX_PURCHASES = "You have reached your maximum number of purchases (Maximum: !g%i!y)"
 
 MSG_ITEMS_DISABLED = "Extra-Items Menu is disabled!"
 MSG_NO_ITEMS = "There are no Items in Extra-Items Menu."
