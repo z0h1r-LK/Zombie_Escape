@@ -100,6 +100,11 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_iPurchases[id] = 0
 }
 
+public ze_game_started()
+{
+	arrayset(g_iPurchases, 0, sizeof(g_iPurchases))
+}
+
 public cmd_ShowItemsMenu(const id)
 {
 	if (x_bItemsDisabled)
@@ -169,9 +174,7 @@ public show_Items_Menu(const id)
 	}
 
 	if (g_bMenuSounds)
-	{
-		client_cmd(id, "speak ^"%s^"", g_szDisplaySound)
-	}
+		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Next, Back, Exit.
 	menu_setprop(iMenu, MPROP_NEXTNAME, fmt("%L", LANG_PLAYER, "NEXT"))
@@ -188,9 +191,7 @@ public show_Items_Menu(const id)
 public handler_Items_Menu(id, iMenu, iKey)
 {
 	if (g_bMenuSounds)
-	{
-		client_cmd(id, "spk ^"%s^"", g_szSelectSound)
-	}
+		ze_res_menu_sound(id, ZE_MENU_SELECT)
 
 	switch (iKey)
 	{
