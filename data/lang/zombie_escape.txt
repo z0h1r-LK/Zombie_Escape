@@ -130,6 +130,7 @@ MSG_CANT_BUY_WEAPON = "Zombie nie moga kupic broni!"
 MSG_BUY_ENABLED = "Menu broni zostalo wlaczone!"
 
 MENU_ITEMS_TITLE = "Dodatkowe itemy"
+MSG_MAX_PURCHASES = "Osiagnoles maksymalny limit itemow (Max: !g%i!y)"
 
 MSG_ITEMS_DISABLED = "Menu dodadtkowych itemow wylaczone!"
 MSG_NO_ITEMS = "Nie ma zadnych dodatkowych itemow w menu."
