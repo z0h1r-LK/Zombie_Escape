@@ -1,5 +1,6 @@
 #include <amxmodx>
 #include <ze_core>
+#define LIBRARY_RESOURCES "ze_resources"
 
 // Macro.
 #define FIsItemValid(%0) (ZE_ITEM_WRONG<(%0)<x_iMaxItems)
@@ -64,6 +65,23 @@ public plugin_natives()
 	register_native("ze_item_set_glimit", "__native_item_set_glimit")
 	register_native("ze_item_set_num_pur", "__native_item_set_num_pur")
 	register_native("ze_item_show_menu", "__native_item_show_menu")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
+}
+
+public fw_module_filter(const module[], LibType:libtype)
+{
+	if (equal(module, LIBRARY_RESOURCES))
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
+}
+
+public fw_native_filter(const name[], index, trap)
+{
+	if (!trap)
+		return PLUGIN_HANDLED
+	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
@@ -72,7 +90,6 @@ public plugin_init()
 	register_plugin("[ZE] Items Manager", ZE_VERSION, ZE_AUTHORS)
 
 	// CVars.
-	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSounds)
 	bind_pcvar_num(register_cvar("ze_purchase_limits", "0"), g_iMaxPurchases)
 
 	// Commands.
@@ -173,7 +190,7 @@ public show_Items_Menu(const id)
 		return
 	}
 
-	if (g_bMenuSounds)
+	if (module_exists(LIBRARY_RESOURCES))
 		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Next, Back, Exit.
@@ -190,7 +207,7 @@ public show_Items_Menu(const id)
 
 public handler_Items_Menu(id, iMenu, iKey)
 {
-	if (g_bMenuSounds)
+	if (module_exists(LIBRARY_RESOURCES))
 		ze_res_menu_sound(id, ZE_MENU_SELECT)
 
 	switch (iKey)

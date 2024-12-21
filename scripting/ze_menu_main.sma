@@ -1,21 +1,17 @@
 #include <amxmodx>
 #include <amxmisc>
 #include <reapi>
-
 #include <ze_core>
 #include <ze_class_human>
 #include <ze_class_zombie>
-#define LIBRARY_HUMAN   "ze_class_human"
-#define LIBRARY_ZOMBIE  "ze_class_zombie"
+#define LIBRARY_HUMAN "ze_class_human"
+#define LIBRARY_ZOMBIE "ze_class_zombie"
 #define LIBRARY_WEAPONS "ze_weapons_menu"
-#define LIBRARY_ITEMS   "ze_items_manager"
+#define LIBRARY_ITEMS "ze_items_manager"
+#define LIBRARY_RESOURCES "ze_resources"
 
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
-
-// Menu Sounds.
-new g_szSelectSound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
-new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
 
 // Variable.
 new bool:g_bMenuSound
@@ -28,7 +24,7 @@ public plugin_natives()
 
 public module_filter(const module[], LibType:libtype)
 {
-	if (equal(module, LIBRARY_HUMAN) || equal(module, LIBRARY_ZOMBIE) || equal(module, LIBRARY_ITEMS) || equal(module, LIBRARY_WEAPONS))
+	if (equal(module, LIBRARY_HUMAN) || equal(module, LIBRARY_ZOMBIE) || equal(module, LIBRARY_ITEMS) || equal(module, LIBRARY_WEAPONS) || equal(module, LIBRARY_RESOURCES))
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
 }
@@ -38,19 +34,6 @@ public native_filter(const name[], index, trap)
 	if (!trap)
 		return PLUGIN_HANDLED
 	return PLUGIN_CONTINUE
-}
-
-public plugin_precache()
-{
-	// Read menu sounds from INI file.
-	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound, charsmax(g_szSelectSound)))
-		ini_write_string(ZE_FILENAME, "Sounds", "MENU_SELECT", g_szSelectSound)
-	if (!ini_read_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound, charsmax(g_szDisplaySound)))
-		ini_write_string(ZE_FILENAME, "Sounds", "MENU_DISPLAY", g_szDisplaySound)
-
-	// Precache Sounds.
-	precache_generic(fmt("sound/%s", g_szSelectSound))
-	precache_generic(fmt("sound/%s", g_szDisplaySound))
 }
 
 public plugin_init()
@@ -155,11 +138,8 @@ public show_Menu_Main(const id)
 	// 0. Exit.
 	iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r0. \w%L", LANG_PLAYER, "MENU_EXIT")
 
-	if (g_bMenuSound)
-	{
-		// Play display sound.
-		PlaySound(id, g_szDisplaySound)
-	}
+	if (module_exists(LIBRARY_RESOURCES))
+		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Show the Menu for player.
 	show_menu(id, KEYS_MENU, szMenu, 30, "Menu_Main")
@@ -171,11 +151,8 @@ public handler_Menu_Main(const id, iKey)
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED
 
-	if (g_bMenuSound)
-	{
-		// Play select sound.
-		PlaySound(id, g_szSelectSound)
-	}
+	if (module_exists(LIBRARY_RESOURCES))
+		ze_res_menu_sound(id, ZE_MENU_SELECT)
 
 	switch (iKey)
 	{

@@ -1,6 +1,5 @@
 #include <amxmodx>
 #include <fakemeta>
-
 #include <ze_core>
 #include <ze_gamemodes>
 
@@ -36,7 +35,8 @@ new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
 new Float:g_flAmbDelay
 
 // Variables.
-new g_iAmbNum
+new g_iAmbNum,
+	bool:g_bMenuSounds
 #endif
 new g_iFwReturn
 
@@ -353,6 +353,7 @@ public plugin_init()
 #if defined COUNTDOWN_SOUNDS
 	bind_pcvar_num(get_cvar_pointer("ze_gamemodes_delay"), g_iGameDelay)
 #endif
+	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSounds)
 
 	// Create Forwards.
 	g_iForward = CreateMultiForward("ze_res_fw_zombie_sound", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
@@ -678,6 +679,11 @@ public __native_res_ambience_play(plugin_id, num_params)
 
 public __native_res_menu_sound(const plugin_id, const num_params)
 {
+	if (!g_bMenuSounds)
+	{
+		return 2
+	}
+
 	new const id = get_param(1)
 
 	if (!is_user_connected(id))
