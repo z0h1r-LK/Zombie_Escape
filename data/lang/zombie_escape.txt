@@ -327,6 +327,7 @@ MSG_CANT_BUY_WEAPON = "Zombie nu pot cumpăra arme!"
 MSG_BUY_ENABLED = "Meniul de arme a fost reactivat!"
 
 MENU_ITEMS_TITLE = "Extra-Items"
+MSG_MAX_PURCHASES = "Ați atins numărul maxim de achiziții (Numarul maxim: !g%i!y)"
 
 MSG_ITEMS_DISABLED = "Meniul de Extra-Items este dezactivat"
 MSG_NO_ITEMS = "Nu exista Items in meniul Extra-Items"
