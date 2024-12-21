@@ -292,3 +292,101 @@ DYNAMIC = "Dinamik"
 
 MENU_LEVEL = "Seviye"
 MSG_LVL_NOT_ENOUGH = "Yeterli seviyen yok!"
+
+[ro]
+GAME_DESC = "Zombie Escape"
+CHAT_PREFIX = "[!gZE!y]"
+MENU_PREFIX = "\r[ZE]\w"
+
+HUD_ESCAPE = "** Mod Escape **"
+HUD_NEMESIS = "** Mod Nemesis **"
+HUD_SURVIVOR = "** Mod de Supraviețuire **"
+HUD_SWARM = "** Mod Swarm **"
+
+HUD_ESCAPE_FAIL = "-=| Evadare eșuată! |=-"
+HUD_ESCAPE_SUCCESS = "-=| Evadare reușită! |=-"
+
+HUD_SCOREMESSAGE = "| Oameni: %i - %i :Zombies |"
+HUD_COUNTDOWN = "Zombie vor aparea dupa %i Secunde !"
+
+HUD_RELEASETIME = "Zombie vor fi eliberați in %i Secunde !"
+HUD_RELEASED = "Zombie au fost eliberați!"
+
+MSG_READY = "!tEști pregătit!y? !tNu uita !y= !gCOVER/DEFENSE = Victorie!"
+NO_ENOUGH_PLAYERS = "!tNu sunt destui jucători!y, Jucători necesari: !g%i/%i!y"
+
+MENU_PRIMARY_TITLE = "Arme Primare"
+MENU_SECONDARY_TITLE = "Arme Secundare"
+MENU_AUTOSELECT = "Salvezi alegerea?"
+
+MSG_WEAPONS_DISABLED = "Meniul de arme este dezactivat!"
+MSG_BUYTIME_OVER = "Timpul pentru a cumpăra a expirat!"
+MSG_ALREADY_BOUGHT = "Ai cumpărat deja arme Primare si Secundare!"
+MSG_CANT_BUY_WEAPON = "Zombie nu pot cumpăra arme!"
+MSG_BUY_ENABLED = "Meniul de arme a fost reactivat!"
+
+MENU_ITEMS_TITLE = "Extra-Items"
+
+MSG_ITEMS_DISABLED = "Meniul de Extra-Items este dezactivat"
+MSG_NO_ITEMS = "Nu exista Items in meniul Extra-Items"
+MSG_LIMIT_REACHED = "Ai trecut limita pentru acest Item"
+
+MENU_MAIN_TITLE = "Meniul Principal
+MENU_WEAPONS = "Arme"
+MENU_RE_WEAPONS = "Arme \r[Auto Cumpărare]"
+MENU_EXTRAITEMS = "Extra Items"
+MENU_HCLASSES = "Clase de Om"
+MENU_ZCLASSES = "Clase de Zombie"
+MENU_LEAVE_SPECS = "Părăseste modul Spectator"
+
+MENU_NEXT = "Înainte"
+MENU_BACK = "Înapoi"
+MENU_EXIT = "Ieși"
+
+ON = "Pornit"
+OFF = "Oprit"
+
+CMD_NOT = "Comanda Indisponibilă!"
+CMD_NOT_ALIVE = "Esti mort!"
+
+HUD_INFECT_NOTICE = "%s a fost infectat de către %s"
+
+MSG_COINS_WINS = "!tEvadare reușită!y | Ai primit !g+%d!y EC!"
+MSG_COINS_KILLED = "!tZombie Omorăt!y | Ai primit !g+%d!y EC!"
+MSG_COINS_INFECTED = "!tOm Infectat!y | Ai primit !g+%d!y EC!"
+MSG_NO_COINS_ENOUGH = "N-ai coins-urile necesare!"
+
+CLASS_HUMAN = "Om"
+CLASS_ZOMBIE = "Zombie"
+CLASS_NEMESIS = "Nemesis"
+CLASS_SURVIVOR = "Supravițuitor"
+
+HUD_INFO_SPEC = "Nume: %s^nViață: %d | Armură: %d | Clasă: %s | EC: %d"
+HUD_INFO_SPEC_COMMAS = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
+HUD_INFO_SPEC_NUM_ABBR = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
+
+HUD_INFO_STATS = "Nume: %s^nViață: %d | Armură: %d | Clasă: %s | EC: %d"
+HUD_INFO_STATS_COMMAS = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
+HUD_INFO_STATS_NUM_ABBR = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
+
+NABBR_THOUSANDS = "M"
+NABBR_MILLIONS = "M"
+NABBR_BILLIONS = "B"
+
+MENU_ZOMBIES_TITLE = "Clase pentru Zombie"
+MENU_HUMANS_TITLE = "Clase pentru Oameni"
+
+NEXT = "Înainte"
+CURRENT = "Actual"
+
+MSG_HUMAN_NAME = "Nume: !t%s"
+MSG_HUMAN_INFO = "Viață: !g%.2f!y | Scut: !g%.2f!y | Viteză (!g%L!y): !g%.2f!y | Gravitație: !g%.2f!y"
+
+MSG_ZOMBIE_NAME = "Nume: !t%s"
+MSG_ZOMBIE_INFO = "Viață: !g%.2f!y | Scut: !g%.2f!y | Gravitație: !g%.2f!y | Knockback: !g%.2f!y"
+
+STATIC = "Static"
+DYNAMIC = "Dinamic"
+
+MENU_LEVEL = "Nivel"
+MSG_LVL_NOT_ENOUGH = "N-ai nivelul necesar!"
