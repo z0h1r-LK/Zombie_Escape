@@ -35,7 +35,7 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 
 	if (iReqLevel > 0)
 	{
-		new const iLevel = ze_get_user_level(id)
+		new const iLevel = module_exists(LIBRARY_LEVELS) ? ze_get_user_level(id) : 0
 
 		if (iLevel < iReqLevel)
 		{
