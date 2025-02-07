@@ -67,13 +67,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
-HUD_INFO_SPEC = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
-HUD_INFO_SPEC_COMMAS = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
-HUD_INFO_SPEC_NUM_ABBR = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
-
-HUD_INFO_STATS = "Name: %s^nHP: %d | Armor: %d | Class: %s | EC: %d"
-HUD_INFO_STATS_COMMAS = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
-HUD_INFO_STATS_NUM_ABBR = "Name: %s^nHP: %s | Armor: %s | Class: %s | EC: %s"
+HUD_INFO_SPEC = "Name: {$NAME}^nHP: {$HEALTH} | Armor: {$SHIELD} | Class: {$CLASS} | EC: {$COINS}"
+HUD_INFO_STATS = "Name: {$NAME}^nHP: {$HEALTH} | Armor: {$SHIELD} | Class: {$CLASS} | EC: {$COINS}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -166,13 +161,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Ocalaly"
 
-HUD_INFO_SPEC = "Nick: %s^nHP: %d | Pancerz: %d | Klasa: %s | Monety: %d"
-HUD_INFO_SPEC_COMMAS = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
-HUD_INFO_SPEC_NUM_ABBR = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
-
-HUD_INFO_STATS = "Nick: %s^nHP: %d | Pancerz: %d | Klasa: %s | Monety: %d"
-HUD_INFO_STATS_COMMAS = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
-HUD_INFO_STATS_NUM_ABBR = "Nick: %s^nHP: %s | Pancerz: %s | Klasa: %s | Monety: %s"
+HUD_INFO_SPEC = "Nick: {$NAME}^nHP: {$HEALTH} | Pancerz: {$SHIELD} | Klasa: {$CLASS} | Monety: {$COINS}"
+HUD_INFO_STATS = "Nick: {$NAME}^nHP: {$HEALTH} | Pancerz: {$SHIELD} | Klasa: {$CLASS} | Monety: {$COINS}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -264,13 +254,8 @@ CLASS_ZOMBIE = "Zombi"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
-HUD_INFO_SPEC = "Isim: %s^nSaglik: %d | Zirh: %d | Sinif: %s | EC: %d"
-HUD_INFO_SPEC_COMMAS = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
-HUD_INFO_SPEC_NUM_ABBR = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
-
-HUD_INFO_STATS = "Isim: %s^nSaglik: %d | Zirh: %d | Sinif: %s | EC: %d"
-HUD_INFO_STATS_COMMAS = "Isim: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
-HUD_INFO_STATS_NUM_ABBR = "Name: %s^nSaglik: %s | Zirh: %s | Sinif: %s | EC: %s"
+HUD_INFO_SPEC = "Isim: {$NAME}^nSaglik: {$HEALTH} | Zirh: {$SHIELD} | Sinif: {$CLASS} | EC: {$COINS}"
+HUD_INFO_STATS = "Isim: {$NAME}^nSaglik: {$HEALTH} | Zirh: {$SHIELD} | Sinif: {$CLASS} | EC: {$COINS}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -363,13 +348,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Supravițuitor"
 
-HUD_INFO_SPEC = "Nume: %s^nViață: %d | Armură: %d | Clasă: %s | EC: %d"
-HUD_INFO_SPEC_COMMAS = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
-HUD_INFO_SPEC_NUM_ABBR = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
-
-HUD_INFO_STATS = "Nume: %s^nViață: %d | Armură: %d | Clasă: %s | EC: %d"
-HUD_INFO_STATS_COMMAS = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
-HUD_INFO_STATS_NUM_ABBR = "Nume: %s^nViață: %s | Armură: %s | Clasă: %s | EC: %s"
+HUD_INFO_SPEC = "Nume: {$NAME}^nViață: {$HEALTH} | Armură: {$SHIELD} | Clasă: {$CLASS} | EC: {$COINS}"
+HUD_INFO_STATS = "Nume: {$NAME}^nViață: {$HEALTH} | Armură: {$SHIELD} | Clasă: {$CLASS} | EC: {$COINS}"
 
 NABBR_THOUSANDS = "M"
 NABBR_MILLIONS = "M"
