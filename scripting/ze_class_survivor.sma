@@ -35,6 +35,7 @@ new g_p_szWeaponModel[MAX_RESOURCE_PATH_LENGTH] = "models/p_m249.mdl"
 new g_iHealth,
 	g_iArmor,
 	g_iGravity,
+	g_iWeaponUID,
 	g_iGlowAmount,
 	g_iHudColor[Colors],
 	g_iGlowColors[Colors],
@@ -153,6 +154,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_survivor_glow_blue", "200"), g_iGlowColors[Blue])
 	bind_pcvar_num(register_cvar("ze_survivor_glow_amount", "16"), g_iGlowAmount)
 
+	bind_pcvar_num(register_cvar("ze_survivor_weapon_uid", "0"), g_iWeaponUID)
 	bind_pcvar_string(register_cvar("ze_survivor_weapon", "weapon_m249"), g_szWeaponName, charsmax(g_szWeaponName))
 
 	bind_pcvar_num(register_cvar("ze_hud_info_survivor_red", "0"), g_iHudColor[Red])
@@ -306,7 +308,7 @@ set_User_Survivor(id)
 	if (g_szWeaponName[0])
 	{
 		// Special Weapon.
-		rg_give_item(id, g_szWeaponName, GT_DROP_AND_REPLACE)
+		rg_give_custom_item(id, g_szWeaponName, GT_DROP_AND_REPLACE, g_iWeaponUID)
 	}
 
 	// HUD information's color.
