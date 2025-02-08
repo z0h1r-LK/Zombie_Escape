@@ -3,19 +3,24 @@
 #include <ze_core>
 #define LIBRARY_COINS "ze_coins_system"
 
-// HUD Position.
-const Float:HUD_SPEC_X = -1.0
-const Float:HUD_SPEC_Y = 0.76
-
-const Float:HUD_STATS_X = -1.0
-const Float:HUD_STATS_Y = 0.86
-
 // Color indexes.
 enum _:Colors
 {
 	Red = 0,
 	Green,
 	Blue
+}
+
+enum _:HUDs
+{
+	HUD_STATS = 0,
+	HUD_SPECS
+}
+
+enum _:Positions
+{
+	Float:POSIT_X = 0,
+	Float:POSIT_Y
 }
 
 // Constant
@@ -30,7 +35,8 @@ new g_iMode,
 new g_iHudInfoMsg
 
 // Array.
-new g_iStatsColor[MAX_PLAYERS+1][Colors]
+new Float:g_flHudPosit[HUDs][Positions],
+	g_iStatsColor[MAX_PLAYERS+1][Colors]
 
 // String.
 new g_szName[MAX_PLAYERS+1][MAX_NAME_LENGTH],
@@ -73,6 +79,24 @@ public plugin_init()
 
 	// Set Values.
 	g_iHudInfoMsg = CreateHudSyncObj()
+}
+
+public plugin_cfg()
+{
+	g_flHudPosit[HUD_STATS][POSIT_X] = -1.0
+	g_flHudPosit[HUD_STATS][POSIT_Y] = 0.86
+	g_flHudPosit[HUD_SPECS][POSIT_X] = -1.0
+	g_flHudPosit[HUD_SPECS][POSIT_Y] = 0.76
+
+	// Read HUD positions from INI file.
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFO_SPEC_X", g_flHudPosit[HUD_SPECS][POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFO_SPEC_X", g_flHudPosit[HUD_SPECS][POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFO_SPEC_Y", g_flHudPosit[HUD_SPECS][POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFO_SPEC_Y", g_flHudPosit[HUD_SPECS][POSIT_Y])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFO_STATS_X", g_flHudPosit[HUD_STATS][POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFO_STATS_X", g_flHudPosit[HUD_STATS][POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFO_STATS_Y", g_flHudPosit[HUD_STATS][POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFO_STATS_Y", g_flHudPosit[HUD_STATS][POSIT_Y])
 }
 
 public client_putinserver(id)
@@ -173,12 +197,12 @@ public ShowHUD(taskid)
 		{
 			case 1: // HUD.
 			{
-				set_hudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], HUD_SPEC_X, HUD_SPEC_Y, 0, 1.0, 1.0, 0.0, 0.1)
+				set_hudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], g_flHudPosit[HUD_SPECS][POSIT_X], g_flHudPosit[HUD_SPECS][POSIT_Y], 0, 1.0, 1.0, 0.0, 0.1)
 				ShowSyncHudMsg(id, g_iHudInfoMsg, szMsg)
 			}
 			case 2: // Director HUD.
 			{
-				set_dhudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], HUD_SPEC_X, HUD_SPEC_Y, 0, 1.0, 1.0, 0.0, 0.1)
+				set_dhudmessage(g_iSpecColor[Red], g_iSpecColor[Green], g_iSpecColor[Blue], g_flHudPosit[HUD_SPECS][POSIT_X], g_flHudPosit[HUD_SPECS][POSIT_Y], 0, 1.0, 1.0, 0.0, 0.1)
 				show_dhudmessage(id, szMsg)
 			}
 		}
@@ -219,12 +243,12 @@ public ShowHUD(taskid)
 		{
 			case 1: // HUD.
 			{
-				set_hudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], HUD_STATS_X, HUD_STATS_Y, 0, 1.0, 1.0, 0.0, 0.1)
+				set_hudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], g_flHudPosit[HUD_STATS][POSIT_X], g_flHudPosit[HUD_STATS][POSIT_Y], 0, 1.0, 1.0, 0.0, 0.1)
 				ShowSyncHudMsg(id, g_iHudInfoMsg, szMsg)
 			}
 			case 2: // Director HUD.
 			{
-				set_dhudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], HUD_STATS_X, HUD_STATS_Y, 0, 1.0, 1.0, 0.0, 0.1)
+				set_dhudmessage(g_iStatsColor[id][Red], g_iStatsColor[id][Green], g_iStatsColor[id][Blue], g_flHudPosit[HUD_STATS][POSIT_X], g_flHudPosit[HUD_STATS][POSIT_Y], 0, 1.0, 1.0, 0.0, 0.1)
 				show_dhudmessage(id, szMsg)
 			}
 		}
