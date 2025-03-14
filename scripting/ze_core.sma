@@ -694,7 +694,7 @@ public fw_SendAudio_Msg(const msg_id, const dest, const player)
 
 public fw_HideWeapon_Msg(const msg_id, const dest, const player)
 {
-	static iFlags
+	static iFlags; iFlags = 0
 
 	if (g_bBlockMoneyHUD)
 		iFlags |= HIDEHUD_MONEY
