@@ -214,9 +214,6 @@ public ze_game_started()
 	new iEnt = NULLENT
 	while ((iEnt = rg_find_ent_by_class(iEnt, "armoury_entity")))
 	{
-		if (is_nullent(iEnt))
-			continue
-
 		// HE Grenade?
 		if (get_member(iEnt, m_Armoury_iItem) == ARMOURY_HEGRENADE)
 			entity_set_model(iEnt, g_w_szFireModel)
