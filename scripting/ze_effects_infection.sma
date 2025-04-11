@@ -4,10 +4,6 @@
 #include <ze_core>
 #include <ini_file>
 
-// HUD Position.
-const Float:HUD_INFECT_X = 0.2
-const Float:HUD_INFECT_Y = -1.0
-
 // Messages ID.
 const msg_Damage = 71
 const msg_DeathMsg = 83
@@ -39,6 +35,12 @@ enum any:Colors
 	Blue
 }
 
+enum _:HUDs
+{
+	Float:HUD_INFECT_X = 0,
+	Float:HUD_INFECT_Y
+}
+
 // Cvars.
 new g_szFlags[16],
 	g_iThunderSize,
@@ -60,6 +62,9 @@ public x_bBlockInfectEff;
 new g_iGibsSpr,
 	g_iBeamSpr,
 	g_iInfectMsg
+
+// Array.
+new Float:g_flHudPosit[HUDs]
 
 // Dynamic Array.
 new Array:g_aComingSounds,
@@ -195,6 +200,18 @@ public plugin_init()
 	g_iInfectMsg = CreateHudSyncObj()
 }
 
+public plugin_cfg()
+{
+	g_flHudPosit[HUD_INFECT_X] = 0.2
+	g_flHudPosit[HUD_INFECT_Y] = -1.0
+
+	// Read HUD positions from INI file.
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFECT_X", g_flHudPosit[HUD_INFECT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFECT_X", g_flHudPosit[HUD_INFECT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_INFECT_Y", g_flHudPosit[HUD_INFECT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_INFECT_Y", g_flHudPosit[HUD_INFECT_Y])
+}
+
 public plugin_end()
 {
 	// Free the Memory.
@@ -234,7 +251,7 @@ public ze_user_infected(iVictim, iInfector)
 			get_user_name(iInfector, szInfName, charsmax(szInfName))
 
 			// Send colored HUD message for everyone.
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_INFECT_X, HUD_INFECT_Y, 1, 3.0, 3.0, 0.1, 0.1)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHudPosit[HUD_INFECT_X], g_flHudPosit[HUD_INFECT_Y], 1, 3.0, 3.0, 0.1, 0.1)
 			ShowSyncHudMsg(0, g_iInfectMsg, "%L", LANG_PLAYER, "HUD_INFECT_NOTICE", szVicName, szInfName)
 		}
 	}
