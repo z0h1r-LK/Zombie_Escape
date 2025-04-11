@@ -53,6 +53,9 @@ new g_szFlags[16],
 	g_iThunderColors[Colors],
 	bool:g_bGreenSkullIcon
 
+// Xvars.
+public x_bBlockInfectEff;
+
 // Variables.
 new g_iGibsSpr,
 	g_iBeamSpr,
@@ -188,6 +191,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_infect_tracers_radius", "120"), g_iTracersRadius)
 
 	// Set Values.
+	x_bBlockInfectEff = 0
 	g_iInfectMsg = CreateHudSyncObj()
 }
 
@@ -201,8 +205,14 @@ public plugin_end()
 
 public ze_user_infected(iVictim, iInfector)
 {
-	if (!g_szFlags[0])
+	if (!g_szFlags[0] || x_bBlockInfectEff == ZE_INFECT_ALWAYS)
 		return
+
+	if (x_bBlockInfectEff == ZE_INFECT_ONCE)
+	{
+		x_bBlockInfectEff = 0
+		return
+	}
 
 	static szSound[MAX_RESOURCE_PATH_LENGTH], bitsFlags; bitsFlags = read_flags(g_szFlags)
 	szSound = NULL_STRING

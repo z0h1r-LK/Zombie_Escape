@@ -95,6 +95,15 @@ enum MenuSounds
 }
 
 /**
+ * For x_Infect_BlockEffect.
+ */
+enum
+{
+	ZE_INFECT_ONCE = 1,
+	ZE_INFECT_ALWAYS
+}
+
+/**
  * XVARs Name.
  */
 #define X_Core_RoundNum        "x_iRoundNum"
@@ -104,3 +113,4 @@ enum MenuSounds
 #define X_Core_GamemodeBegin   "x_bGameChosen"
 #define X_Core_RespawnAsZm     "x_bRespawnAsZombie"
 #define X_Core_UpdateAvailable "x_bUpdateAvailable"
+#define x_Infect_BlockEffect   "x_bBlockInfectEff"
