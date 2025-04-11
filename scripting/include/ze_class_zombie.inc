@@ -163,6 +163,28 @@ native Float:ze_zclass_get_gravity(iClassID);
 native Float:ze_zclass_get_knockback(iClassID);
 
 /**
+ * Gets a class required level.
+ *
+ * @param iClassID    A valid class ID.
+ *
+ * @return            Required level on success, ZE_CLASS_INVALID when failure.
+ *
+ * @error             If this class ID is invalid.
+ */
+native ze_zclass_get_level(iClassID);
+
+/**
+ * Look for an index of the class via the name.
+ *
+ * @param szName[]    A valid class ID.
+ *
+ * @return            Required level on success, ZE_CLASS_INVALID when failure.
+ *
+ * @error             If this class ID is invalid.
+ */
+native ze_zclass_get_index(const szName[]);
+
+/**
  * Sets a class for specific player.
  *
  * @param id          Client index.
@@ -270,6 +292,19 @@ native ze_zclass_set_gravity(iClassID, Float:flGravity);
  * @error             If this class ID is invalid.
  */
 native ze_zclass_set_knockback(iClassID, Float:flSpeed);
+
+/**
+ * Sets new required level for specific class.
+ *
+ * @param iClassID    A valid class ID.
+ * @param iLevel      Required level to be set.
+ *
+ * @return            true  | If changed successfully.
+ *                    false | If failure.
+ *
+ * @error             If this class ID is invalid.
+ */
+native ze_zclass_set_level(iClassID, iLevel);
 
 /**
  * Show Zombies Classes Menu for specific player.

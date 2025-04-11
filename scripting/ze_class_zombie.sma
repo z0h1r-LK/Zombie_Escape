@@ -78,6 +78,7 @@ public plugin_natives()
 	register_native("ze_zclass_get_gravity", "__native_zclass_get_gravity")
 	register_native("ze_zclass_get_knockback", "__native_zclass_get_knockback")
 	register_native("ze_zclass_get_level", "__native_zclass_get_level")
+	register_native("ze_zclass_get_index", "__native_zclass_get_index")
 	register_native("ze_zclass_set_current", "__native_zclass_set_current")
 	register_native("ze_zclass_set_next", "__native_zclass_set_next")
 	register_native("ze_zclass_set_name", "__native_zclass_set_name")
@@ -560,12 +561,31 @@ public __native_zclass_get_level(const plugin_id, const num_params)
 	if (FIsWrongClass(i))
 	{
 		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Class ID (%d)", i)
-		return NULLENT
+		return ZE_CLASS_INVALID
 	}
 
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, i, aArray)
 	return aArray[ZOMBIE_LEVEL]
+}
+
+public __native_zclass_get_index(const plugin_id, const num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't search class index without name !")
+		return ZE_CLASS_INVALID
+	}
+
+	for (new aArray[ZOMBIE_ATTRIB], i = 0; i < g_iNumZombies; i++)
+	{
+		ArrayGetArray(g_aZombieClass, i, aArray)
+		if (equal(szName, aArray[ZOMBIE_NAME]))
+			return i
+	}
+
+	return ZE_CLASS_INVALID
 }
 
 public __native_zclass_set_current(const plugin_id, const num_params)
