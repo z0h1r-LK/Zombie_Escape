@@ -13,16 +13,18 @@ stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 #define X_Wpn_WeaponsDisabled "x_bWeaponsDisabled"
 
-// HUD Event Position.
-const Float:HUD_EVENT_X = -1.0
-const Float:HUD_EVENT_Y = 0.4
-
 // Colors
 enum any:Colors
 {
 	Red = 0,
 	Green,
 	Blue
+}
+
+enum _:HUDs
+{
+	Float:HUD_EVENT_X = 0,
+	Float:HUD_EVENT_Y
 }
 
 // CVars.
@@ -36,6 +38,9 @@ new g_iChance,
 
 // Variables.
 new g_iAmbHandle
+
+// Array.
+new g_flHUDPosit[HUDs]
 
 // XVar.
 new g_xFixSpawn,
@@ -129,6 +134,17 @@ public plugin_init()
 	g_xWeaponsDisabled = get_xvar_id(X_Wpn_WeaponsDisabled)
 }
 
+public plugin_cfg()
+{
+	g_flHUDPosit[HUD_EVENT_X] = -1.0
+	g_flHUDPosit[HUD_EVENT_Y] = 0.4
+
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT_Y])
+}
+
 public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 {
 	if (!g_bEnabled)
@@ -210,12 +226,12 @@ public ze_gamemode_chosen(game_id, target)
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_EVENT_X], g_flHUDPosit[HUD_EVENT_Y], 1, 3.0, 3.0, 0.1, 1.0)
 			show_hudmessage(0, "%L", LANG_PLAYER, "HUD_SURVIVOR")
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_EVENT_X], g_flHUDPosit[HUD_EVENT_Y], 1, 3.0, 3.0, 0.1, 1.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_SURVIVOR")
 		}
 	}

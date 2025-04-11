@@ -40,6 +40,18 @@ enum any:Colors
 	Blue
 }
 
+enum _:Positions
+{
+	Float:POSIT_X = 0,
+	Float:POSIT_Y
+}
+
+enum _:HUDs
+{
+	HUD_EVENT[Positions] = 0,
+	HUD_TIMER[Positions]
+}
+
 // CVars.
 new g_iChance,
 	g_iMsgNotice,
@@ -65,7 +77,8 @@ new g_iAmbHandle,
 	bool:g_bFreezeZombie
 
 // Arrays.
-new g_iForwards[FORWARDS]
+new g_iForwards[FORWARDS],
+	Float:g_flHUDPosit[HUDs]
 
 // XVar.
 new g_xFixSpawn,
@@ -183,6 +196,23 @@ public plugin_init()
 
 	// Set Values.
 	g_iMsgNotice = CreateHudSyncObj()
+}
+
+public plugin_cfg()
+{
+	g_flHUDPosit[HUD_EVENT][POSIT_X] = -1.0
+	g_flHUDPosit[HUD_EVENT][POSIT_Y] = 0.4
+	g_flHUDPosit[HUD_TIMER][POSIT_X] = -1.0
+	g_flHUDPosit[HUD_TIMER][POSIT_Y] = 0.6
+
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_TIMER_X", g_flHUDPosit[HUD_TIMER][POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_TIMER_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_TIMER_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_TIMER_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT][POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT][POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT][POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT][POSIT_Y])
 }
 
 public ze_frost_freeze_start(id)
@@ -381,12 +411,12 @@ public ze_gamemode_chosen(game_id, target)
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_EVENT][POSIT_X], g_flHUDPosit[HUD_EVENT][POSIT_Y], 1, 3.0, 3.0, 0.1, 1.0)
 			show_hudmessage(0, "%L", LANG_PLAYER, "HUD_SWARM")
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_EVENT_X, HUD_EVENT_Y, 1, 3.0, 3.0, 0.1, 1.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_EVENT][POSIT_X], g_flHUDPosit[HUD_EVENT][POSIT_Y], 1, 3.0, 3.0, 0.1, 1.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_SWARM")
 		}
 	}
@@ -408,12 +438,12 @@ public show_ReleaseTime(taskid)
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 	}
@@ -441,12 +471,12 @@ public release_Zombies()
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], HUD_TIMER_X, HUD_TIMER_Y, 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 	}
