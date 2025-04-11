@@ -1,8 +1,11 @@
 #include <amxmodx>
 #include <reapi>
+
 #include <ze_core>
-#define LIBRARY_NEMESIS "ze_class_nemesis"
-#define LIBRARY_RESOURCES "ze_resources"
+
+// Libraries.
+stock const LIBRARY_NEMESIS[] = "ze_class_nemesis"
+stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Defines.
 #define GAMEMODE_NAME "Nemesis"
@@ -88,7 +91,7 @@ public plugin_precache()
 	}
 
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		new const szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.wav"
 		const iNemesisAmbienceSound = 200
@@ -129,7 +132,7 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 	if (!bSkipCheck)
 	{
 		// ze_class_nemesis not Loaded?
-		if (!module_exists(LIBRARY_NEMESIS))
+		if (!LibraryExists(LIBRARY_NEMESIS, LibType_Library))
 			return ZE_GAME_IGNORE
 
 		// This is not round of Nemesis?
@@ -218,7 +221,7 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
 		ze_res_ambience_play(g_iAmbHandle)

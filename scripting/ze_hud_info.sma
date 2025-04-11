@@ -1,7 +1,9 @@
 #include <amxmodx>
 #include <reapi>
 #include <ze_core>
-#define LIBRARY_COINS "ze_coins_system"
+
+// Libraries.
+stock const LIBRARY_COINS[] = "ze_coins_system"
 
 // Color indexes.
 enum _:Colors

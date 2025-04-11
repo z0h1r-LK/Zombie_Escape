@@ -1,6 +1,8 @@
 #include <amxmodx>
 #include <ze_core>
-#define LIBRARY_RESOURCES "ze_resources"
+
+// Libraries.
+stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Macro.
 #define FIsItemValid(%0) (ZE_ITEM_WRONG<(%0)<x_iMaxItems)
@@ -24,8 +26,7 @@ enum _:FORWARDS
 }
 
 // CVars.
-new g_iMaxPurchases,
-	bool:g_bMenuSounds
+new g_iMaxPurchases
 
 // Variables.
 new g_iFwReturn
@@ -190,7 +191,7 @@ public show_Items_Menu(const id)
 		return
 	}
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Next, Back, Exit.
@@ -207,7 +208,7 @@ public show_Items_Menu(const id)
 
 public handler_Items_Menu(id, iMenu, iKey)
 {
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 		ze_res_menu_sound(id, ZE_MENU_SELECT)
 
 	switch (iKey)

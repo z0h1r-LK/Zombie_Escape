@@ -5,7 +5,9 @@
 #include <ze_core>
 #include <ini_file>
 #include <ze_weap_models_api>
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries.
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Defines.
 #define FIRE_RADIUS 240.0
@@ -226,7 +228,7 @@ public ze_user_humanized(id)
 	g_flBurnTime[id] = 0.0
 	remove_task(id+TASK_BURNING)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// View and Weapon Model.
 		ze_set_user_view_model(id, CSW_HEGRENADE, g_v_szFireModel)

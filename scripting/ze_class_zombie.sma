@@ -4,11 +4,13 @@
 #include <ze_core>
 #include <ze_levels>
 #include <ze_class_const>
-#define LIBRARY_LEVELS "ze_levels"
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_KNOCKBACK "ze_kb_system"
-#define LIBRARY_NEMESIS "ze_class_nemesis"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries.
+stock const LIBRARY_LEVELS[] = "ze_levels"
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_KNOCKBACK[] = "ze_kb_system"
+stock const LIBRARY_NEMESIS[] = "ze_class_nemesis"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
@@ -183,7 +185,7 @@ public cmd_ShowClassesMenu(const id)
 public ze_user_infected(iVictim, iInfector)
 {
 	// Ignore Nemesis!
-	if (module_exists(LIBRARY_NEMESIS) && ze_is_user_nemesis(iVictim)) return
+	if (LibraryExists(LIBRARY_NEMESIS, LibType_Library) && ze_is_user_nemesis(iVictim)) return
 
 	// Player hasn't chosen a class yet?
 	if (g_iCurrent[iVictim] == ZE_CLASS_INVALID)
@@ -201,19 +203,19 @@ public ze_user_infected(iVictim, iInfector)
 
 	ze_set_user_speed(iVictim, aArray[ZOMBIE_SPEED])
 
-	if (module_exists(LIBRARY_KNOCKBACK))
+	if (LibraryExists(LIBRARY_KNOCKBACK, LibType_Library))
 	{
 		ze_set_zombie_knockback(iVictim, aArray[ZOMBIE_KNOCKBACK])
 	}
 
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(iVictim, aArray[ZOMBIE_NAME], g_iHudColor)
 	}
 
 	rg_set_user_model(iVictim, aArray[ZOMBIE_MODEL], true)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		ze_set_user_view_model(iVictim, CSW_KNIFE, aArray[ZOMBIE_MELEE])
 		ze_set_user_weap_model(iVictim, CSW_KNIFE)
@@ -227,7 +229,7 @@ public show_Zombies_Menu(const id)
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_ZOMBIES_TITLE")
 	new iMenu = menu_create(szLang, "handler_Zombies_Menu")
-	new fLevel = module_exists(LIBRARY_LEVELS)
+	new fLevel = LibraryExists(LIBRARY_LEVELS, LibType_Library)
 
 	if (fLevel)
 		iLevel = ze_get_user_level(id)
@@ -279,7 +281,7 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 			new i = iItemData[0]
 			ArrayGetArray(g_aZombieClass, i, aArray)
 
-			if (module_exists(LIBRARY_LEVELS) && ze_get_user_level(id) < aArray[ZOMBIE_LEVEL])
+			if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[ZOMBIE_LEVEL])
 			{
 				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
 				goto CloseMenu

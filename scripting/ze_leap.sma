@@ -3,8 +3,10 @@
 
 #include <ze_core>
 #include <ze_class_survivor>
-#define LIBRARY_NEMESIS "ze_class_nemesis"
-#define LIBRARY_SURVIVOR "ze_class_survivor"
+
+// Libraries.
+stock const LIBRARY_NEMESIS[] = "ze_class_nemesis"
+stock const LIBRARY_SURVIVOR[] = "ze_class_survivor"
 
 // Defines.
 #define CLASS_ZOMBIE 0
@@ -57,7 +59,7 @@ public plugin_init()
 	bind_pcvar_float(register_cvar("ze_leap_zombie_height", "300.0"), g_flHeight[CLASS_ZOMBIE])
 	bind_pcvar_float(register_cvar("ze_leap_zombie_cooldown", "5.0"), g_flCooldown[CLASS_ZOMBIE])
 
-	if (module_exists(LIBRARY_NEMESIS))
+	if (LibraryExists(LIBRARY_NEMESIS, LibType_Library))
 	{
 		bind_pcvar_num(register_cvar("ze_leap_nemesis", "1"), g_iEnable[CLASS_NEMESIS])
 		bind_pcvar_num(register_cvar("ze_leap_nemesis_force", "500"), g_iForce[CLASS_NEMESIS])
@@ -65,7 +67,7 @@ public plugin_init()
 		bind_pcvar_float(register_cvar("ze_leap_nemesis_cooldown", "5.0"), g_flCooldown[CLASS_NEMESIS])
 	}
 
-	if (module_exists(LIBRARY_SURVIVOR))
+	if (LibraryExists(LIBRARY_SURVIVOR, LibType_Library))
 	{
 		bind_pcvar_num(register_cvar("ze_leap_survivor", "1"), g_iEnable[CLASS_SURVIVOR])
 		bind_pcvar_num(register_cvar("ze_leap_survivor_force", "500"), g_iForce[CLASS_SURVIVOR])
@@ -120,7 +122,7 @@ public fw_PlayerPreThink(const id)
 
 	static Float:flCooldown, Float:flHeight, iForce
 
-	if (module_exists(LIBRARY_NEMESIS) && ze_is_user_nemesis(id))
+	if (LibraryExists(LIBRARY_NEMESIS, LibType_Library) && ze_is_user_nemesis(id))
 	{
 		if (!g_iEnable[CLASS_NEMESIS])
 			return
@@ -129,7 +131,7 @@ public fw_PlayerPreThink(const id)
 		flHeight = g_flHeight[CLASS_ZOMBIE]
 		flCooldown = g_flCooldown[CLASS_ZOMBIE]
 	}
-	else if (module_exists(LIBRARY_SURVIVOR) && ze_is_user_survivor(id))
+	else if (LibraryExists(LIBRARY_SURVIVOR, LibType_Library) && ze_is_user_survivor(id))
 	{
 		iForce = g_iForce[CLASS_SURVIVOR]
 		flHeight = g_flHeight[CLASS_SURVIVOR]

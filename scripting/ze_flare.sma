@@ -2,8 +2,11 @@
 #include <hamsandwich>
 #include <engine>
 #include <reapi>
+
 #include <ze_core>
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries.
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Macroses.
 #define FIsClient(%0) (1<=(%0)<=MaxClients)
@@ -137,7 +140,7 @@ public ze_game_started()
 
 public ze_user_humanized(id)
 {
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// View and Weapon Model.
 		ze_set_user_view_model(id, CSW_SMOKEGRENADE, g_v_szFlareModel)

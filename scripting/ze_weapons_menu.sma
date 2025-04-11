@@ -4,7 +4,9 @@
 
 #include <ze_core>
 #include <ze_levels>
-#define LIBRARY_LEVEL "ze_levels"
+
+// Libraries.
+stock const LIBRARY_LEVEL[] = "ze_levels"
 
 // Defines.
 #define MN_AUTO_SELECT 7
@@ -323,7 +325,7 @@ public show_Primary_Weapons(id)
 	// Get number of weapons on page.
 	new iWpn = g_iMenuData[id][MD_PRI_PAGE]
 	new iMaxLoops = min(iWpn + 7, g_iPrimaryNum)
-	new fLevels = module_exists(LIBRARY_LEVEL)
+	new fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
 
 	if (fLevels)
 		iLevel = ze_get_user_level(id)
@@ -450,7 +452,7 @@ public show_Secondary_Weapons(id)
 	// Get number of weapons on page.
 	new iWpn = g_iMenuData[id][MD_SEC_PAGE]
 	new iMaxLoops = min(iWpn + 7, g_iSecondaryNum)
-	new fLevels = module_exists(LIBRARY_LEVEL)
+	new fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
 
 	if (fLevels)
 		iLevel = ze_get_user_level(id)
@@ -573,7 +575,7 @@ public choose_Weapon(id, iIndex, iSection)
 		{
 			ArrayGetArray(g_aPrimaryWeapons, iIndex, pArray)
 
-			if (module_exists(LIBRARY_LEVEL))
+			if (LibraryExists(LIBRARY_LEVEL, LibType_Library))
 			{
 				if (ze_get_user_level(id) < pArray[WPN_LEVEL])
 				{
@@ -611,7 +613,7 @@ public choose_Weapon(id, iIndex, iSection)
 		{
 			ArrayGetArray(g_aSecondaryWeapons, iIndex, pArray)
 
-			if (module_exists(LIBRARY_LEVEL))
+			if (LibraryExists(LIBRARY_LEVEL, LibType_Library))
 			{
 				if (ze_get_user_level(id) < pArray[WPN_LEVEL])
 				{

@@ -1,7 +1,9 @@
 #include <amxmodx>
 #include <ze_core>
 #include <ze_levels>
-#define LIBRARY_LEVELS "ze_levels"
+
+// Libraries.
+stock const LIBRARY_LEVELS[] = "ze_levels"
 
 public plugin_natives()
 {
@@ -35,7 +37,7 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 
 	if (iReqLevel > 0)
 	{
-		new const iLevel = module_exists(LIBRARY_LEVELS) ? ze_get_user_level(id) : 0
+		new const iLevel = LibraryExists(LIBRARY_LEVELS, LibType_Library) ? ze_get_user_level(id) : 0
 
 		if (iLevel < iReqLevel)
 		{

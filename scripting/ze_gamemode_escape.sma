@@ -4,7 +4,9 @@
 
 #include <ze_core>
 #include <ze_gamemodes>
-#define LIBRARY_RESOURCES "ze_resources"
+
+// Libraryies.
+stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Define.
 #define GAMEMODE_NAME "Escape"
@@ -135,7 +137,7 @@ public plugin_precache()
 		precache_generic(szSound)
 	}
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		new const szEscapeAmbienceSound[] = "zm_es/ze_amb_escape.mp3"
 		const iEscapeAmbienceLength = 150
@@ -439,7 +441,7 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
 		ze_res_ambience_play(g_iAmbHandle)

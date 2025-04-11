@@ -4,9 +4,11 @@
 #include <reapi>
 
 #include <ze_core>
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
-#define LIBRARY_KNOCKBACK "ze_kb_system"
+
+// Libraries.
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
+stock const LIBRARY_KNOCKBACK[] = "ze_kb_system"
 
 // Define.
 #define CUSTOM_MODEL
@@ -299,7 +301,7 @@ set_User_Nemesis(const id)
 	// Custom Knockback
 	if (g_flKnockback > 0.0)
 	{
-		if (module_exists(LIBRARY_KNOCKBACK))
+		if (LibraryExists(LIBRARY_KNOCKBACK, LibType_Library))
 		{
 			// Set knockback.
 			ze_set_zombie_knockback(id, g_flKnockback)
@@ -307,7 +309,7 @@ set_User_Nemesis(const id)
 	}
 
 	// HUD info.
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(id, "CLASS_NEMESIS", g_iHudColor, true)
 	}
@@ -319,7 +321,7 @@ set_User_Nemesis(const id)
 	ArrayGetString(g_aNemesisModel, random_num(0, ArraySize(g_aNemesisModel) - 1), szModel, charsmax(szModel))
 	rg_set_user_model(id, szModel, true)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// Set player custom Knife Model.
 		ArrayGetString(g_aNemesisClaws, random_num(0, ArraySize(g_aNemesisClaws) - 1), szModel, charsmax(szModel))

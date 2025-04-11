@@ -1,10 +1,11 @@
 #include <amxmodx>
 #include <engine>
 #include <reapi>
-
 #include <ze_core>
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries.
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -312,7 +313,7 @@ set_User_Survivor(id)
 	}
 
 	// HUD information's color.
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(id, "CLASS_SURVIVOR", g_iHudColor, true)
 	}
@@ -323,7 +324,7 @@ set_User_Survivor(id)
 	ArrayGetString(g_aSurvivorModel, random_num(0, ArraySize(g_aSurvivorModel) - 1), szModel, charsmax(szModel))
 	rg_set_user_model(id, szModel, true)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// Weapon model.
 		new iWeaponID = get_weaponid(g_szWeaponName)

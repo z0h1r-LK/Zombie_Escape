@@ -3,8 +3,10 @@
 
 #include <ze_core>
 #include <ze_class_survivor>
-#define LIBRARY_SURVIVOR "ze_class_survivor"
-#define LIBRARY_RESOURCES "ze_resources"
+
+// Libraries.
+stock const LIBRARY_SURVIVOR[] = "ze_class_survivor"
+stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Defines.
 #define GAMEMODE_NAME "Survivor"
@@ -93,7 +95,7 @@ public plugin_precache()
 	}
 
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		new const szSurvivorAmbienceSound[] = "zm_es/ze_amb_survivor.wav"
 		const iSurvivorAmbienceSound = 200
@@ -135,7 +137,7 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 	if (!bSkipCheck)
 	{
 		// ze_class_survivor not Loaded!
-		if (!module_exists(LIBRARY_SURVIVOR))
+		if (!LibraryExists(LIBRARY_SURVIVOR, LibType_Library))
 			return ZE_GAME_IGNORE
 
 		// This is not round of Nemesis?
@@ -218,7 +220,7 @@ public ze_gamemode_chosen(game_id, target)
 		}
 	}
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
 		ze_res_ambience_play(g_iAmbHandle)

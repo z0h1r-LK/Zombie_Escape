@@ -2,9 +2,11 @@
 #include <reapi>
 
 #include <ze_core>
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_KNOCKBACK "ze_kb_system"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries.
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_KNOCKBACK[] = "ze_kb_system"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -146,14 +148,14 @@ public ze_user_infected(iVictim, iInfector)
 	}
 
 	// Info HUD.
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(iVictim, "CLASS_ZOMBIE", g_iHudColor, true)
 	}
 
 	if (g_flZombieKnockback > 0.0)
 	{
-		if (module_exists(LIBRARY_KNOCKBACK))
+		if (LibraryExists(LIBRARY_KNOCKBACK, LibType_Library))
 		{
 			ze_set_zombie_knockback(iVictim, g_flZombieKnockback)
 		}

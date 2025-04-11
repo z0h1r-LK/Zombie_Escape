@@ -1,20 +1,20 @@
 #include <amxmodx>
 #include <amxmisc>
 #include <reapi>
+
 #include <ze_core>
 #include <ze_class_human>
 #include <ze_class_zombie>
-#define LIBRARY_HUMAN "ze_class_human"
-#define LIBRARY_ZOMBIE "ze_class_zombie"
-#define LIBRARY_WEAPONS "ze_weapons_menu"
-#define LIBRARY_ITEMS "ze_items_manager"
-#define LIBRARY_RESOURCES "ze_resources"
+
+// Libraries.
+stock const LIBRARY_HUMAN[] = "ze_class_human"
+stock const LIBRARY_ZOMBIE[] = "ze_class_zombie"
+stock const LIBRARY_WEAPONS[] = "ze_weapons_menu"
+stock const LIBRARY_ITEMS[] = "ze_items_manager"
+stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Keys Menu.
 const KEYS_MENU = MENU_KEY_1|MENU_KEY_2|MENU_KEY_3|MENU_KEY_4|MENU_KEY_5|MENU_KEY_6|MENU_KEY_7|MENU_KEY_8|MENU_KEY_9|MENU_KEY_0
-
-// Variable.
-new bool:g_bMenuSound
 
 public plugin_natives()
 {
@@ -40,9 +40,6 @@ public plugin_init()
 {
 	// Load Plug-In.
 	register_plugin("[ZE] Menu Main", ZE_VERSION, ZE_AUTHORS)
-
-	// CVars.
-	bind_pcvar_num(register_cvar("ze_menu_sounds", "1"), g_bMenuSound)
 
 	// Commands.
 	register_clcmd("jointeam", "cmd_MenuMain")
@@ -72,7 +69,7 @@ public show_Menu_Main(const id)
 	// Menu Title.
 	iLen = formatex(szMenu, charsmax(szMenu), "\r%L \y%L:^n^n", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_MAIN_TITLE")
 
-	if (module_exists(LIBRARY_WEAPONS))
+	if (LibraryExists(LIBRARY_WEAPONS, LibType_Library))
 	{
 		// 1. Weapons Menu.
 		if (is_user_alive(id))
@@ -92,7 +89,7 @@ public show_Menu_Main(const id)
 		}
 	}
 
-	if (module_exists(LIBRARY_ITEMS))
+	if (LibraryExists(LIBRARY_ITEMS, LibType_Library))
 	{
 		// 2. Extra Items.
 		if (is_user_alive(id))
@@ -109,13 +106,13 @@ public show_Menu_Main(const id)
 	szMenu[iLen++] = '^n'
 
 	// 3. Human Classes
-	if (module_exists(LIBRARY_HUMAN))
+	if (LibraryExists(LIBRARY_HUMAN, LibType_Library))
 	{
 		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r3. %L^n", LANG_PLAYER, "MENU_HCLASSES")
 	}
 
 	// 4. Zombie Classes
-	if (module_exists(LIBRARY_ZOMBIE))
+	if (LibraryExists(LIBRARY_ZOMBIE, LibType_Library))
 	{
 		iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r4. %L^n", LANG_PLAYER, "MENU_ZCLASSES")
 	}
@@ -138,7 +135,7 @@ public show_Menu_Main(const id)
 	// 0. Exit.
 	iLen += formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r0. \w%L", LANG_PLAYER, "MENU_EXIT")
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Show the Menu for player.
@@ -151,14 +148,14 @@ public handler_Menu_Main(const id, iKey)
 	if (!is_user_connected(id))
 		return PLUGIN_HANDLED
 
-	if (module_exists(LIBRARY_RESOURCES))
+	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 		ze_res_menu_sound(id, ZE_MENU_SELECT)
 
 	switch (iKey)
 	{
 		case 0: // 1. Weapons Menu.
 		{
-			if (module_exists(LIBRARY_WEAPONS))
+			if (LibraryExists(LIBRARY_WEAPONS, LibType_Library))
 			{
 				if (ze_auto_buy_enabled(id))
 				{
@@ -173,21 +170,21 @@ public handler_Menu_Main(const id, iKey)
 		case 1: // 2. Extra Items.
 		{
 			// Show Extra-Items menu for player.
-			if (module_exists(LIBRARY_ITEMS))
+			if (LibraryExists(LIBRARY_ITEMS, LibType_Library))
 			{
 				ze_item_show_menu(id)
 			}
 		}
 		case 2: // 3. Human Classes.
 		{
-			if (module_exists(LIBRARY_HUMAN))
+			if (LibraryExists(LIBRARY_HUMAN, LibType_Library))
 			{
 				ze_hclass_show_menu(id)
 			}
 		}
 		case 3: // 4. Zombie Classes.
 		{
-			if (module_exists(LIBRARY_ZOMBIE))
+			if (LibraryExists(LIBRARY_ZOMBIE, LibType_Library))
 			{
 				ze_zclass_show_menu(id)
 			}

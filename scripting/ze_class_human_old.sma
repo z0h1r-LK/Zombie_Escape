@@ -1,10 +1,13 @@
 #include <amxmodx>
 #include <reapi>
+
 #include <ze_core>
 #include <ze_class_survivor>
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_SURVIVOR "ze_class_survivor"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_SURVIVOR[] = "ze_class_survivor"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Define.
 #define CUSTOM_MODEL
@@ -134,7 +137,7 @@ public plugin_init()
 public ze_user_humanized(id)
 {
 	// Ignore Survivor!
-	if (module_exists(LIBRARY_SURVIVOR) && ze_is_user_survivor(id)) return
+	if (LibraryExists(LIBRARY_SURVIVOR, LibType_Library) && ze_is_user_survivor(id)) return
 
 	// Health.
 	if (g_iHumanHealth > 0)
@@ -180,7 +183,7 @@ public ze_user_humanized(id)
 	}
 
 	// HUD Info.
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(id, "CLASS_HUMAN", g_iHudColor, true)
 	}
@@ -194,7 +197,7 @@ public ze_user_humanized(id)
 	// Set player Model.
 	rg_set_user_model(id, szModel, true)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// Remove player Zombie Knife.
 		ze_remove_user_view_model(id, CSW_KNIFE)

@@ -5,10 +5,12 @@
 #include <ze_levels>
 #include <ze_class_const>
 #include <ze_class_survivor>
-#define LIBRARY_LEVELS "ze_levels"
-#define LIBRARY_HUDINFO "ze_hud_info"
-#define LIBRARY_SURVIVOR "ze_class_survivor"
-#define LIBRARY_WPNMODELS "ze_weap_models_api"
+
+// Libraries
+stock const LIBRARY_LEVELS[] = "ze_levels"
+stock const LIBRARY_HUDINFO[] = "ze_hud_info"
+stock const LIBRARY_SURVIVOR[] = "ze_class_survivor"
+stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumHumans)
@@ -209,7 +211,7 @@ public cmd_ShowClassesMenu(const id)
 public ze_user_humanized(id)
 {
 	// Ignore Survivor!
-	if (module_exists(LIBRARY_SURVIVOR) && ze_is_user_survivor(id)) return
+	if (LibraryExists(LIBRARY_SURVIVOR, LibType_Library) && ze_is_user_survivor(id)) return
 
 	// Player hasn't chosen a class yet?
 	if (g_iCurrent[id] == ZE_CLASS_INVALID)
@@ -237,14 +239,14 @@ public ze_user_humanized(id)
 
 	ze_set_user_speed(id, aArray[HUMAN_SPEED], bool:aArray[HUMAN_SPEED_FACTOR])
 
-	if (module_exists(LIBRARY_HUDINFO))
+	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
 		ze_hud_info_set(id, aArray[HUMAN_NAME], g_iHudColor)
 	}
 
 	rg_set_user_model(id, aArray[HUMAN_MODEL], true)
 
-	if (module_exists(LIBRARY_WPNMODELS))
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		ze_remove_user_view_model(id, CSW_KNIFE)
 		ze_remove_user_weap_model(id, CSW_KNIFE)
@@ -284,7 +286,7 @@ public show_Humans_Menu(const id)
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_HUMANS_TITLE")
 	new iMenu = menu_create(szLang, "handler_Humans_Menu")
-	new const fLevel = module_exists(LIBRARY_LEVELS)
+	new const fLevel = LibraryExists(LIBRARY_LEVELS, LibType_Library)
 
 	if (fLevel)
 		iLevel = ze_get_user_level(id)
@@ -336,7 +338,7 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 			new const i = iItemData[0]
 			ArrayGetArray(g_aHumanClass, i, aArray)
 
-			if (module_exists(LIBRARY_LEVELS) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
+			if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
 			{
 				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
 				goto CloseMenu
