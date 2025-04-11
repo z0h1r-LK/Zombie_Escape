@@ -207,14 +207,14 @@ public plugin_cfg()
 	g_flHUDPosit[HUD_TIMER][POSIT_X] = -1.0
 	g_flHUDPosit[HUD_TIMER][POSIT_Y] = 0.6
 
-	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_TIMER_X", g_flHUDPosit[HUD_TIMER][POSIT_X]))
-		ini_write_float(ZE_FILENAME, "HUDs", "HUD_TIMER_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
-	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_TIMER_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
-		ini_write_float(ZE_FILENAME, "HUDs", "HUD_TIMER_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
 	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT][POSIT_X]))
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_X", g_flHUDPosit[HUD_EVENT][POSIT_X])
 	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT][POSIT_Y]))
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_GAMEEVENT_Y", g_flHUDPosit[HUD_EVENT][POSIT_Y])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_X", g_flHUDPosit[HUD_TIMER][POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
 
 	// Create new Hash Map.
 	g_tChosen = TrieCreate()
