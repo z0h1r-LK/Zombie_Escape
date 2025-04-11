@@ -146,6 +146,17 @@ native ze_item_get_glimit(iItem);
 native ze_item_get_num_pur(id);
 
 /**
+ * Look for an index of the item via the name
+ *
+ * @param szName[]   Item name.
+ *
+ * @return           Item index    | If item's found.
+ *                   ZE_WRONG_ITEM | If no name entered or item's not found.
+ * @error            If no name has entered.
+ */
+native ze_item_get_index(const szName[]);
+
+/**
  * Add additional text in item name on Menu.
  *
  * @param text[]       Text to be added.

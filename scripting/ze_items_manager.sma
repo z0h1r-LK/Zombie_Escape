@@ -56,6 +56,7 @@ public plugin_natives()
 	register_native("ze_item_get_level", "__native_item_get_level")
 	register_native("ze_item_get_glimit", "__native_item_get_glimit")
 	register_native("ze_item_get_num_pur", "__native_item_get_num_pur")
+	register_native("ze_item_get_index", "__native_item_get_index")
 	register_native("ze_item_add_text", "__native_item_add_text")
 	register_native("ze_item_force_buy", "__native_item_force_buy")
 	register_native("ze_item_is_valid", "__native_item_is_valid")
@@ -470,6 +471,24 @@ public __native_item_get_num_pur(const plugin_id, const num_params)
 	}
 
 	return g_iPurchases[id]
+}
+
+public __native_item_get_index(const plugin_id, const num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't search item index without name !")
+		return ZE_ITEM_WRONG
+	}
+
+	for (new i = 0; i < x_iMaxItems; i++)
+	{
+		if (equal(szName, g_aItems[i][ITEM_NAME]))
+			return i
+	}
+
+	return ZE_ITEM_WRONG
 }
 
 public __native_item_add_text(const plugin_id, const num_params)
