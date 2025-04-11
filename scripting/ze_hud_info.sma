@@ -13,16 +13,16 @@ enum _:Colors
 	Blue
 }
 
-enum _:HUDs
-{
-	HUD_STATS = 0,
-	HUD_SPECS
-}
-
 enum _:Positions
 {
 	Float:POSIT_X = 0,
 	Float:POSIT_Y
+}
+
+enum _:HUDs
+{
+	HUD_STATS[Positions] = 0,
+	HUD_SPECS[Positions]
 }
 
 // Constant
@@ -37,7 +37,7 @@ new g_iMode,
 new g_iHudInfoMsg
 
 // Array.
-new Float:g_flHudPosit[HUDs][Positions],
+new Float:g_flHudPosit[HUDs],
 	g_iStatsColor[MAX_PLAYERS+1][Colors]
 
 // String.
