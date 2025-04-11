@@ -383,7 +383,7 @@ public ze_gamemode_chosen(game_id, target)
 	// Release time
 	g_bReleaseTime = true
 
-	if (g_iReleaseTime <= 1)
+	if (g_iReleaseTime < 1)
 	{
 		release_Zombies()
 	}
@@ -438,12 +438,12 @@ public show_ReleaseTime(taskid)
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iReleaseTimeColors[Red], g_iReleaseTimeColors[Green], g_iReleaseTimeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iReleaseTimeColors[Red], g_iReleaseTimeColors[Green], g_iReleaseTimeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASETIME", g_iCountdown)
 		}
 	}
@@ -471,12 +471,12 @@ public release_Zombies()
 		}
 		case 2: // HUD.
 		{
-			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
+			set_hudmessage(g_iReleaseTimeColors[Red], g_iReleaseTimeColors[Green], g_iReleaseTimeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0, 4)
 			ShowSyncHudMsg(0, g_iMsgNotice, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 		case 3: // DHUD.
 		{
-			set_dhudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
+			set_dhudmessage(g_iReleaseTimeColors[Red], g_iReleaseTimeColors[Green], g_iReleaseTimeColors[Blue], g_flHUDPosit[HUD_TIMER][POSIT_X], g_flHUDPosit[HUD_TIMER][POSIT_Y], 1, 0.0, 1.0, 0.0, 0.0)
 			show_dhudmessage(0, "%L", LANG_PLAYER, "HUD_RELEASED")
 		}
 	}

@@ -423,7 +423,7 @@ public ze_gamemode_chosen(game_id, target)
 	// Release time
 	g_bReleaseTime = true
 
-	if (g_iReleaseTime <= 1)
+	if (g_iReleaseTime < 1)
 	{
 		release_Zombies()
 	}
