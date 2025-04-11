@@ -163,11 +163,11 @@ native Float:ze_zclass_get_gravity(iClassID);
 native Float:ze_zclass_get_knockback(iClassID);
 
 /**
- * Gets a class required level.
+ * Gets a class Level.
  *
  * @param iClassID    A valid class ID.
  *
- * @return            Required level on success, ZE_CLASS_INVALID when failure.
+ * @return            Level value on success, ZE_CLASS_INVALID when failure.
  *
  * @error             If this class ID is invalid.
  */
@@ -178,7 +178,7 @@ native ze_zclass_get_level(iClassID);
  *
  * @param szName[]    A valid class ID.
  *
- * @return            Required level on success, ZE_CLASS_INVALID when failure.
+ * @return            Class index on success, ZE_CLASS_INVALID when failure.
  *
  * @error             If this class ID is invalid.
  */
@@ -294,15 +294,15 @@ native ze_zclass_set_gravity(iClassID, Float:flGravity);
 native ze_zclass_set_knockback(iClassID, Float:flSpeed);
 
 /**
- * Sets new required level for specific class.
+ * Sets new Level for specific class.
  *
  * @param iClassID    A valid class ID.
- * @param iLevel      Required level to be set.
+ * @param iLevel      Level to be set.
  *
  * @return            true  | If changed successfully.
  *                    false | If failure.
  *
- * @error             If this class ID is invalid.
+ * @error             If this class IS is invalid.
  */
 native ze_zclass_set_level(iClassID, iLevel);
 

@@ -174,6 +174,17 @@ native Float:ze_hclass_get_gravity(iClassID);
 native ze_hclass_get_level(iClassID);
 
 /**
+ * Look for an index of the class via the name.
+ *
+ * @param szName[]    A valid class ID.
+ *
+ * @return            Class index on success, ZE_CLASS_INVALID when failure.
+ *
+ * @error             If this class ID is invalid.
+ */
+native ze_hclass_get_index(const szName[]);
+
+/**
  * Sets a class for specific player.
  *
  * @param id          Client index.

@@ -87,6 +87,7 @@ public plugin_natives()
 	register_native("ze_hclass_get_speed", "__native_hclass_get_speed")
 	register_native("ze_hclass_get_gravity", "__native_hclass_get_gravity")
 	register_native("ze_hclass_get_level", "__native_hclass_get_level")
+	register_native("ze_hclass_get_index", "__native_hclass_get_index")
 	register_native("ze_hclass_set_current", "__native_hclass_set_current")
 	register_native("ze_hclass_set_next", "__native_hclass_set_next")
 	register_native("ze_hclass_set_name", "__native_hclass_set_name")
@@ -619,6 +620,25 @@ public __native_hclass_get_level(const plugin_id, const num_params)
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, i, aArray)
 	return aArray[HUMAN_LEVEL]
+}
+
+public __native_hclass_get_index(const plugin_id, const num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Can't search class index without name !")
+		return ZE_CLASS_INVALID
+	}
+
+	for (new aArray[HUMAN_ATTRIB], i = 0; i < g_iNumHumans; i++)
+	{
+		ArrayGetArray(g_aHumanClass, i, aArray)
+		if (equal(szName, aArray[HUMAN_NAME]))
+			return i
+	}
+
+	return ZE_CLASS_INVALID
 }
 
 public __native_hclass_set_current(const plugin_id, const num_params)
