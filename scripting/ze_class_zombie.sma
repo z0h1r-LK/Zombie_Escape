@@ -190,7 +190,7 @@ public ze_user_infected(iVictim, iInfector)
 
 	// Player hasn't chosen a class yet?
 	if (g_iCurrent[iVictim] == ZE_CLASS_INVALID)
-		show_Zombies_Menu(iVictim)
+		RequestFrame("show_Zombies_Menu", iVictim)
 
 	new iClassID = g_iCurrent[iVictim] = g_iNext[iVictim]
 
