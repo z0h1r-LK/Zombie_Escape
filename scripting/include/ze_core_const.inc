@@ -114,3 +114,4 @@ enum
 #define X_Core_RespawnAsZm     "x_bRespawnAsZombie"
 #define X_Core_UpdateAvailable "x_bUpdateAvailable"
 #define x_Infect_BlockEffect   "x_bBlockInfectEff"
+#define x_Weather_3DSkyBoxEnt  "x_i3DSkyEnt"
