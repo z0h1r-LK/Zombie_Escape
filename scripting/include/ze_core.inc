@@ -448,6 +448,20 @@ native ze_get_user_coins(id);
 native ze_set_user_coins(id, iCoins, bool:bAdd = false);
 
 /**
+ * Show Coins message for specific player or all clients.
+ *
+ * @note Maximum message length is 256 bytes.
+ *
+ * @param id        Client index (0 = All clients).
+ * @param message[] Message to be sent.
+ * @param ...       Variable number of formatting parameters.
+ *
+ * @return          Number of printed characters.
+ * @error           If this player not on game.
+ */
+native ze_show_coins_message(id, const message[], any:...);
+
+/**
  * Check If the player is Frozen or not.
  *
  * @param id   Client index.

@@ -9,6 +9,20 @@
 new const g_szVaultName[] = "ZE_Coins"
 new const g_szLogFile[] = "SQL_Coins.log"
 
+// Colors indexes.
+enum _:eColors
+{
+	Red = 0,
+	Green,
+	Blue
+}
+
+enum _:Positions
+{
+	Float:HUD_POSIT_X = 0,
+	Float:HUD_POSIT_Y
+}
+
 // CVars.
 new g_iSaveType,
 	g_iAuthType,
@@ -17,15 +31,20 @@ new g_iSaveType,
 	g_iStartCoins,
 	g_iInfectReward,
 	g_iZombieKilled,
+	g_iMsgHUDMode,
+	g_iMsgHUDColor[eColors],
 	bool:g_bDmgEnabled,
-	bool:g_bEarnMessage,
-	Float:g_flReqDamage
+	Float:g_flReqDamage,
+	Float:g_flMsgHUDRelay
 
 // Variables.
-new g_iVaultCoins
+new g_iSyncHUDMsg,
+	g_iVaultCoins
 
 // Array.
 new g_iCoins[MAX_PLAYERS+1],
+	Float:g_flHUDPos[Positions],
+	Float:g_flRelay[MAX_PLAYERS+1],
 	Float:g_flDamage[MAX_PLAYERS+1]
 
 // String.
@@ -42,6 +61,7 @@ public plugin_natives()
 	register_library("ze_coins_system")
 	register_native("ze_get_user_coins", "__native_get_user_coins")
 	register_native("ze_set_user_coins", "__native_set_user_coins")
+	register_native("ze_show_coins_message", "__native_show_coins_message")
 }
 
 public plugin_init()
@@ -62,7 +82,11 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_coins_dmg_rw", "1"), g_iDmgReward)
 	bind_pcvar_num(register_cvar("ze_coins_start", "10"), g_iStartCoins)
 	bind_pcvar_float(register_cvar("ze_coins_dmg_req", "800.0"), g_flReqDamage)
-	bind_pcvar_num(register_cvar("ze_earn_coins_message", "1"), g_bEarnMessage)
+	bind_pcvar_num(register_cvar("ze_coins_msg", "1"), g_iMsgHUDMode)
+	bind_pcvar_num(register_cvar("ze_coins_msg_red", "127"), g_iMsgHUDColor[Red])
+	bind_pcvar_num(register_cvar("ze_coins_msg_green", "127"), g_iMsgHUDColor[Green])
+	bind_pcvar_num(register_cvar("ze_coins_msg_blue", "127"), g_iMsgHUDColor[Blue])
+	bind_pcvar_float(register_cvar("ze_coins_msg_relay", "0.5"), g_flMsgHUDRelay)
 
 	// Command.
 	register_srvcmd("flush_coins", "cmd_FlushCoins", ADMIN_RCON, "Delete all players data (Saved coins).")
@@ -71,6 +95,7 @@ public plugin_init()
 	g_hTuple = Empty_Handle
 	g_tTempVault = Invalid_Trie
 	g_iVaultCoins = INVALID_HANDLE
+	g_iSyncHUDMsg = CreateHudSyncObj()
 }
 
 public plugin_cfg()
@@ -94,6 +119,14 @@ public plugin_cfg()
 			SQL_Init()
 		}
 	}
+
+	g_flHUDPos[HUD_POSIT_X] = -1.0
+	g_flHUDPos[HUD_POSIT_Y] = 0.8
+
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_MSG_COINS_X", g_flHUDPos[HUD_POSIT_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_MSG_COINS_X", g_flHUDPos[HUD_POSIT_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_MSG_COINS_Y", g_flHUDPos[HUD_POSIT_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_MSG_COINS_Y", g_flHUDPos[HUD_POSIT_Y])
 }
 
 public plugin_end()
@@ -255,7 +288,7 @@ public ze_user_infected(iVictim, iInfector)
 		return
 
 	g_iCoins[iInfector] += g_iInfectReward
-	ze_colored_print(iInfector, "%L", LANG_PLAYER, "MSG_COINS_INFECTED", g_iInfectReward)
+	show_CoinsMessage(iInfector, "%L", LANG_PLAYER, "MSG_COINS_INFECTED", g_iInfectReward)
 }
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
@@ -269,7 +302,7 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 		return
 
 	g_iCoins[iAttacker] += g_iZombieKilled
-	ze_colored_print(iAttacker, "%L", LANG_PLAYER, "MSG_COINS_KILLED", g_iZombieKilled)
+	show_CoinsMessage(iAttacker, "%L", LANG_PLAYER, "MSG_COINS_KILLED", g_iZombieKilled)
 }
 
 public cmd_FlushCoins(const id, level, cid)
@@ -375,10 +408,59 @@ public ze_roundend(iWinTeam)
 					continue
 
 				g_iCoins[id] += g_iWinsReward
-				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_COINS_WINS", g_iWinsReward)
+				show_CoinsMessage(id, "%L", LANG_PLAYER, "MSG_COINS_WINS", g_iWinsReward)
 			}
 		}
 	}
+}
+
+public show_CoinsMessage(const receiver, const message[], any:...)
+{
+	if (!g_iMsgHUDMode)
+		return 0
+
+	if (g_flMsgHUDRelay > 0.0)
+	{
+		static Float:flCSTime; flCSTime = get_gametime()
+
+		if (g_flRelay[receiver] > flCSTime)
+			return 0
+
+		g_flRelay[receiver] = flCSTime + g_flMsgHUDRelay
+	}
+
+	static szMessage[256]
+	vformat(szMessage, charsmax(szMessage), message, 3)
+
+	switch (g_iMsgHUDMode)
+	{
+		case 2, 3: // HUDs only
+		{
+			replace_string(szMessage, charsmax(szMessage), "!t", "")
+			replace_string(szMessage, charsmax(szMessage), "!g", "")
+			replace_string(szMessage, charsmax(szMessage), "!y", "")
+		}
+	}
+
+	switch (g_iMsgHUDMode)
+	{
+		case 1: // Chat.
+		{
+			return ze_colored_print(receiver, szMessage)
+		}
+		case 2: // HUD.
+		{
+			set_hudmessage(g_iMsgHUDColor[Red], g_iMsgHUDColor[Green], g_iMsgHUDColor[Blue], g_flHUDPos[HUD_POSIT_X], g_flHUDPos[HUD_POSIT_Y], 0, 2.0, 2.0, 0.5, 0.5)
+			return ShowSyncHudMsg(receiver, g_iSyncHUDMsg, szMessage)
+		}
+		case 3: // Director HUD.
+		{
+			set_dhudmessage(g_iMsgHUDColor[Red], g_iMsgHUDColor[Green], g_iMsgHUDColor[Blue], g_flHUDPos[HUD_POSIT_X], g_flHUDPos[HUD_POSIT_Y], 0, 2.0, 2.0, 0.5, 0.5)
+			return show_dhudmessage(receiver, szMessage)
+		}
+	}
+
+	return 0
 }
 
 public read_Coins(const id)
@@ -491,4 +573,22 @@ public __native_set_user_coins(const plugin_id, const num_params)
 	else
 		g_iCoins[id] += get_param(2)
 	return true
+}
+
+public __native_show_coins_message(const plugin_id, const num_params)
+{
+	new const id = get_param(1)
+
+	if (id)
+	{
+		if (!is_user_connected(id))
+		{
+			log_error(AMX_ERR_NATIVE, "[ZE] Player not on game (%d)", id)
+			return false
+		}
+	}
+
+	new szMessage[256]
+	vdformat(szMessage, charsmax(szMessage), 2, 3)
+	return show_CoinsMessage(id, szMessage)
 }

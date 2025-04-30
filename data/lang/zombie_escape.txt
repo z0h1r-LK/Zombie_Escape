@@ -61,6 +61,7 @@ MSG_COINS_WINS = "!tEscape Success!y | You earned !g+%d!y EC!"
 MSG_COINS_KILLED = "!tZombie Killed!y | You earned !g+%d!y EC!"
 MSG_COINS_INFECTED = "!tHuman Infected!y | You earned !g+%d!y EC!"
 MSG_NO_COINS_ENOUGH = "You don't have enough coins!"
+MSG_ITEM_PURCHASED = "You Bought An Item | -!g%i !yEC!t!"
 
 CLASS_HUMAN = "Human"
 CLASS_ZOMBIE = "Zombie"

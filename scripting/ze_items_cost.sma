@@ -41,5 +41,7 @@ public ze_select_item_post(id, iItem, bool:bIgnoreCost)
 		{
 			ze_set_user_coins(id, ze_get_user_coins(id) - iCost)
 		}
+
+		ze_show_coins_message(id, "%L", LANG_PLAYER, "MSG_ITEM_PURCHASED", iCost)
 	}
 }
