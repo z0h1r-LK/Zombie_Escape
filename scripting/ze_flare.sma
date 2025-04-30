@@ -26,7 +26,8 @@ new g_p_szFlareModel[MAX_RESOURCE_PATH_LENGTH] = "models/p_smokegrenade.mdl"
 new g_w_szFlareModel[MAX_RESOURCE_PATH_LENGTH] = "models/w_smokegrenade.mdl"
 
 // CVars.
-new Float:g_flFlareDamage
+new Float:g_flFlareDamage,
+	bool:g_bDamageEntities
 
 // Variables.
 new g_iRingSpr,
@@ -121,6 +122,7 @@ public plugin_init()
 	RegisterHam(Ham_Think, "grenade", "fw_GrenadeThink_Pre")
 
 	// CVars.
+	bind_pcvar_num(register_cvar("ze_flare_ents", "0"), g_bDamageEntities)
 	bind_pcvar_float(register_cvar("ze_flare_damage", "500.0"), g_flFlareDamage)
 
 	// Create Forward.
@@ -235,6 +237,13 @@ public flare_Explode(const iEnt)
 
 				// Damage victim.
 				ExecuteHamB(Ham_TakeDamage, iVictim, iEnt, iAttacker, flDamage, DMG_GRENADE|DMG_BLAST)
+			}
+		}
+		else if (g_bDamageEntities && iVictim)
+		{
+			if (get_entvar(iVictim, var_takedamage) != DAMAGE_NO && get_entvar(iVictim, var_health) > 0.0)
+			{
+				ExecuteHamB(Ham_TakeDamage, iVictim, iEnt, iAttacker, g_flFlareDamage, DMG_GENERIC)
 			}
 		}
 	}
