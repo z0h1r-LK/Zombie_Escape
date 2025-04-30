@@ -216,7 +216,7 @@ public ze_user_humanized(id)
 
 	// Player hasn't chosen a class yet?
 	if (g_iCurrent[id] == ZE_CLASS_INVALID)
-		show_Humans_Menu(id)
+		RequestFrame("show_Humans_Menu", id)
 
 	new const iClassID = g_iCurrent[id] = g_iNext[id]
 
