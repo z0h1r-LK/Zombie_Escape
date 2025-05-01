@@ -1,5 +1,6 @@
 #include <amxmodx>
 #include <hamsandwich>
+#include <fakemeta>
 #include <engine>
 #include <reapi>
 
@@ -26,13 +27,15 @@ new g_p_szFlareModel[MAX_RESOURCE_PATH_LENGTH] = "models/p_smokegrenade.mdl"
 new g_w_szFlareModel[MAX_RESOURCE_PATH_LENGTH] = "models/w_smokegrenade.mdl"
 
 // CVars.
-new Float:g_flFlareDamage,
-	bool:g_bDamageEntities
+new bool:g_bExplodeDecal,
+	bool:g_bDamageEntities,
+	Float:g_flFlareDamage
 
 // Variables.
 new g_iRingSpr,
 	g_iTrailSpr,
-	g_iForward
+	g_iForward,
+	g_iExplodeDecals[3]
 
 // Dynamic Arrays.
 new Array:g_aFlareExplodeSounds
@@ -123,10 +126,16 @@ public plugin_init()
 
 	// CVars.
 	bind_pcvar_num(register_cvar("ze_flare_ents", "0"), g_bDamageEntities)
+	bind_pcvar_num(register_cvar("ze_flare_decal", "1"), g_bExplodeDecal)
 	bind_pcvar_float(register_cvar("ze_flare_damage", "500.0"), g_flFlareDamage)
 
 	// Create Forward.
 	g_iForward = CreateMultiForward("ze_grenade_exploded", ET_IGNORE, FP_CELL, FP_CELL, FP_ARRAY)
+
+	// Initial Values.
+	g_iExplodeDecals[0] = get_decal_index("{scorch1")
+	g_iExplodeDecals[1] = get_decal_index("{scorch2")
+	g_iExplodeDecals[2] = get_decal_index("{scorch3")
 }
 
 public ze_game_started()
@@ -270,6 +279,17 @@ public flare_Explode(const iEnt)
 		write_byte(200) // Blue.
 		write_byte(255) // Brightness.
 		write_byte(0) // Scroll Speed.
+		message_end()
+	}
+
+	if (g_bExplodeDecal)
+	{
+		message_begin_f(MSG_PVS, SVC_TEMPENTITY, vOrigin)
+		write_byte(TE_WORLDDECAL) // TE id.
+		write_coord_f(vOrigin[0]) // Position X.
+		write_coord_f(vOrigin[1]) // Position Y.
+		write_coord_f(vOrigin[2]) // Position Z.
+		write_byte(g_iExplodeDecals[random(2)]) // Decal index.
 		message_end()
 	}
 
