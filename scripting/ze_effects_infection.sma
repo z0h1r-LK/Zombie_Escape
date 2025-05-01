@@ -4,13 +4,6 @@
 #include <ze_core>
 #include <ini_file>
 
-// Messages ID.
-const msg_Damage = 71
-const msg_DeathMsg = 83
-const msg_ScoreAttrib = 84
-const msg_ScreenShake = 97
-const msg_ScreenFade = 98
-
 // Effects Flags.
 enum (<<=1)
 {
@@ -61,7 +54,12 @@ public x_bBlockInfectEff;
 // Variables.
 new g_iGibsSpr,
 	g_iBeamSpr,
-	g_iInfectMsg
+	g_iInfectMsg,
+	g_iMsgDamage,
+	g_iMsgDeathMsg,
+	g_iMsgScoreAttrib,
+	g_iMsgScreenShake,
+	g_iMsgScreenFade
 
 // Array.
 new Float:g_flHudPosit[HUDs]
@@ -197,6 +195,11 @@ public plugin_init()
 
 	// Set Values.
 	x_bBlockInfectEff = 0
+	g_iMsgDamage = get_user_msgid("Damage")
+	g_iMsgDeathMsg = get_user_msgid("DeathMsg")
+	g_iMsgScoreAttrib = get_user_msgid("ScoreAttrib")
+	g_iMsgScreenShake = get_user_msgid("ScreenShake")
+	g_iMsgScreenFade = get_user_msgid("ScreenFade")
 	g_iInfectMsg = CreateHudSyncObj()
 }
 
@@ -259,7 +262,7 @@ public ze_user_infected(iVictim, iInfector)
 	// Fade Screen.
 	if (bitsFlags & FLAG_FADE)
 	{
-		message_begin(MSG_ONE_UNRELIABLE, msg_ScreenFade, .player = iVictim)
+		message_begin(MSG_ONE_UNRELIABLE, g_iMsgScreenFade, .player = iVictim)
 		write_short(BIT(11)) // Duration.
 		write_short(0) // Hold time.
 		write_short(0) // Fade type.
@@ -273,7 +276,7 @@ public ze_user_infected(iVictim, iInfector)
 	// Shake Screen.
 	if (bitsFlags & FLAG_SHAKE)
 	{
-		message_begin(MSG_ONE_UNRELIABLE, msg_ScreenShake, .player = iVictim)
+		message_begin(MSG_ONE_UNRELIABLE, g_iMsgScreenShake, .player = iVictim)
 		write_short(2 * BIT(12)) // Duration.
 		write_short(6 * BIT(12)) // Amplitude.
 		write_short(3 * BIT(12)) // Frequence.
@@ -320,7 +323,7 @@ public ze_user_infected(iVictim, iInfector)
 	// Infection icon.
 	if (bitsFlags & FLAG_ICON)
 	{
-		message_begin(MSG_ONE_UNRELIABLE, msg_Damage, .player = iVictim)
+		message_begin(MSG_ONE_UNRELIABLE, g_iMsgDamage, .player = iVictim)
 		write_byte(0) // Damage Take
 		write_byte(0) // Damage Save
 		write_long(DMG_PARALYZE|DMG_NERVEGAS) // Damage Type
@@ -408,7 +411,7 @@ public ze_user_infected(iVictim, iInfector)
 	}
 
 	// Send death message to everyone.
-	message_begin(MSG_ALL, msg_DeathMsg)
+	message_begin(MSG_ALL, g_iMsgDeathMsg)
 	write_byte(iInfector) // Attacker.
 	write_byte(iVictim) // Victim.
 	write_byte(0) // 1 = Headshot.
@@ -416,7 +419,7 @@ public ze_user_infected(iVictim, iInfector)
 	message_end()
 
 	// Fix Dead attrib on Scoreboard
-	message_begin(MSG_ALL, msg_ScoreAttrib)
+	message_begin(MSG_ALL, g_iMsgScoreAttrib)
 	write_byte(iVictim) // Client index.
 	write_byte(0) // 0 - None | 1 - Dead
 	message_end()
