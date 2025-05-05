@@ -27,7 +27,7 @@ MENU_AUTOSELECT = "Remember?"
 MSG_WEAPONS_DISABLED = "Weapons Menu disabled!"
 MSG_BUYTIME_OVER = "Buy time is over!"
 MSG_ALREADY_BOUGHT = "You already bought primary and secondary weapons!"
-MSG_CANT_BUY_WEAPON = "Can't Zombies buy Weapons"
+MSG_CANT_BUY_WEAPON = "Zombies cannot buy Weapons"
 MSG_BUY_ENABLED = "Weapons Menu has been re-enabled!"
 
 MENU_ITEMS_TITLE = "Extra-Items"
@@ -55,7 +55,7 @@ OFF = "Off"
 CMD_NOT = "Command unavailable!"
 CMD_NOT_ALIVE = "You are dead!"
 
-HUD_INFECT_NOTICE = "%s has been infected by %s"
+HUD_INFECT_NOTICE = "{$ATTACKER} has been infected by {$VICTIM}"
 
 MSG_COINS_WINS = "!tEscape Success!y | You earned !g+%d!y EC!"
 MSG_COINS_KILLED = "!tZombie Killed!y | You earned !g+%d!y EC!"
@@ -150,12 +150,13 @@ OFF = "Off"
 CMD_NOT = "Komenda niedostepna!"
 CMD_NOT_ALIVE = "Jestes martwy!"
 
-HUD_INFECT_NOTICE = "%s zostal zainfekowany przez %s"
+HUD_INFECT_NOTICE = "{$VICTIM} zostal zainfekowany przez {$ATTACKER}"
 
 MSG_COINS_WINS = "!tUcieczka Udana!y | Zdobyles !g+%d!y monet!"
 MSG_COINS_KILLED = "!tZombie Zabity!y | Zdobyles !g+%d!y monet!"
 MSG_COINS_INFECTED = "!tCzlowiek Zarazony !y | Zdobyles !g+%d!y monet!"
-MSG_NO_COINS_ENOUGH = "You don't have enough coins!"
+MSG_NO_COINS_ENOUGH = "Nie masz wystarczej ilosci monet!"
+MSG_ITEM_PURCHASED = "Kupiles itemek | -!g%i !ymonet!t!"
 
 CLASS_HUMAN = "Czlowiek"
 CLASS_ZOMBIE = "Zombie"
@@ -243,7 +244,7 @@ OFF = "Kapali"
 CMD_NOT = "Komut devre disi!"
 CMD_NOT_ALIVE = "Canli degilsin!"
 
-HUD_INFECT_NOTICE = "%s, %s tarafindan enfekte edildi"
+HUD_INFECT_NOTICE = "{$VICTIM} tarafindan enfekte edildi {$ATTACKER}"
 
 MSG_COINS_WINS = "!tKacis basarili!y | !g+%d!y EC !tkazandin!"
 MSG_COINS_KILLED = "!tZombi Olduruldu!y | !g+%d!y EC !tkazandin!"
@@ -337,12 +338,13 @@ OFF = "Oprit"
 CMD_NOT = "Comanda Indisponibilă!"
 CMD_NOT_ALIVE = "Esti mort!"
 
-HUD_INFECT_NOTICE = "%s a fost infectat de către %s"
+HUD_INFECT_NOTICE = "{$VICTIM} a fost infectat de către {$ATTACKER}"
 
 MSG_COINS_WINS = "!tEvadare reușită!y | Ai primit !g+%d!y EC!"
 MSG_COINS_KILLED = "!tZombie Omorăt!y | Ai primit !g+%d!y EC!"
 MSG_COINS_INFECTED = "!tOm Infectat!y | Ai primit !g+%d!y EC!"
 MSG_NO_COINS_ENOUGH = "N-ai coins-urile necesare!"
+MSG_ITEM_PURCHASED = "Ai achizitionat un item | -!g%i !yEC!t!"
 
 CLASS_HUMAN = "Om"
 CLASS_ZOMBIE = "Zombie"

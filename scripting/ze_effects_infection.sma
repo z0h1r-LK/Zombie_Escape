@@ -223,7 +223,7 @@ public plugin_end()
 	ArrayDestroy(g_aThunderSounds)
 }
 
-public ze_user_infected(iVictim, iInfector)
+public ze_user_infected_ex(iVictim, iInfector, iHeadshot)
 {
 	if (!g_szFlags[0] || x_bBlockInfectEff == ZE_INFECT_ALWAYS)
 		return
@@ -253,9 +253,16 @@ public ze_user_infected(iVictim, iInfector)
 			get_user_name(iVictim, szVicName, charsmax(szVicName))
 			get_user_name(iInfector, szInfName, charsmax(szInfName))
 
+			static szMessage[256]
+			formatex(szMessage, charsmax(szMessage), "%L", LANG_PLAYER, "HUD_INFECT_NOTICE")
+
+			replace_string(szMessage, charsmax(szMessage), "{$VICTIM}", szVicName)
+			replace_string(szMessage, charsmax(szMessage), "{$ATTACKER}", szInfName)
+
 			// Send colored HUD message for everyone.
 			set_hudmessage(g_iNoticeColors[Red], g_iNoticeColors[Green], g_iNoticeColors[Blue], g_flHudPosit[HUD_INFECT_X], g_flHudPosit[HUD_INFECT_Y], 1, 3.0, 3.0, 0.1, 0.1)
-			ShowSyncHudMsg(0, g_iInfectMsg, "%L", LANG_PLAYER, "HUD_INFECT_NOTICE", szVicName, szInfName)
+			ShowSyncHudMsg(0, g_iInfectMsg, szMessage)
+			szMessage = NULL_STRING
 		}
 	}
 
@@ -414,7 +421,7 @@ public ze_user_infected(iVictim, iInfector)
 	message_begin(MSG_ALL, g_iMsgDeathMsg)
 	write_byte(iInfector) // Attacker.
 	write_byte(iVictim) // Victim.
-	write_byte(0) // 1 = Headshot.
+	write_byte(iHeadshot) // 1 = Headshot.
 	write_string(g_bGreenSkullIcon ? "teammate" : "claws") // Weapon Name.
 	message_end()
 
