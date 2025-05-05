@@ -19,6 +19,7 @@ enum _:FORWARDS
 	FORWARD_USER_HUMANIZED,
 	FORWARD_USER_INFECTED_PRE,
 	FORWARD_USER_INFECTED,
+	FORWARD_USER_INFECTED_EX,
 	FORWARD_USER_SPAWN_POST,
 	FORWARD_USER_KILLED_POST,
 	FORWARD_USER_LAST_HUMAN,
@@ -218,6 +219,7 @@ public plugin_init()
 	g_iForwards[FORWARD_USER_HUMANIZED] = CreateMultiForward("ze_user_humanized", ET_IGNORE, FP_CELL)
 	g_iForwards[FORWARD_USER_INFECTED_PRE] = CreateMultiForward("ze_user_infected_pre", ET_CONTINUE, FP_CELL, FP_CELL, FP_FLOAT)
 	g_iForwards[FORWARD_USER_INFECTED] = CreateMultiForward("ze_user_infected", ET_IGNORE, FP_CELL, FP_CELL)
+	g_iForwards[FORWARD_USER_INFECTED_EX] = CreateMultiForward("ze_user_infected_ex", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
 	g_iForwards[FORWARD_USER_SPAWN_POST] = CreateMultiForward("ze_user_spawn_post", ET_IGNORE, FP_CELL)
 	g_iForwards[FORWARD_USER_KILLED_POST] = CreateMultiForward("ze_user_killed_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
 	g_iForwards[FORWARD_USER_LAST_HUMAN] = CreateMultiForward("ze_user_last_human", ET_IGNORE, FP_CELL)
@@ -846,13 +848,15 @@ public fw_TraceAttack_Pre(const iVictim, const iAttacker, const Float:flDamage, 
 		if (get_user_weapon(iAttacker) != CSW_KNIFE)
 			return HC_SUPERCEDE
 
+		static iHeadshot; iHeadshot = (get_pmtrace(pTrace, pmt_hitgroup) == HITGROUP_HEAD)
+
 		// Last Human?
 		if (get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT") == 1)
 		{
 			if (g_bLastHumanDied)
 				return HC_CONTINUE
 
-			switch (set_user_Zombie(iVictim, iAttacker, flDamage))
+			switch (set_user_Zombie(iVictim, iAttacker, flDamage, iHeadshot))
 			{
 				case 1: rg_round_end(g_flRoundEndDelay, WINSTATUS_TERRORISTS, ROUND_TERRORISTS_WIN, "", "", true)
 				case 2: return HC_CONTINUE
@@ -861,7 +865,7 @@ public fw_TraceAttack_Pre(const iVictim, const iAttacker, const Float:flDamage, 
 			return HC_SUPERCEDE
 		}
 
-		switch (set_user_Zombie(iVictim, iAttacker, flDamage))
+		switch (set_user_Zombie(iVictim, iAttacker, flDamage, iHeadshot))
 		{
 			case 0..1: return HC_SUPERCEDE
 			case 2: return HC_CONTINUE
@@ -1004,7 +1008,7 @@ set_user_Human(const id)
 	return 1
 }
 
-set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
+set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0, bHead = false)
 {
 	// Call forward ze_user_infected_pre(param1, param2, fparam3)
 	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED_PRE], g_iFwReturn, iVictim, iAttacker, flDamage)
@@ -1025,6 +1029,9 @@ set_user_Zombie(const iVictim, const iAttacker = 0, Float:flDamage = 0.0)
 
 	// Call forward ze_user_infected(param1, param2).
 	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED], _/* Ignore return value */, iVictim, iAttacker)
+
+	// Call forward ze_user_infected_ex(param1, param2, param3)
+	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED_EX], _/* Ignore return value */, iVictim, iAttacker, bHead)
 
 	// Switch player TERRORIST team.
 	rg_set_user_team(iVictim, TEAM_TERRORIST, MODEL_UNASSIGNED)
@@ -1051,7 +1058,7 @@ force_set_user_Human(const id)
 	check_LastPlayer()
 }
 
-force_set_user_Zombie(const iVictim, iAttacker = 0)
+force_set_user_Zombie(const iVictim, iAttacker = 0, bool:bHead = false)
 {
 	flag_set(g_bitsIsZombie, iVictim)
 
@@ -1064,6 +1071,7 @@ force_set_user_Zombie(const iVictim, iAttacker = 0)
 
 	// Call forward ze_user_infected(param1, param2).
 	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED], _/* Ignore return value */, iVictim, iAttacker)
+	ExecuteForward(g_iForwards[FORWARD_USER_INFECTED_EX], _/* Ignore return value */, iVictim, iAttacker, bHead)
 
 	// Switch player TERRORIST team.
 	rg_set_user_team(iVictim, TEAM_TERRORIST, MODEL_UNASSIGNED)

@@ -79,6 +79,19 @@ forward ze_user_infected_pre(iVictim, iInfector, Float:flDamage);
 forward ze_user_infected(iVictim, iInfector);
 
 /**
+ * Called after infection event. It called whenever ze_set_user_zombie(param1, param2) native used.
+ *
+ * @note This forward doesn't called, If pre-forward is return ZE_STOP or ZE_BREAK.
+ *
+ * @param iVictim     Victim index.
+ * @param iInfector   Attacker index. (0 = SERVER)
+ * @param iHeadshot   1 = Headshot | 0 = Otherwise.
+ *
+ * @noreturn
+ */
+forward ze_user_infected_ex(iVictim, iInfector, bHeadshot);
+
+/**
  * Called after player spawn.
  *
  * @param id       Client index.
