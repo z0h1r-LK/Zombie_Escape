@@ -55,7 +55,7 @@ OFF = "Off"
 CMD_NOT = "Command unavailable!"
 CMD_NOT_ALIVE = "You are dead!"
 
-HUD_INFECT_NOTICE = "{$ATTACKER} has been infected by {$VICTIM}"
+HUD_INFECT_NOTICE = "{$victim} has been infected by {$attacker}"
 
 MSG_COINS_WINS = "!tEscape Success!y | You earned !g+%d!y EC!"
 MSG_COINS_KILLED = "!tZombie Killed!y | You earned !g+%d!y EC!"
@@ -68,8 +68,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
-HUD_INFO_SPEC = "Name: {$NAME}^nHP: {$HEALTH} | Armor: {$SHIELD} | Class: {$CLASS} | EC: {$COINS}"
-HUD_INFO_STATS = "Name: {$NAME}^nHP: {$HEALTH} | Armor: {$SHIELD} | Class: {$CLASS} | EC: {$COINS}"
+HUD_INFO_SPEC = "Name: {$name}^nHP: {$health} | Armor: {$shield} | Class: {$class} | EC: {$coins}"
+HUD_INFO_STATS = "Name: {$name}^nHP: {$health} | Armor: {$shield} | Class: {$class} | EC: {$coins}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -150,7 +150,7 @@ OFF = "Off"
 CMD_NOT = "Komenda niedostepna!"
 CMD_NOT_ALIVE = "Jestes martwy!"
 
-HUD_INFECT_NOTICE = "{$VICTIM} zostal zainfekowany przez {$ATTACKER}"
+HUD_INFECT_NOTICE = "{$victim} zostal zainfekowany przez {$attacker}"
 
 MSG_COINS_WINS = "!tUcieczka Udana!y | Zdobyles !g+%d!y monet!"
 MSG_COINS_KILLED = "!tZombie Zabity!y | Zdobyles !g+%d!y monet!"
@@ -163,8 +163,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Ocalaly"
 
-HUD_INFO_SPEC = "Nick: {$NAME}^nHP: {$HEALTH} | Pancerz: {$SHIELD} | Klasa: {$CLASS} | Monety: {$COINS}"
-HUD_INFO_STATS = "Nick: {$NAME}^nHP: {$HEALTH} | Pancerz: {$SHIELD} | Klasa: {$CLASS} | Monety: {$COINS}"
+HUD_INFO_SPEC = "Nick: {$name}^nHP: {$health} | Pancerz: {$shield} | Klasa: {$class} | Monety: {$coins}"
+HUD_INFO_STATS = "Nick: {$name}^nHP: {$health} | Pancerz: {$shield} | Klasa: {$class} | Monety: {$coins}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -244,7 +244,7 @@ OFF = "Kapali"
 CMD_NOT = "Komut devre disi!"
 CMD_NOT_ALIVE = "Canli degilsin!"
 
-HUD_INFECT_NOTICE = "{$VICTIM} tarafindan enfekte edildi {$ATTACKER}"
+HUD_INFECT_NOTICE = "{$victim} tarafindan enfekte edildi {$attacker}"
 
 MSG_COINS_WINS = "!tKacis basarili!y | !g+%d!y EC !tkazandin!"
 MSG_COINS_KILLED = "!tZombi Olduruldu!y | !g+%d!y EC !tkazandin!"
@@ -256,8 +256,8 @@ CLASS_ZOMBIE = "Zombi"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Survivor"
 
-HUD_INFO_SPEC = "Isim: {$NAME}^nSaglik: {$HEALTH} | Zirh: {$SHIELD} | Sinif: {$CLASS} | EC: {$COINS}"
-HUD_INFO_STATS = "Isim: {$NAME}^nSaglik: {$HEALTH} | Zirh: {$SHIELD} | Sinif: {$CLASS} | EC: {$COINS}"
+HUD_INFO_SPEC = "Isim: {$name}^nSaglik: {$health} | Zirh: {$shield} | Sinif: {$class} | EC: {$coins}"
+HUD_INFO_STATS = "Isim: {$name}^nSaglik: {$health} | Zirh: {$shield} | Sinif: {$class} | EC: {$coins}"
 
 NABBR_THOUSANDS = "K"
 NABBR_MILLIONS = "M"
@@ -338,7 +338,7 @@ OFF = "Oprit"
 CMD_NOT = "Comanda Indisponibilă!"
 CMD_NOT_ALIVE = "Esti mort!"
 
-HUD_INFECT_NOTICE = "{$VICTIM} a fost infectat de către {$ATTACKER}"
+HUD_INFECT_NOTICE = "{$victim} a fost infectat de către {$attacker}"
 
 MSG_COINS_WINS = "!tEvadare reușită!y | Ai primit !g+%d!y EC!"
 MSG_COINS_KILLED = "!tZombie Omorăt!y | Ai primit !g+%d!y EC!"
@@ -351,8 +351,8 @@ CLASS_ZOMBIE = "Zombie"
 CLASS_NEMESIS = "Nemesis"
 CLASS_SURVIVOR = "Supravițuitor"
 
-HUD_INFO_SPEC = "Nume: {$NAME}^nViață: {$HEALTH} | Armură: {$SHIELD} | Clasă: {$CLASS} | EC: {$COINS}"
-HUD_INFO_STATS = "Nume: {$NAME}^nViață: {$HEALTH} | Armură: {$SHIELD} | Clasă: {$CLASS} | EC: {$COINS}"
+HUD_INFO_SPEC = "Nume: {$name}^nViață: {$health} | Armură: {$shield} | Clasă: {$class} | EC: {$coins}"
+HUD_INFO_STATS = "Nume: {$name}^nViață: {$health} | Armură: {$shield} | Clasă: {$class} | EC: {$coins}"
 
 NABBR_THOUSANDS = "M"
 NABBR_MILLIONS = "M"

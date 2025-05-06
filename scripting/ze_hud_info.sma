@@ -189,11 +189,11 @@ public ShowHUD(taskid)
 
 		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "HUD_INFO_SPEC")
 
-		replace_string(szMsg, charsmax(szMsg), "{$NAME}", g_szName[target]) // Name.
-		replace_string(szMsg, charsmax(szMsg), "{$HEALTH}", szHealth) // Health.
-		replace_string(szMsg, charsmax(szMsg), "{$SHIELD}", szShield) // Shield.
-		replace_string(szMsg, charsmax(szMsg), "{$CLASS}", g_szClass[target]) // Class.
-		replace_string(szMsg, charsmax(szMsg), "{$COINS}", szCoins) // Escape Coins.
+		replace_string(szMsg, charsmax(szMsg), "{$name}", g_szName[target]) // Name.
+		replace_string(szMsg, charsmax(szMsg), "{$health}", szHealth) // Health.
+		replace_string(szMsg, charsmax(szMsg), "{$shield}", szShield) // Shield.
+		replace_string(szMsg, charsmax(szMsg), "{$class}", g_szClass[target]) // Class.
+		replace_string(szMsg, charsmax(szMsg), "{$coins}", szCoins) // Escape Coins.
 
 		switch (g_iMode)
 		{
@@ -235,11 +235,11 @@ public ShowHUD(taskid)
 
 		formatex(szMsg, charsmax(szMsg), "%L", LANG_PLAYER, "HUD_INFO_STATS")
 
-		replace_string(szMsg, charsmax(szMsg), "{$NAME}", g_szName[target]) // Name.
-		replace_string(szMsg, charsmax(szMsg), "{$HEALTH}", szHealth) // Health.
-		replace_string(szMsg, charsmax(szMsg), "{$SHIELD}", szShield) // Shield.
-		replace_string(szMsg, charsmax(szMsg), "{$CLASS}", g_szClass[target]) // Class.
-		replace_string(szMsg, charsmax(szMsg), "{$COINS}", szCoins) // Escape Coins.
+		replace_string(szMsg, charsmax(szMsg), "{$name}", g_szName[target]) // Name.
+		replace_string(szMsg, charsmax(szMsg), "{$health}", szHealth) // Health.
+		replace_string(szMsg, charsmax(szMsg), "{$shield}", szShield) // Shield.
+		replace_string(szMsg, charsmax(szMsg), "{$class}", g_szClass[target]) // Class.
+		replace_string(szMsg, charsmax(szMsg), "{$coins}", szCoins) // Escape Coins.
 
 		switch (g_iMode)
 		{
