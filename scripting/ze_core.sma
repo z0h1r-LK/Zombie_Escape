@@ -78,7 +78,7 @@ new g_iReqPlayers,
 	bool:g_bBlockHpArRrHUD,
 	bool:g_bBlockBloodEffs,
 	bool:g_bBlockStartupMOTD,
-	boool:g_bBlockHintMessage,
+	bool:g_bBlockHintMessage,
 	Float:g_flRoundEndDelay
 
 // Variables.
