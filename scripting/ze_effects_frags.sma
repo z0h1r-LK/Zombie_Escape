@@ -3,10 +3,15 @@
 
 #include <ze_core>
 
+// Libraries.
+stock const LIBRARY_NEMESIS[] = "ze_class_nemesis"
+
 // Cvars.
 new g_iFragsEscapeSuccess,
 	g_iFragsHumanInfect,
 	g_iFragsZombieKilled,
+	g_iFragsNemesisKilled,
+	g_iDeathsNemesisKilled,
 	g_iDeathsZombieKilled,
 	g_iDeathsHumanInfect
 
@@ -21,7 +26,16 @@ public plugin_natives()
 {
 	register_native("ze_add_user_frags", "__native_add_user_frags")
 	register_native("ze_add_user_deaths", "__native_add_user_deaths")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
 }
+
+public fw_module_filter(const module[], LibType:libtype)
+	return equal(module, LIBRARY_NEMESIS) ? PLUGIN_HANDLED : PLUGIN_CONTINUE
+
+public fw_native_filter(const name[], index, trap)
+	return !trap ? PLUGIN_HANDLED : PLUGIN_CONTINUE
 
 public plugin_init()
 {
@@ -35,6 +49,8 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_frags_escape_success", "10"), g_iFragsEscapeSuccess)
 	bind_pcvar_num(register_cvar("ze_frags_infect_human", "2"), g_iFragsHumanInfect)
 	bind_pcvar_num(register_cvar("ze_frags_killed_zombie", "4"), g_iFragsZombieKilled)
+	bind_pcvar_num(register_cvar("ze_frags_killed_nemesis", "2"), g_iFragsNemesisKilled)
+	bind_pcvar_num(register_cvar("ze_deaths_killed_nemesis", "2"), g_iDeathsNemesisKilled)
 	bind_pcvar_num(register_cvar("ze_deaths_killed_zombie", "1"), g_iDeathsZombieKilled)
 	bind_pcvar_num(register_cvar("ze_deaths_infect_human", "1"), g_iDeathsHumanInfect)
 
@@ -102,8 +118,32 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 	if (!is_user_connected(iAttacker))
 		return
 
-	// Victim is Zombie?
-	if (ze_is_user_zombie(iVictim))
+	// Victim is Nemesis?
+	if (LibraryExists(LIBRARY_NEMESIS, LibType_Library) && ze_is_user_nemesis(iVictim))
+	{
+		if (g_iFragsNemesisKilled > 0)
+		{
+			g_iFrags[iAttacker] += g_iFragsNemesisKilled
+
+			// Update Frags on Server.
+			set_entvar(iAttacker, var_frags, float(g_iFrags[iAttacker]))
+
+			// Update Frags on Scoreboard ( Client Side ).
+			UpdateScore(iAttacker)
+		}
+
+		if (g_iDeathsNemesisKilled > 0)
+		{
+			g_iDeaths[iVictim] += g_iDeathsNemesisKilled
+
+			// Update Deaths on Server.
+			set_member(iVictim, m_iDeaths, g_iDeathsNemesisKilled)
+
+			// Update Deaths on Scoreboard ( Client Side ).
+			UpdateScore(iVictim)
+		}
+	}
+	else if (ze_is_user_zombie(iVictim))
 	{
 		if (g_iDeathsZombieKilled > 0)
 		{
