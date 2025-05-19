@@ -321,16 +321,18 @@ public check_Update(taskid)
 			case 1: server_print("[ZE] Check-Update: Unable to create socket.")
 			case 2: server_print("[ZE] Check-Update: Unable to connect to hostname.")
 			case 3: server_print("[ZE] Check-Update: Unable to connect to HTTP Port.")
+			default: // No error?
+			{
+				// Send request to Server.
+				new szRequest[256]
+				formatex(szRequest, charsmax(szRequest), "GET /%s HTTP/1.1^r^nHost:%s^r^nAccept:application/json^r^n^r^n", ZE_HOME_TOPIC, ZE_HOME_HOST)
+				socket_send2(g_hSocketUpdate, szRequest, strlen(szRequest))
+
+				// Check from reponse.
+				set_task(1.0, "check_Reponse", TASK_SVREPONSE, "", 0, "a", 5)
+				set_task(6.0, "close_Connection", TASK_CONNECTFAIL)
+			}
 		}
-
-		// Send request to Server.
-		new szRequest[256]
-		formatex(szRequest, charsmax(szRequest), "GET /%s HTTP/1.1^r^nHost:%s^r^n^r^n", ZE_HOME_TOPIC, ZE_HOME_HOST)
-		socket_send2(g_hSocketUpdate, szRequest, strlen(szRequest))
-
-		// Check from reponse.
-		set_task(1.0, "check_Reponse", TASK_SVREPONSE, "", 0, "a", 5)
-		set_task(6.0, "close_Connection", TASK_CONNECTFAIL)
 	}
 }
 
@@ -343,46 +345,54 @@ public check_Reponse(taskid)
 		remove_task(TASK_SVREPONSE)
 		remove_task(TASK_CONNECTFAIL)
 
-		new szReponse[512]
-		socket_recv(g_hSocketUpdate, szReponse, charsmax(szReponse))
+		new szBuffer[512], szVersion[8]
+		socket_recv(g_hSocketUpdate, szBuffer, charsmax(szBuffer))
 
-		new iPos
-		if ((iPos = strfind(szReponse, "{")) > -1)
-		{
-			// Copy JSON content.
-			copy(szReponse, charsmax(szReponse), szReponse[iPos])
-		}
+		new i
+		if ((i = contain(szBuffer, "{")) > -1)
+			copy(szBuffer, charsmax(szBuffer), szBuffer[i])
 
 		new JSON:hJson
-		if ((hJson = json_parse(szReponse)) == Invalid_JSON)
+		if ((hJson = json_parse(szBuffer)) == Invalid_JSON)
 		{
-			server_print("[Zombie-Escape] Error while parsing JSON string (-1)")
+			server_print("[Zombie-Escape] Error while parsing JSON string (Bad JSON format) (-1)")
 		}
 		else
 		{
 			new szMD5Hash[34]
-			if (json_object_get_string(hJson, "md5hash", szMD5Hash, charsmax(szMD5Hash)) > 0)
-			{
-				if (!equal(szMD5Hash, ZE_MD5HASH))
-				{
-					new const szMessage[] =
-					"\
-					^n^n^n\
-					| ***--- Zombie Escape Rebuild ---***^n\
-					| There is a new update!^n\
-					| • Official Website: https://escapers-zone.net/^n\
-					| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
-					^n^n^n\
-					"
 
-					x_bUpdateAvailable = 1
-					server_print(szMessage)
-				}
-				else
+			if (json_object_get_string(hJson, "fversion", szVersion, charsmax(szVersion)) || json_object_get_string(hJson, "md5hash", szMD5Hash, charsmax(szMD5Hash)))
+			{
+				if (str_to_float(szVersion) < ZE_VERSION_FL || !equal(szMD5Hash, ZE_MD5HASH))
 				{
-					server_print("[Zombie-Escape] Your Mod is up to date :)")
+					x_bUpdateAvailable = 1
 				}
 			}
+		}
+
+		if (x_bUpdateAvailable)
+		{
+			formatex(szBuffer, charsmax(szBuffer), "\
+			^n^n^n\
+			| ***--- Zombie Escape Rebuild %s ---***^n\
+			| There is a new update!^n\
+			| • Official Website: https://escapers-zone.net/^n\
+			| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
+			^n^n^n\
+			", szVersion)
+
+			server_print(szBuffer)
+
+			new hFile
+			if ((hFile = fopen("update", "wt")))
+			{
+				fputs(hFile, szVersion)
+				fclose(hFile)
+			}
+		}
+		else
+		{
+			server_print("[Zombie-Escape] Your Mod is up to date :)")
 		}
 
 		// Frees handle.
