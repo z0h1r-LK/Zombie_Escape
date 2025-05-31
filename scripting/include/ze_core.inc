@@ -235,6 +235,20 @@ forward ze_zombie_release();
 forward ze_grenade_exploded(ent, NadeType:iGrenade, Float:vOrigin[3]);
 
 /**
+ * Called when Victim received knockback attack from Attacker.
+ *
+ * @note You can also modify on taken knockback.
+ *
+ * @param iVictim    Victim index.
+ * @param iAttacker  Attacker index.
+ * @param vSpeed[3]  Knockback speed taken.
+ *
+ * @return           ZE_STOP     | Prevent taken knockback.
+ *                   ZE_CONTINUE | Otherwise.
+ */
+forward ze_take_knockback(iVictim, iAttacker, Float:vSpeed[3]);
+
+/**
  * -=| Natives |=-
  */
 
