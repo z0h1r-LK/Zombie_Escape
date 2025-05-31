@@ -47,7 +47,9 @@ new Float:g_flWeaponsPower[] =
 }
 
 // Cvars.
-new bool:g_bPower,
+new g_iFwHandle,
+	g_iFwResult,
+	bool:g_bPower,
 	bool:g_bDamage,
 	bool:g_bVerVelo,
 	Float:g_flDucking,
@@ -80,6 +82,9 @@ public plugin_init()
 	bind_pcvar_num(create_cvar("ze_knockback_vervelo", "0"), g_bVerVelo)
 	bind_pcvar_float(create_cvar("ze_knockback_ducking", "0.25"), g_flDucking)
 	bind_pcvar_float(create_cvar("ze_knockback_distance", "500.0"), g_flDistance)
+
+	// Create Forwards.
+	g_iFwHandle = CreateMultiForward("ze_take_knockback", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
 }
 
 public plugin_cfg()
@@ -98,6 +103,12 @@ public plugin_cfg()
 		if (!ini_read_float(ZE_FILENAME, "Knockback", szName[7], g_flWeaponsPower[iWeapon]))
 			ini_write_float(ZE_FILENAME, "Knockback", szName[7], g_flWeaponsPower[iWeapon])
 	}
+}
+
+public plugin_end()
+{
+	// Free the Memory.
+	DestroyForward(g_iFwHandle)
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
@@ -180,6 +191,12 @@ public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDire
 	// Should knockback also affect vertical velocity?
 	if (!g_bVerVelo)
 		vDirection[2] = vSpeed[2]
+
+	// Call forward ze_take_knockback(param1, param2, array1[3]) and get return value.
+	ExecuteForward(g_iFwHandle, g_iFwResult, iVictim, iAttacker, PrepareArray(_:vDirection, 3, 1))
+
+	if (g_iFwResult >= ZE_STOP)
+		return
 
 	// Set the knockback'd victim's velocity
 	set_entvar(iVictim, var_velocity, vDirection)
