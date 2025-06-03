@@ -134,9 +134,6 @@ public plugin_init()
 	// Hook Chains.
 	RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "fw_HasRestrictItem_Pre")
 
-	// Events.
-	register_event("CurWeapon", "fw_CurWeapon_Event", "be", "2!0", "3=1")
-
 	// Cvars.
 	bind_pcvar_num(register_cvar("ze_survivor_health", "6000"), g_iHealth)
 	bind_pcvar_num(register_cvar("ze_survivor_armor", "0"), g_iArmor)
@@ -232,23 +229,6 @@ public fw_HasRestrictItem_Pre(const id, pItem)
 	return HC_SUPERCEDE
 }
 
-public fw_CurWeapon_Event(const id)
-{
-	if (!g_bUnlimitedAmmo)
-		return
-
-	// Player isn't Survivor?
-	if (!is_user_survivor(id))
-		return
-
-	new iMaxClip
-	if ((iMaxClip = rg_get_weapon_info(read_data(2), WI_GUN_CLIP_SIZE)) < 0)
-		return
-
-	// Reloaded!
-	set_member(get_member(id, m_pActiveItem), m_Weapon_iClip, iMaxClip)
-}
-
 /**
  * -=| Functions |=-
  */
@@ -332,6 +312,11 @@ set_User_Survivor(id)
 		ze_set_user_weap_model(id, iWeaponID, g_p_szWeaponModel)
 	}
 #endif
+
+	if (g_bUnlimitedAmmo)
+	{
+		set_member(id, m_iWeaponInfiniteAmmo, 1)
+	}
 }
 
 unset_User_Survivor(id)
