@@ -498,7 +498,7 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
 		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_PAIN, PrepareArray(szSound, sizeof(szSound), 1))
 
-		if (g_iFwReturn >= ZE_STOP)
+		if (g_iFwReturn >= ZE_STOP || !szSound[0])
 			return FMRES_SUPERCEDE
 
 		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
