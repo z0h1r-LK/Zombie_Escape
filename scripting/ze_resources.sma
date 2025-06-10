@@ -250,8 +250,6 @@ public plugin_precache()
 	ini_read_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
 
-	new i
-
 	if (!ArraySize(g_aPainSounds))
 	{
 		for (i = 0; i < sizeof(szPainSounds); i++)
