@@ -65,7 +65,7 @@ enum (+=1)
 }
 
 /**
- * Type of sound, Used in ze_fw_res_player_sound()
+ * Type of sound, Used in ze_fw_res_zombie_sound()
  */
 enum
 {

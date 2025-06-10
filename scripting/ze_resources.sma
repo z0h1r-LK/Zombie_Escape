@@ -250,9 +250,11 @@ public plugin_precache()
 	ini_read_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "DIE", g_aDieSounds)
 
+	new i
+
 	if (!ArraySize(g_aPainSounds))
 	{
-		for (new i = 0; i < sizeof(szPainSounds); i++)
+		for (i = 0; i < sizeof(szPainSounds); i++)
 			ArrayPushString(g_aPainSounds, szPainSounds[i])
 
 		// Write Pain sounds on INI file.
@@ -261,7 +263,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aPainHeadSounds))
 	{
-		for (new i = 0; i < sizeof(szPainHeadSounds); i++)
+		for (i = 0; i < sizeof(szPainHeadSounds); i++)
 			ArrayPushString(g_aPainHeadSounds, szPainHeadSounds[i])
 
 		// Write Pain headshot sounds on INI file.
@@ -270,7 +272,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aMissSlashSounds))
 	{
-		for (new i = 0; i < sizeof(szMissSlashSounds); i++)
+		for (i = 0; i < sizeof(szMissSlashSounds); i++)
 			ArrayPushString(g_aMissSlashSounds, szMissSlashSounds[i])
 
 		// Write Miss Slash sounds on INI file.
@@ -279,7 +281,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aMissWallSounds))
 	{
-		for (new i = 0; i < sizeof(szMissWallSounds); i++)
+		for (i = 0; i < sizeof(szMissWallSounds); i++)
 			ArrayPushString(g_aMissWallSounds, szMissWallSounds[i])
 
 		// Write Miss Wall sounds on INI file.
@@ -288,7 +290,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aAttackSounds))
 	{
-		for (new i = 0; i < sizeof(szAttackSounds); i++)
+		for (i = 0; i < sizeof(szAttackSounds); i++)
 			ArrayPushString(g_aAttackSounds, szAttackSounds[i])
 
 		// Write Attack sounds on INI file.
@@ -297,7 +299,7 @@ public plugin_precache()
 
 	if (!ArraySize(g_aDieSounds))
 	{
-		for (new i = 0; i < sizeof(szDieSounds); i++)
+		for (i = 0; i < sizeof(szDieSounds); i++)
 			ArrayPushString(g_aDieSounds, szDieSounds[i])
 
 		// Write Die sounds on INI file.
@@ -306,42 +308,42 @@ public plugin_precache()
 
 	// Precache Sounds.
 	iFiles = ArraySize(g_aPainSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aPainSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
 	iFiles = ArraySize(g_aPainHeadSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aPainHeadSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
 	iFiles = ArraySize(g_aMissSlashSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aMissSlashSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
 	iFiles = ArraySize(g_aMissWallSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aMissWallSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
 	iFiles = ArraySize(g_aAttackSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aAttackSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
 	iFiles = ArraySize(g_aDieSounds)
-	for (new i = 0; i < iFiles; i++)
+	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aDieSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
@@ -400,6 +402,13 @@ public plugin_end()
 	#if defined COUNTDOWN_SOUNDS
 	ArrayDestroy(g_aCountdownSounds)
 	#endif
+
+	ArrayDestroy(g_aPainSounds)
+	ArrayDestroy(g_aPainHeadSounds)
+	ArrayDestroy(g_aMissSlashSounds)
+	ArrayDestroy(g_aMissWallSounds)
+	ArrayDestroy(g_aAttackSounds)
+	ArrayDestroy(g_aDieSounds)
 }
 
 public ze_game_started_pre()
