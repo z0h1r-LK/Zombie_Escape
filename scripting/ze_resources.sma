@@ -71,6 +71,7 @@ new Array:g_aCountdownSounds
 #endif
 
 new Array:g_aPainSounds,
+	Array:g_aPainHeadSounds,
 	Array:g_aMissSlashSounds,
 	Array:g_aMissWallSounds,
 	Array:g_aAttackSounds,
@@ -227,6 +228,7 @@ public plugin_precache()
 #endif
 
 	new const szPainSounds[][] = {"zm_es/zombie_pain_1.wav", "zm_es/zombie_pain_2.wav"}
+	new const szPainHeadSounds[][] = {"zm_es/zombie_pain_1.wav", "zm_es/zombie_pain_2.wav"}
 	new const szMissSlashSounds[][] = {"zm_es/zombie_miss_slash_1.wav", "zm_es/zombie_miss_slash_2.wav", "zm_es/zombie_miss_slash_3.wav"}
 	new const szMissWallSounds[][] = {"zm_es/zombie_miss_wall_1.wav", "zm_es/zombie_miss_wall_2.wav", "zm_es/zombie_miss_wall_3.wav"}
 	new const szAttackSounds[][] = {"zm_es/zombie_attack_1.wav", "zm_es/zombie_attack_2.wav", "zm_es/zombie_attack_3.wav"}
@@ -234,6 +236,7 @@ public plugin_precache()
 
 	// Create new dyn Arrays.
 	g_aPainSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
+	g_aPainHeadSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
 	g_aMissSlashSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
 	g_aMissWallSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
 	g_aAttackSounds = ArrayCreate(MAX_RESOURCE_PATH_LENGTH, 1)
@@ -241,6 +244,7 @@ public plugin_precache()
 
 	// Read Zombie sounds from INI file.
 	ini_read_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
+	ini_read_string_array(ZE_FILENAME, "Sounds", "PAIN_HEAD", g_aPainHeadSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_SLASH", g_aMissSlashSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "MISS_WALL", g_aMissWallSounds)
 	ini_read_string_array(ZE_FILENAME, "Sounds", "ATTACK", g_aAttackSounds)
@@ -253,6 +257,15 @@ public plugin_precache()
 
 		// Write Pain sounds on INI file.
 		ini_write_string_array(ZE_FILENAME, "Sounds", "PAIN", g_aPainSounds)
+	}
+
+	if (!ArraySize(g_aPainHeadSounds))
+	{
+		for (new i = 0; i < sizeof(szPainHeadSounds); i++)
+			ArrayPushString(g_aPainHeadSounds, szPainHeadSounds[i])
+
+		// Write Pain headshot sounds on INI file.
+		ini_write_string_array(ZE_FILENAME, "Sounds", "PAIN_HEAD", g_aPainHeadSounds)
 	}
 
 	if (!ArraySize(g_aMissSlashSounds))
@@ -296,6 +309,13 @@ public plugin_precache()
 	for (new i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aPainSounds, i, szSound, charsmax(szSound))
+		precache_sound(szSound)
+	}
+
+	iFiles = ArraySize(g_aPainHeadSounds)
+	for (new i = 0; i < iFiles; i++)
+	{
+		ArrayGetString(g_aPainHeadSounds, i, szSound, charsmax(szSound))
 		precache_sound(szSound)
 	}
 
@@ -497,6 +517,21 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 
 		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
 		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_PAIN, PrepareArray(szSound, sizeof(szSound), 1))
+
+		if (g_iFwReturn >= ZE_STOP || !szSound[0])
+			return FMRES_SUPERCEDE
+
+		emit_sound(iEnt, iChan, szSound, flVol, flAttn, bitsFlags, iPitch)
+		return FMRES_SUPERCEDE
+	}
+
+	// Headshot.
+	if (szSample[7] == 'h' && szSample[8] == 'e' && szSample[9] == 'a')
+	{
+		ArrayGetString(g_aPainHeadSounds, random_num(0, ArraySize(g_aPainHeadSounds) - 1), szSound, charsmax(szSound))
+
+		// Call forward ze_res_fw_zombie_sound(param1, param2, array[])
+		ExecuteForward(g_iForward, g_iFwReturn, iEnt, ZE_SND_HDSHOT, PrepareArray(szSound, sizeof(szSound), 1))
 
 		if (g_iFwReturn >= ZE_STOP || !szSound[0])
 			return FMRES_SUPERCEDE

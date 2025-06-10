@@ -70,6 +70,7 @@ enum (+=1)
 enum
 {
 	ZE_SND_PAIN = 0,
+	ZE_SND_HDSHOT,
 	ZE_SND_SLASH,
 	ZE_SND_WALL,
 	ZE_SND_ATTACK,
