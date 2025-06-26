@@ -13,7 +13,8 @@ new g_iFragsEscapeSuccess,
 	g_iFragsNemesisKilled,
 	g_iDeathsNemesisKilled,
 	g_iDeathsZombieKilled,
-	g_iDeathsHumanInfect
+	g_iDeathsHumanInfect,
+	bool:g_bRoundRestartReset
 
 // Variables.
 new g_iMsgScoreInfo
@@ -53,6 +54,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_deaths_killed_nemesis", "2"), g_iDeathsNemesisKilled)
 	bind_pcvar_num(register_cvar("ze_deaths_killed_zombie", "1"), g_iDeathsZombieKilled)
 	bind_pcvar_num(register_cvar("ze_deaths_infect_human", "1"), g_iDeathsHumanInfect)
+	bind_pcvar_num(register_cvar("ze_reset_after_game_restart", "1"), g_bRoundRestartReset)
 
 	// Set Values.
 	g_iMsgScoreInfo = get_user_msgid("ScoreInfo")
@@ -171,23 +173,34 @@ public ze_user_killed_post(iVictim, iAttacker, iGibs)
 
 public ze_roundend(iWinTeam)
 {
-	if (iWinTeam == ZE_TEAM_HUMAN)
+	switch (iWinTeam)
 	{
-		if (g_iFragsEscapeSuccess > 0)
+		case ZE_TEAM_UNA: // Game restart in?
 		{
-			new iPlayers[MAX_PLAYERS], iAliveNum
-			get_players(iPlayers, iAliveNum, "a")
-
-			for (new id, i = 0; i < iAliveNum; i++)
+			if (g_bRoundRestartReset)
 			{
-				id = iPlayers[i]
+				arrayset(g_iFrags, 0, sizeof(g_iFrags))
+				arrayset(g_iDeaths, 0, sizeof(g_iDeaths))
+			}
+		}
+		case ZE_TEAM_HUMAN: // Human Win!
+		{
+			if (g_iFragsEscapeSuccess > 0)
+			{
+				new iPlayers[MAX_PLAYERS], iAliveNum
+				get_players(iPlayers, iAliveNum, "a")
 
-				// Is Zombie?
-				if (ze_is_user_zombie(id))
-					continue
+				for (new id, i = 0; i < iAliveNum; i++)
+				{
+					id = iPlayers[i]
 
-				g_iFrags[id] += g_iFragsEscapeSuccess
-				UpdateScore(id)
+					// Is Zombie?
+					if (ze_is_user_zombie(id))
+						continue
+
+					g_iFrags[id] += g_iFragsEscapeSuccess
+					UpdateScore(id)
+				}
 			}
 		}
 	}
