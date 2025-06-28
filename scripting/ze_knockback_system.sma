@@ -50,14 +50,12 @@ new Float:g_flWeaponsPower[] =
 new bool:g_bPower,
 	bool:g_bDamage,
 	bool:g_bVerVelo,
-	bool:g_bFreezeMode,
 	Float:g_flDucking,
 	Float:g_flDistance
 
 // Variable.
 new g_iFwHandle,
-	g_iFwResult,
-	bool:g_bReleaseTime
+	g_iFwResult
 
 // Array
 new Float:g_flKnockback[MAX_PLAYERS+1]
@@ -83,8 +81,6 @@ public plugin_init()
 	bind_pcvar_num(create_cvar("ze_knockback_vervelo", "0"), g_bVerVelo)
 	bind_pcvar_float(create_cvar("ze_knockback_ducking", "0.25"), g_flDucking)
 	bind_pcvar_float(create_cvar("ze_knockback_distance", "500.0"), g_flDistance)
-
-	bind_pcvar_num(get_cvar_pointer("ze_escape_mode"), g_bFreezeMode)
 
 	// Create Forwards.
 	g_iFwHandle = CreateMultiForward("ze_take_knockback", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
@@ -123,26 +119,10 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_flKnockback[id] = 0.0
 }
 
-public ze_game_started_pre()
-{
-	g_bFreezeMode = false
-}
-
-public ze_zombie_appear(const iZombies[], iZombiesNum)
-{
-	if (g_bFreezeMode)
-		g_bReleaseTime = true
-}
-
-public ze_zombie_release()
-{
-	g_bReleaseTime = false
-}
-
 public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDirection[3], tr, const bitsDamageType)
 {
 	// Non-player damage or self damage
-	if (g_bReleaseTime || iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
+	if (ze_is_zombie_frozen() || iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
 		return
 
 	// Victim isn't zombie or attacker isn't human
