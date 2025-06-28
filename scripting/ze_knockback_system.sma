@@ -47,16 +47,17 @@ new Float:g_flWeaponsPower[] =
 }
 
 // Cvars.
-new g_iFwHandle,
-	g_iFwResult,
-	bool:g_bPower,
+new bool:g_bPower,
 	bool:g_bDamage,
 	bool:g_bVerVelo,
+	bool:g_bFreezeMode,
 	Float:g_flDucking,
 	Float:g_flDistance
 
 // Variable.
-new bool:g_bReleaseTime
+new g_iFwHandle,
+	g_iFwResult,
+	bool:g_bReleaseTime
 
 // Array
 new Float:g_flKnockback[MAX_PLAYERS+1]
@@ -82,6 +83,8 @@ public plugin_init()
 	bind_pcvar_num(create_cvar("ze_knockback_vervelo", "0"), g_bVerVelo)
 	bind_pcvar_float(create_cvar("ze_knockback_ducking", "0.25"), g_flDucking)
 	bind_pcvar_float(create_cvar("ze_knockback_distance", "500.0"), g_flDistance)
+
+	bind_pcvar_num(get_cvar_pointer("ze_escape_mode"), g_bFreezeMode)
 
 	// Create Forwards.
 	g_iFwHandle = CreateMultiForward("ze_take_knockback", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
@@ -120,9 +123,15 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	g_flKnockback[id] = 0.0
 }
 
+public ze_game_started_pre()
+{
+	g_bFreezeMode = false
+}
+
 public ze_zombie_appear(const iZombies[], iZombiesNum)
 {
-	g_bReleaseTime = true
+	if (g_bFreezeMode)
+		g_bReleaseTime = true
 }
 
 public ze_zombie_release()
