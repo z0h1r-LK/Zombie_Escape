@@ -6,6 +6,57 @@
 #include <ze_class_const>
 
 /**
+ * -=| Forwards |=-
+ */
+
+/**
+ * Called when a player selects a Zombie class. This function is also called when displaying the class in the menu.
+ *
+ * @note It is also called when a player gets infected and before assign Zombie attributes.
+ *
+ * @param id          Client index.
+ * @param iClassID    Class index.
+ * @param bInfected   true = Assigning Zombie attributes to the player | false = Do not assign attributes.
+ * @param bInMenu     true = Ignore item cost (menu preview) | false = Apply item cost.
+ * @param szName[]    Zombie name.
+ * @param szDesc[]    Zombie description.
+ * @param szModel[]   Zombie player model.
+ * @param szMelee[]   Zombie melee model.
+ * @param flHealth    Zombie health
+ * @param flSpeed     Zombie maxsppeed
+ * @param flGravity   Zombie gravity.
+ * @param flKnockback Zombie knockback
+ * @param iLevel      Zombie required level.
+ *
+ * @return           ZE_CLASS_AVAILABLE   | Make class available for player.
+ *                   ZE_CLASS_UNAVAILABLE | Make class unavailable for player.
+ *                   ZE_CLASS_DONT_SHOW   | Don't display the class in Menu.
+ */
+forward ze_select_zclass_pre(id, iClassID, bool:bInfected, bool:bInMenu, const szName[], const szDesc[], const szModel[], const szMelee[], Float:flHealth, Float:flSpeed, Float:flGravity, Float:flKnockback, iLevel);
+
+/**
+ * Called after a player selects a Zombie class.
+ *
+ * @note It is also called when a player gets infected and after assign Zombie attributes.
+ *
+ * @param id          Client index.
+ * @param iClassID    Class index.
+ * @param bInfected   true = Assigning Zombie attributes to the player | false = Otherwise
+ * @param szName[]    Zombie name.
+ * @param szDesc[]    Zombie description.
+ * @param szModel[]   Zombie player model.
+ * @param szMelee[]   Zombie melee model.
+ * @param flHealth    Zombie health
+ * @param flSpeed     Zombie maxsppeed
+ * @param flGravity   Zombie gravity.
+ * @param flKnockback Zombie knockback
+ * @param iLevel      Zombie required level.
+ *
+ * @noreturn
+ */
+forward ze_select_zclass_post(id, iClassID, bool:bInfected, const szName[], const szDesc[], const szModel[], const szMelee[], Float:flHealth, Float:flSpeed, Float:flGravity, Float:flKnockback, iLevel);
+
+/**
  * -=| Natives |=-
  */
 
@@ -305,6 +356,17 @@ native ze_zclass_set_knockback(iClassID, Float:flSpeed);
  * @error             If this class IS is invalid.
  */
 native ze_zclass_set_level(iClassID, iLevel);
+
+/**
+ * Adds additional text to the class in the menu.
+ *
+ * @note Maximum text length is 64 bytes.
+ *
+ * @param szText[]  Text to be add.
+ *
+ * @return          Number of cells written.
+ */
+native ze_zclass_add_text(const szText[], any:...);
 
 /**
  * Show Zombies Classes Menu for specific player.

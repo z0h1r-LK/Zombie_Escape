@@ -40,6 +40,12 @@ enum _:Colors
 	Blue
 }
 
+enum _:TOTAL_FORWARDS
+{
+	FORWARD_SELECT_CLASS_PRE = 0,
+	FORWARD_SELECT_CLASS_POST
+}
+
 // Default Human Attributes.
 stock const DEFAULT_HUMAN_NAME[] = "Regular Human"
 stock const DEFAULT_HUMAN_DESC[] = "-= Balanced =-"
@@ -55,7 +61,8 @@ stock const DEFAULT_HUMAN_LEVEL = 0
 new g_szShieldAttackSound[MAX_RESOURCE_PATH_LENGTH] = "player/bhit_helmet-1.wav"
 
 // Variable.
-new g_iNumHumans,
+new g_iFwResult,
+	g_iNumHumans,
 	g_msgWeapPickup
 
 // Cvars.
@@ -66,7 +73,11 @@ new bool:g_bHumanShield,
 // Arrays.
 new g_iNext[MAX_PLAYERS+1],
 	g_iPage[MAX_PLAYERS+1],
-	g_iCurrent[MAX_PLAYERS+1]
+	g_iCurrent[MAX_PLAYERS+1],
+	g_iForwards[TOTAL_FORWARDS]
+
+// String.
+new g_szText[64]
 
 // Dynamic Array.
 new Array:g_aHumanClass
@@ -98,6 +109,7 @@ public plugin_natives()
 	register_native("ze_hclass_set_speed", "__native_hclass_set_speed")
 	register_native("ze_hclass_set_gravity", "__native_hclass_set_gravity")
 	register_native("ze_hclass_set_level", "__native_hclass_set_level")
+	register_native("ze_hclass_add_text", "__native_hclass_add_text")
 	register_native("ze_hclass_show_menu", "__native_hclass_show_menu")
 
 	set_module_filter("fw_module_filter")
@@ -144,6 +156,10 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_hud_info_human_green", "127"), g_iHudColor[Green])
 	bind_pcvar_num(register_cvar("ze_hud_info_human_blue", "255"), g_iHudColor[Blue])
 
+	// Create Forwards.
+	g_iForwards[FORWARD_SELECT_CLASS_PRE] = CreateMultiForward("ze_select_hclass_pre", ET_CONTINUE, FP_CELL, FP_CELL, FP_CELL, FP_CELL, FP_STRING, FP_STRING, FP_STRING, FP_FLOAT, FP_FLOAT, FP_CELL, FP_FLOAT, FP_FLOAT, FP_CELL)
+	g_iForwards[FORWARD_SELECT_CLASS_POST] = CreateMultiForward("ze_select_hclass_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL, FP_STRING, FP_STRING, FP_STRING, FP_FLOAT, FP_FLOAT, FP_CELL, FP_FLOAT, FP_FLOAT, FP_CELL)
+
 	// Commands.
 	register_clcmd("say /hm", "cmd_ShowClassesMenu")
 	register_clcmd("say_team /hm", "cmd_ShowClassesMenu")
@@ -181,6 +197,8 @@ public plugin_end()
 {
 	// Free the Memory.
 	ArrayDestroy(g_aHumanClass)
+	DestroyForward(g_iForwards[FORWARD_SELECT_CLASS_PRE])
+	DestroyForward(g_iForwards[FORWARD_SELECT_CLASS_POST])
 }
 
 public client_putinserver(id)
@@ -218,11 +236,19 @@ public ze_user_humanized(id)
 	if (g_iCurrent[id] == ZE_CLASS_INVALID)
 		RequestFrame("show_Humans_Menu", id)
 
-	new const iClassID = g_iCurrent[id] = g_iNext[id]
+	new iClassID = g_iNext[id]
 
-	// Get Zombie attributes.
+	// Get Human attributes.
 	new aArray[HUMAN_ATTRIB]
 	ArrayGetArray(g_aHumanClass, iClassID, aArray)
+
+	// ze_select_hclass_pre(param1, param2, param3, param4, string5, string6, string7, fparam8, fparam9, param10, fparam11, fparam12, param13)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, id, iClassID, true, false, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
+
+	if (g_iFwResult >= ZE_CLASS_UNAVAILABLE)
+		return
+
+	g_iCurrent[id] = iClassID
 
 	set_entvar(id, var_health, aArray[HUMAN_HEALTH])
 	set_entvar(id, var_max_health, aArray[HUMAN_HEALTH])
@@ -252,6 +278,9 @@ public ze_user_humanized(id)
 		ze_remove_user_view_model(id, CSW_KNIFE)
 		ze_remove_user_weap_model(id, CSW_KNIFE)
 	}
+
+	// ze_select_hclass_post(param1, param2, param3, string4, string5, string6, fparam7, fparam8, param9, fparam10, fparam11, param12)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], g_iFwResult, id, iClassID, true, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
 }
 
 public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
@@ -294,16 +323,25 @@ public show_Humans_Menu(const id)
 
 	for (new aArray[HUMAN_ATTRIB], iItemData[2], i = 0; i < g_iNumHumans; i++)
 	{
+		g_szText = NULL_STRING
 		ArrayGetArray(g_aHumanClass, i, aArray)
 
-		if (fLevel && iLevel < aArray[HUMAN_LEVEL])
-			formatex(szLang, charsmax(szLang), "\d%s • %s \r[\r%L\d: \y%i\r]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "MENU_LEVEL", aArray[HUMAN_LEVEL])
+		// ze_select_hclass_pre(param1, param2, param3, param4, string5, string6, string7, fparam8, fparam9, param10, fparam11, fparam12, param13)
+		ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, id, i, false, true, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
+
+		if (g_iFwResult >= ZE_CLASS_DONT_SHOW)
+			continue
+
+		if (g_iFwResult == ZE_CLASS_UNAVAILABLE)
+			formatex(szLang, charsmax(szLang), "\d%s • %s%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText)
+		else if (fLevel && iLevel < aArray[HUMAN_LEVEL])
+			formatex(szLang, charsmax(szLang), "\d%s • %s%s \r[\r%L\d: \y%i\r]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText, LANG_PLAYER, "MENU_LEVEL", aArray[HUMAN_LEVEL])
 		else if (i == g_iCurrent[id])
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "CURRENT")
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText, LANG_PLAYER, "CURRENT")
 		else if (i == g_iNext[id])
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], LANG_PLAYER, "NEXT")
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText, LANG_PLAYER, "NEXT")
 		else
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC])
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText)
 
 		iItemData[0] = i
 
@@ -332,31 +370,45 @@ public handler_Humans_Menu(const id, iMenu, iKey)
 		}
 		default:
 		{
-			new aArray[HUMAN_ATTRIB], iItemData[2]
+			new iItemData[2]
 			menu_item_getinfo(iMenu, iKey, .info = iItemData, .infolen = charsmax(iItemData))
-
-			// Get Zombie Attributes.
 			new const i = iItemData[0]
-			ArrayGetArray(g_aHumanClass, i, aArray)
 
-			if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
-			{
-				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
-				goto CloseMenu
-			}
-
-			g_iNext[id] = i
-			g_iPage[id] = iKey / 7
-
-			// Send colored message on chat for player.
-			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_HUMAN_NAME", aArray[HUMAN_NAME])
-			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_HUMAN_INFO", aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], LANG_PLAYER, aArray[HUMAN_SPEED_FACTOR] ? "DYNAMIC" : "STATIC", aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY])
+			if (assign_PlayerClassID(id, i))
+				g_iPage[id] = iKey / 7
 		}
 	}
 
 	CloseMenu:
 	menu_destroy(iMenu)
 	return PLUGIN_HANDLED
+}
+
+public assign_PlayerClassID(const id, iClassID)
+{
+	new aArray[HUMAN_ATTRIB]
+	ArrayGetArray(g_aHumanClass, iClassID, aArray)
+
+	// ze_select_hclass_pre(param1, param2, param3, param4, string5, string6, string7, fparam8, fparam9, param10, fparam11, fparam12, param13)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, id, iClassID, false, false, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
+
+	if (g_iFwResult >= ZE_CLASS_UNAVAILABLE)
+		return 0
+
+	if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[HUMAN_LEVEL])
+	{
+		ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+		return 0
+	}
+
+	// ze_select_hclass_post(param1, param2, param3, string4, string5, string6, fparam7, fparam8, param9, fparam10, fparam11, param12)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], g_iFwResult, id, iClassID, false, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
+	g_iNext[id] = iClassID
+
+	// Send colored message on chat for player.
+	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_HUMAN_NAME", aArray[HUMAN_NAME])
+	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_HUMAN_INFO", aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], LANG_PLAYER, aArray[HUMAN_SPEED_FACTOR] ? "DYNAMIC" : "STATIC", aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY])
+	return 1
 }
 
 /**
@@ -825,6 +877,12 @@ public __native_hclass_set_level(const plugin_id, const num_params)
 	aArray[HUMAN_LEVEL] = get_param(2)
 	ArraySetArray(g_aHumanClass, i, aArray)
 	return true
+}
+
+public __native_hclass_add_text(const plugin_id, const num_params)
+{
+	get_string(1, g_szText, charsmax(g_szText))
+	return vdformat(g_szText, charsmax(g_szText), 1, 2)
 }
 
 public __native_hclass_show_menu(const plugin_id, const num_params)

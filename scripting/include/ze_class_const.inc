@@ -10,5 +10,8 @@ stock const ZE_FILENAME_ZCLASS[] = "ze_class_zombie"
 // Classes return value.
 enum (+=1)
 {
-	ZE_CLASS_INVALID = -1
+	ZE_CLASS_INVALID = -1,
+	ZE_CLASS_AVAILABLE,
+	ZE_CLASS_UNAVAILABLE,
+	ZE_CLASS_DONT_SHOW
 }

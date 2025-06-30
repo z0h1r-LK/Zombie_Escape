@@ -37,6 +37,12 @@ enum _:Colors
 	Blue
 }
 
+enum _:TOTAL_FORWARDS
+{
+	FORWARD_SELECT_CLASS_PRE = 0,
+	FORWARD_SELECT_CLASS_POST
+}
+
 // Default Zombie Attributes.
 stock const DEFAULT_ZOMBIE_NAME[] = "Regular Zombie"
 stock const DEFAULT_ZOMBIE_DESC[] = "-= Balanced =-"
@@ -49,7 +55,8 @@ stock const Float:DEFAULT_ZOMBIE_KNOCKBACK = 200.0
 stock const DEFAULT_ZOMBIE_LEVEL = 0
 
 // Variable.
-new g_iNumZombies
+new g_iFwResult,
+	g_iNumZombies
 
 // Cvars.
 new g_iHudColor[Colors]
@@ -57,7 +64,11 @@ new g_iHudColor[Colors]
 // Arrays.
 new g_iNext[MAX_PLAYERS+1],
 	g_iPage[MAX_PLAYERS+1],
-	g_iCurrent[MAX_PLAYERS+1]
+	g_iCurrent[MAX_PLAYERS+1],
+	g_iForwards[TOTAL_FORWARDS]
+
+// String.
+new g_szText[64]
 
 // Dynamic Array.
 new Array:g_aZombieClass
@@ -88,6 +99,7 @@ public plugin_natives()
 	register_native("ze_zclass_set_gravity", "__native_zclass_set_gravity")
 	register_native("ze_zclass_set_knockback", "__native_zclass_set_knockback")
 	register_native("ze_zclass_set_level", "__native_zclass_set_level")
+	register_native("ze_zclass_add_text", "__native_zclass_add_text")
 	register_native("ze_zclass_show_menu", "__native_zclass_show_menu")
 
 	set_module_filter("module_filter")
@@ -121,6 +133,10 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_hud_info_zombie_green", "127"), g_iHudColor[Green])
 	bind_pcvar_num(register_cvar("ze_hud_info_zombie_blue", "0"), g_iHudColor[Blue])
 
+	// Create Forwards.
+	g_iForwards[FORWARD_SELECT_CLASS_PRE] = CreateMultiForward("ze_select_zclass_pre", ET_CONTINUE, FP_CELL, FP_CELL, FP_CELL, FP_CELL, FP_STRING, FP_STRING, FP_STRING, FP_STRING, FP_FLOAT, FP_FLOAT, FP_FLOAT, FP_FLOAT, FP_CELL)
+	g_iForwards[FORWARD_SELECT_CLASS_POST] = CreateMultiForward("ze_select_zclass_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL, FP_STRING, FP_STRING, FP_STRING, FP_STRING, FP_FLOAT, FP_FLOAT, FP_FLOAT, FP_FLOAT, FP_CELL)
+
 	// Commands.
 	register_clcmd("say /zm", "cmd_ShowClassesMenu")
 	register_clcmd("say_team /zm", "cmd_ShowClassesMenu")
@@ -132,6 +148,8 @@ public plugin_end()
 {
 	// Free the Memory.
 	ArrayDestroy(g_aZombieClass)
+	DestroyForward(g_iForwards[FORWARD_SELECT_CLASS_PRE])
+	DestroyForward(g_iForwards[FORWARD_SELECT_CLASS_POST])
 }
 
 public plugin_cfg()
@@ -192,11 +210,17 @@ public ze_user_infected(iVictim, iInfector)
 	if (g_iCurrent[iVictim] == ZE_CLASS_INVALID)
 		RequestFrame("show_Zombies_Menu", iVictim)
 
-	new iClassID = g_iCurrent[iVictim] = g_iNext[iVictim]
+	new iClassID = g_iNext[iVictim]
 
 	// Get Zombie attributes.
 	new aArray[ZOMBIE_ATTRIB]
 	ArrayGetArray(g_aZombieClass, iClassID, aArray)
+
+	// Call forward ze_select_class_pre(param1, param2, param3, param4, string5, string6, string7, string8, fparam9, fparam10, fparam11, fparam12, param13)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, iVictim, iClassID, true, false, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
+
+	if (g_iFwResult >= ZE_CLASS_UNAVAILABLE)
+		return
 
 	set_entvar(iVictim, var_health, aArray[ZOMBIE_HEALTH])
 	set_entvar(iVictim, var_max_health, aArray[ZOMBIE_HEALTH])
@@ -221,6 +245,10 @@ public ze_user_infected(iVictim, iInfector)
 		ze_set_user_view_model(iVictim, CSW_KNIFE, aArray[ZOMBIE_MELEE])
 		ze_set_user_weap_model(iVictim, CSW_KNIFE)
 	}
+
+	// Call forward ze_select_class_post(param1, param2, param3, string4, string5, string6, string7, fparam8, fparam9, fparam10, fparam11, param12)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], _/* Ignore return value */, iVictim, iClassID, true, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
+	g_iCurrent[iVictim] = iClassID
 }
 
 public show_Zombies_Menu(const id)
@@ -237,16 +265,25 @@ public show_Zombies_Menu(const id)
 
 	for (new aArray[ZOMBIE_ATTRIB], iItemData[2], i = 0; i < g_iNumZombies; i++)
 	{
+		g_szText = NULL_STRING
 		ArrayGetArray(g_aZombieClass, i, aArray)
 
-		if (fLevel && iLevel < aArray[ZOMBIE_LEVEL])
-			formatex(szLang, charsmax(szLang), "\d%s • %s \r[\r%L\d: \y%i\r]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "MENU_LEVEL", aArray[ZOMBIE_LEVEL])
+		// Call forward ze_select_class_pre(param1, param2, param3, param4, string5, string6, string7, string8, fparam9, fparam10, fparam11, fparam12, param13)
+		ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, id, i, false, true, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
+
+		if (g_iFwResult >= ZE_CLASS_DONT_SHOW)
+			continue
+
+		if (g_iFwResult == ZE_ITEM_UNAVAILABLE)
+			formatex(szLang, charsmax(szLang), "\d%s • %s%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText)
+		else if (fLevel && iLevel < aArray[ZOMBIE_LEVEL])
+			formatex(szLang, charsmax(szLang), "\d%s • %s%s \r[\r%L\d: \y%i\r]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText, LANG_PLAYER, "MENU_LEVEL", aArray[ZOMBIE_LEVEL])
 		else if (i == g_iCurrent[id])
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "CURRENT")
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText, LANG_PLAYER, "CURRENT")
 		else if (i == g_iNext[id])
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], LANG_PLAYER, "NEXT")
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s \d[\r%L\d]", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText, LANG_PLAYER, "NEXT")
 		else
-			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC])
+			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText)
 
 		iItemData[0] = i
 
@@ -275,31 +312,45 @@ public handler_Zombies_Menu(const id, iMenu, iKey)
 		}
 		default:
 		{
-			new aArray[ZOMBIE_ATTRIB], iItemData[2]
+			new iItemData[2]
 			menu_item_getinfo(iMenu, iKey, .info = iItemData, .infolen = charsmax(iItemData))
-
-			// Get Zombie Attributes.
 			new i = iItemData[0]
-			ArrayGetArray(g_aZombieClass, i, aArray)
 
-			if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[ZOMBIE_LEVEL])
-			{
-				ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
-				goto CloseMenu
-			}
-
-			g_iNext[id] = i
-			g_iPage[id] = iKey / 7
-
-			// Send colored message on chat for player.
-			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ZOMBIE_NAME", aArray[ZOMBIE_NAME])
-			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ZOMBIE_INFO", aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], (aArray[ZOMBIE_KNOCKBACK] / MAX_KNOCKBACK) * 100.0)
+			if (assign_PlayerClassID(id, i))
+				g_iPage[id] = iKey / 7
 		}
 	}
 
 	CloseMenu:
 	menu_destroy(iMenu)
 	return PLUGIN_HANDLED
+}
+
+public assign_PlayerClassID(const id, iClassID)
+{
+	new aArray[ZOMBIE_ATTRIB]
+	ArrayGetArray(g_aZombieClass, iClassID, aArray)
+
+	// Call forward ze_select_class_pre(param1, param2, param3, param4, string5, string6, string7, string8, fparam9, fparam10, fparam11, fparam12, param13)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_PRE], g_iFwResult, id, iClassID, false, false, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
+
+	if (g_iFwResult >= ZE_STOP)
+		return 0
+
+	if (LibraryExists(LIBRARY_LEVELS, LibType_Library) && ze_get_user_level(id) < aArray[ZOMBIE_LEVEL])
+	{
+		ze_colored_print(id, "%L", LANG_PLAYER, "MSG_LVL_NOT_ENOUGH")
+		return 0
+	}
+
+	// Call forward ze_select_class_post(param1, param2, param3, string4, string5, string6, string7, fparam8, fparam9, fparam10, fparam11, param12)
+	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], _/* Ignore return value */, id, iClassID, false, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
+	g_iNext[id] = iClassID
+
+	// Send colored message on chat for player.
+	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ZOMBIE_NAME", aArray[ZOMBIE_NAME])
+	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ZOMBIE_INFO", aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], (aArray[ZOMBIE_KNOCKBACK] / MAX_KNOCKBACK) * 100.0)
+	return 1
 }
 
 /**
@@ -755,6 +806,12 @@ public __native_zclass_set_level(const plugin_id, const num_params)
 	aArray[ZOMBIE_LEVEL] = get_param(2)
 	ArraySetArray(g_aZombieClass, i, aArray)
 	return true
+}
+
+public __native_zclass_add_text(const plugin_id, const num_params)
+{
+	get_string(1, g_szText, charsmax(g_szText))
+	return vdformat(g_szText, charsmax(g_szText), 1, 2)
 }
 
 public __native_zclass_show_menu(const plugin_id, const num_params)

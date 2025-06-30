@@ -6,6 +6,58 @@
 #include <ze_class_const>
 
 /**
+ * -=| Forwards |=-
+ */
+
+/**
+ * Called when a player selects a Human class. This function is also called when displaying the class in the menu.
+ *
+ * @note It is also called when a player gets humanized and before assign Human attributes.
+ *
+ * @param id           Client index.
+ * @param iClassID     Class index.
+ * @param bHumanized   true = Assigning Human attributes to the player | false = Do not assign attributes.
+ * @param bInMenu      true = Ignore item cost (menu preview) | false = Apply item cost.
+ * @param szName[]     Human name.
+ * @param szDesc[]     Human description.
+ * @param szModel[]    Human player model.
+ * @param szMelee[]    Human melee model.
+ * @param flHealth     Human health
+ * @param flArmor      Human armor
+ * @param bSpeedFactor Human speed factor.
+ * @param flSpeed      Human maxsppeed
+ * @param flGravity    Human gravity.
+ * @param iLevel       Human required level.
+ *
+ * @return             ZE_CLASS_AVAILABLE   | Make class available for player.
+ *                     ZE_CLASS_UNAVAILABLE | Make class unavailable for player.
+ *                     ZE_CLASS_DONT_SHOW   | Don't display the class in Menu.
+ */
+forward ze_select_hclass_pre(id, iClassID, bool:bHumanized, bool:bInMenu, const szName[], const szDesc[], const szModel[], Float:flHealth, Float:flArmor, bool:bSpeedFactor, Float:flSpeed, Float:flGravity, iLevel);
+
+/**
+ * Called after a player selects a Human class.
+ *
+ * @note It is also called when a player gets humanized and after assign Human attributes.
+ *
+ * @param id           Client index.
+ * @param iClassID     Class index.
+ * @param bHumanized   true = Assigning Human attributes to the player | false = Otherwise
+ * @param szName[]     Human name.
+ * @param szDesc[]     Human description.
+ * @param szModel[]    Human player model.
+ * @param flHealth     Human health
+ * @param flArmor      Human armor.
+ * @param bSpeedFactor Human speed factor.
+ * @param flSpeed      Human maxsppeed
+ * @param flGravity    Human gravity.
+ * @param iLevel       Human required level.
+ *
+ * @noreturn
+ */
+forward ze_select_hclass_post(id, iClassID, bool:bHumanized, const szName[], const szDesc[], const szModel[], Float:flHealth, Float:flArmor, bool:bSpeedFactor, Float:flSpeed, Float:flGravity, iLevel);
+
+/**
  * -=| Natives |=-
  */
 
@@ -305,6 +357,17 @@ native ze_hclass_set_gravity(iClassID, Float:flGravity);
  * @error             If this class IS is invalid.
  */
 native ze_hclass_set_level(iClassID, iLevel);
+
+/**
+ * Adds additional text to the class in the menu.
+ *
+ * @note Maximum text length is 64 bytes.
+ *
+ * @param szText[]  Text to be add.
+ *
+ * @return          Number of cells written.
+ */
+native ze_hclass_add_text(const szText[], any:...);
 
 /**
  * Show Zombies Classes Menu for specific player.
