@@ -8,30 +8,6 @@
  */
 
 /**
- * Called after XP points of the player updated.
- *
- * @param id      Client index.
- * @param iXP     New XP of the player.
- *
- * @noreturn
- */
-forward ze_fw_user_xp(id, iXP);
-
-/**
- * Called after Level of the player updated.
- *
- * @param id      Client index.
- * @param iLevel  New Level of the player.
- *
- * @noreturn
- */
-forward ze_fw_user_level(id, iLevel);
-
-/**
- * -=| Natives |=-
- */
-
-/**
  * Get player's XP point(s).
  *
  * @param id     Client index.
@@ -75,8 +51,6 @@ native ze_get_user_level(id);
  * Set or Add Level for player.
  *
  * @param id     Client index.
- * @param level  Level to be add or set.
- * @param add    true = Add level | false = Set level.
  *
  * @return       Level on success, NULLENT when failure.
  *
@@ -108,3 +82,18 @@ native ze_get_user_maxxp(id);
  * @error         If player not on game.
  */
 native ze_set_user_maxxp(id, maxxp, bool:add = false);
+
+/**
+ * Gets current rank name of the player.
+ *
+ * @note Maximum rank name length is 32 characters.
+ *       Check MAX_NAME_LENGTH in amxconst.inc
+ *
+ * @param id      Client index.
+ * @param rank[]  Buffer to store string in.
+ * @param length  Maximum buffer length
+ *
+ * @return        Number of cells written.
+ * @error         If this player not on game.
+ */
+native ze_get_user_rank(id, rank[], length);
