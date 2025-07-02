@@ -3,9 +3,6 @@
 #include <ze_core>
 #include <ze_gamemodes>
 
-// Macroses.
-#define FInvalidAmbHandle(%0) (INVALID_HANDLE>=(%0)>=g_iAmbNum)
-
 // Defines.
 #define BEGIN_SOUNDS
 #define READY_SOUNDS
@@ -20,7 +17,7 @@
 #define TASK_AMBIENCE 1565
 
 // Enum.
-enum _:AMBIENCE_DATA
+enum _:AMBIENTX_DATA
 {
 	AMB_NAME[MAX_NAME_LENGTH] = 0,
 	AMB_SOUND[MAX_RESOURCE_PATH_LENGTH],
@@ -35,8 +32,7 @@ new g_szDisplaySound[MAX_RESOURCE_PATH_LENGTH] = "buttons/lightswitch2.wav"
 new Float:g_flAmbDelay
 
 // Variables.
-new g_iAmbNum,
-	bool:g_bMenuSounds
+new bool:g_bMenuSounds
 #endif
 new g_iFwReturn
 
@@ -62,10 +58,6 @@ new Array:g_aEscapeFailSounds,
 	Array:g_aEscapeSuccessSounds
 #endif
 
-#if defined AMBIENCE_SOUNDS
-new Array:g_aAmbienceSounds
-#endif
-
 #if defined COUNTDOWN_SOUNDS
 new Array:g_aCountdownSounds
 #endif
@@ -78,18 +70,26 @@ new Array:g_aPainSounds,
 	Array:g_aDieSounds
 
 #if defined AMBIENCE_SOUNDS
+// Trie's.
+new Trie:g_tAmbientSndx
+#endif
+
 public plugin_natives()
 {
 	register_library("ze_resources")
+
+	#if defined AMBIENCE_SOUNDS
 	register_native("ze_res_ambience_register", "__native_res_ambience_register")
 	register_native("ze_res_ambience_play", "__native_res_ambience_play")
 
-	register_native("ze_res_menu_sound", "__native_res_menu_sound")
+	register_native("ze_res_ambx_register", "__native_res_ambx_register")
+	register_native("ze_res_ambx_play", "__native_res_ambx_play")
 
-	// Create new dyn Array.
-	g_aAmbienceSounds = ArrayCreate(AMBIENCE_DATA, 1)
+	g_tAmbientSndx = TrieCreate()
+	#endif
+
+	register_native("ze_res_menu_sound", "__native_res_menu_sound")
 }
-#endif
 
 public plugin_precache()
 {
@@ -366,10 +366,6 @@ public plugin_init()
 	// Hook Chain.
 	register_forward(FM_EmitSound, "fw_EmitSound_Pre")
 
-#if defined AMBIENCE_SOUNDS
-	// CVars.
-	bind_pcvar_float(get_cvar_pointer("ze_release_time"), g_flAmbDelay)
-#endif
 #if defined COUNTDOWN_SOUNDS
 	bind_pcvar_num(get_cvar_pointer("ze_gamemodes_delay"), g_iGameDelay)
 #endif
@@ -378,6 +374,16 @@ public plugin_init()
 	// Create Forwards.
 	g_iForward = CreateMultiForward("ze_res_fw_zombie_sound", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
 }
+
+#if defined AMBIENCE_SOUNDS
+public plugin_cfg()
+{
+	g_flAmbDelay = 5.0
+
+	if (!ini_read_float(ZE_FILENAME, "AmbienceX", "DELAY_START", g_flAmbDelay))
+		ini_write_float(ZE_FILENAME, "AmbienceX", "DELAY_START", g_flAmbDelay)
+}
+#endif
 
 public plugin_end()
 {
@@ -389,9 +395,6 @@ public plugin_end()
 	#endif
 	#if defined READY_SOUNDS
 	ArrayDestroy(g_aReadySounds)
-	#endif
-	#if defined AMBIENCE_SOUNDS
-	ArrayDestroy(g_aAmbienceSounds)
 	#endif
 	#if defined WINS_SOUNDS
 	ArrayDestroy(g_aEscapeFailSounds)
@@ -407,6 +410,10 @@ public plugin_end()
 	ArrayDestroy(g_aMissWallSounds)
 	ArrayDestroy(g_aAttackSounds)
 	ArrayDestroy(g_aDieSounds)
+
+	#if defined AMBIENCE_SOUNDS
+	TrieDestroy(g_tAmbientSndx)
+	#endif
 }
 
 public ze_game_started_pre()
@@ -635,62 +642,111 @@ public fw_EmitSound_Pre(const iEnt, iChan, const szSample[], Float:flVol, Float:
 #if defined AMBIENCE_SOUNDS
 public __native_res_ambience_register(plugin_id, num_params)
 {
-	new szName[MAX_NAME_LENGTH]
-	get_string(1, szName, charsmax(szName))
-
-	if (!strlen(szName))
-	{
-		log_error(AMX_ERR_NATIVE, "[ZE] Can't register new ambience sound without game-mode name.")
-		return INVALID_HANDLE
-	}
-
-	new pArray[AMBIENCE_DATA]
-	for (new i = 0; i < g_iAmbNum; i++)
-	{
-		ArrayGetArray(g_aAmbienceSounds, i, pArray)
-
-		if (equali(szName, pArray[AMB_NAME]))
-		{
-			log_error(AMX_ERR_NATIVE, "[ZE] Already game-mode ^'%s^' has ambience sound.", pArray[AMB_NAME])
-			return INVALID_HANDLE
-		}
-	}
-
-	get_string(2, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND)
-	pArray[AMB_LENGTH] = get_param(3)
-
-	new szTemp[MAX_NAME_LENGTH]
-	mb_strtoupper(szName, charsmax(szName))
-
-	// Read Ambience sound and Length from INI file.
-	formatex(szTemp, charsmax(szTemp), "%s_SOUND", szName)
-	if (!ini_read_string(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND))
-		ini_write_string(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_SOUND])
-
-	formatex(szTemp, charsmax(szTemp), "%s_LENGTH", szName)
-	if (!ini_read_int(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_LENGTH]))
-		ini_write_int(ZE_FILENAME, "Ambience", szTemp, pArray[AMB_LENGTH])
-
-	// Precache Sound.
-	formatex(szTemp, charsmax(szTemp), "sound/%s", pArray[AMB_SOUND])
-	precache_generic(szTemp)
-
-	ArrayPushArray(g_aAmbienceSounds, pArray)
-	return ++g_iAmbNum - 1
+	log_error(AMX_ERR_GENERAL, "[ZE] This native deprecated!, Use ze_res_ambx_register()")
+	return -1
 }
 
 public __native_res_ambience_play(plugin_id, num_params)
 {
-	new iHandle = get_param(1)
+	log_error(AMX_ERR_GENERAL, "[ZE] This native deprecated!, Use ze_res_ambx_play()")
+	return 0
+}
 
-	if (FInvalidAmbHandle(iHandle))
+public __native_res_ambx_register(plugin_id, num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
 	{
-		log_error(AMX_ERR_NATIVE, "[ZE] Invalid Ambience handle id (%d)", iHandle)
+		log_error(AMX_ERR_NATIVE, "[ZE] Cannot register a new ambient sound without specifying the game mode name.")
 		return false
 	}
 
-	new pArray[AMBIENCE_DATA]
-	ArrayGetArray(g_aAmbienceSounds, iHandle, pArray)
+	mb_strtoupper(szName, charsmax(szName))
+	if (TrieKeyExists(g_tAmbientSndx, szName))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] The game mode (%s) already has ambient sounds.", szName)
+		return false
+	}
+
+	new pArray[AMBIENTX_DATA], szTemp[128], bool:bFileLoaded, i
+
+	// Create dyn Arrays.
+	new Array:aTempSounds = ArrayCreate(128, 1)
+	new Array:aAmbSounds = ArrayCreate(AMBIENTX_DATA, 1)
+
+	// Read ambient sounds from INI file.
+	ini_read_string_array(ZE_FILENAME, "AmbienceX", szName, aTempSounds)
+
+	new szSound[MAX_RESOURCE_PATH_LENGTH]
+	if (!ArraySize(aTempSounds))
+	{
+		for (i = 2; i < num_params; i++)
+		{
+			get_string(i, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND)
+			pArray[AMB_LENGTH] = get_param(i + 1)
+			ArrayPushArray(aAmbSounds, pArray)
+
+			// Pre-load sound file.
+			formatex(szSound, charsmax(szSound), "sound/%s", pArray[AMB_SOUND])
+			precache_generic(szSound)
+
+			formatex(szTemp, charsmax(szTemp), "%s:%i", pArray[AMB_SOUND], pArray[AMB_LENGTH])
+			ArrayPushString(aTempSounds, szTemp)
+		}
+
+		// Write default ambience(s) sounds in INI file.
+		ini_write_string_array(ZE_FILENAME, "AmbienceX", szName, aTempSounds)
+		bFileLoaded = true
+	}
+
+	if (!bFileLoaded)
+	{
+		new const iSounds = ArraySize(aTempSounds)
+
+		new szLength[10]
+		for (i = 0; i < iSounds; i++)
+		{
+			ArrayGetString(aTempSounds, i, szTemp, charsmax(szTemp))
+
+			strtok2(szTemp, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND, szLength, charsmax(szLength), ':')
+			pArray[AMB_LENGTH] = str_to_num(szLength)
+
+			// Pre-load sound file.
+			formatex(szSound, charsmax(szSound), "sound/%s", pArray[AMB_SOUND])
+			precache_generic(szSound)
+
+			ArrayPushArray(aAmbSounds, pArray)
+		}
+	}
+
+	// Free the Memory.
+	ArrayDestroy(aTempSounds)
+
+	TrieSetCell(g_tAmbientSndx, szName, aAmbSounds)
+	return true
+}
+
+public __native_res_ambx_play(plugin_id, num_params)
+{
+	new szName[MAX_NAME_LENGTH]
+	if (!get_string(1, szName, charsmax(szName)))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] Cannot play ambient sound without a registered game mode name.")
+		return false
+	}
+
+	mb_strtoupper(szName, charsmax(szName))
+	if (!TrieKeyExists(g_tAmbientSndx, szName))
+	{
+		log_error(AMX_ERR_NATIVE, "[ZE] This an ambient sound not found (%s)", szName)
+		return false
+	}
+
+	new Array:aHandle
+	TrieGetCell(g_tAmbientSndx, szName, aHandle)
+
+	new pArray[AMBIENTX_DATA]
+	ArrayGetArray(aHandle, random_num(0, ArraySize(aHandle) - 1), pArray)
 
 	// Delay before play Ambience sound.
 	set_task(g_flAmbDelay, "@play_Sound", TASK_AMBIENCE, pArray[AMB_SOUND], AMB_SOUND, "a", 1)

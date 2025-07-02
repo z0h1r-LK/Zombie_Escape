@@ -70,8 +70,7 @@ new g_iChance,
 	Float:g_flMultiDamage
 
 // Variables.
-new g_iAmbHandle,
-	g_iCountdown,
+new g_iCountdown,
 	bool:g_bIsSwarm,
 	bool:g_bReleaseTime,
 	bool:g_bFreezeZombie
@@ -145,7 +144,7 @@ public plugin_precache()
 		const iSwarmAmbienceLength = 200
 
 		// Registers new Ambience sound.
-		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szSwarmAmbienceSound, iSwarmAmbienceLength)
+		ze_res_ambx_register(GAMEMODE_NAME, szSwarmAmbienceSound, iSwarmAmbienceLength)
 	}
 }
 
@@ -424,7 +423,7 @@ public ze_gamemode_chosen(game_id, target)
 	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
-		ze_res_ambience_play(g_iAmbHandle)
+		ze_res_ambx_play(GAMEMODE_NAME)
 	}
 }
 

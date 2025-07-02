@@ -36,9 +36,6 @@ new g_iChance,
 	bool:g_bEnabled,
 	bool:g_bBackToSpawn
 
-// Variables.
-new g_iAmbHandle
-
 // Array.
 new g_flHUDPosit[HUDs]
 
@@ -106,7 +103,7 @@ public plugin_precache()
 		const iSurvivorAmbienceSound = 200
 
 		// Registers new Ambience on game.
-		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szSurvivorAmbienceSound, iSurvivorAmbienceSound)
+		ze_res_ambx_register(GAMEMODE_NAME, szSurvivorAmbienceSound, iSurvivorAmbienceSound)
 	}
 }
 
@@ -239,7 +236,7 @@ public ze_gamemode_chosen(game_id, target)
 	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
-		ze_res_ambience_play(g_iAmbHandle)
+		ze_res_ambx_play(GAMEMODE_NAME)
 	}
 }
 

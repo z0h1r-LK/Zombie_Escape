@@ -37,9 +37,6 @@ new g_iChance,
 	Float:g_flNemesisHealth,
 	Float:g_flSurvivorHealth
 
-// Variables.
-new g_iAmbHandle
-
 // Array.
 new Float:g_flHUDPosit[HUDs]
 
@@ -106,7 +103,7 @@ public plugin_precache()
 		const iArmageddonAmbienceSound = 200
 
 		// Registers new Ambience on game.
-		g_iAmbHandle = ze_res_ambience_register(GAMEMODE_NAME, szArmageddonAmbienceSound, iArmageddonAmbienceSound)
+		ze_res_ambx_register(GAMEMODE_NAME, szArmageddonAmbienceSound, iArmageddonAmbienceSound)
 	}
 }
 
@@ -254,6 +251,6 @@ public ze_gamemode_chosen(game_id, target)
 	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
 		// Plays ambience sound for everyone.
-		ze_res_ambience_play(g_iAmbHandle)
+		ze_res_ambx_play(GAMEMODE_NAME)
 	}
 }

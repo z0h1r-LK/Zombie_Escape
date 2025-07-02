@@ -408,31 +408,46 @@ native ze_add_user_frags(id, iFrags, bool:bAdd = true);
 native ze_add_user_deaths(id, iDeaths, bool:bAdd = true);
 
 /**
- * Registers ambience for specific game mode.
- *
- * @param szName[]   Game name.
- * @param szSound[]  Sound path ("" = Ignore).
- * @param iLength    Ambience sound length with seconds.
- *
- * @return           Ambience handle | If ambience registered successfully.
- *                   INVALID_HANDLE  | Otherwise.
- *
- * @error            Ambience without game mode.
+ * @deprecated This function does not catch all cases.
  */
+#pragma deprecated Use ze_res_ambx_register() instead.
 native ze_res_ambience_register(const szName[], const szSound[], iLength);
 
 /**
- * Plays ambience sound for all players.
- *
- * @param iHandle Ambience handle id.
- * @param bLoop   true = Repeat ambience until round end or new round | false = Once time.
- *
- * @return        true  | If operation successfully.
- *                false | Invalid Ambience handle.
- *
- * @error         Invalid Ambience handle.
+ * @deprecated This function does not catch all cases.
  */
+#pragma deprecated Use ze_res_ambx_play() instead.
 native ze_res_ambience_play(const iHandle, bool:bLoop = true);
+
+/**
+ * Registers ambience sounds for a specific game mode.
+ *
+ * @note You can register multiple ambience tracks.
+ * Example: ze_res_ambx_register("Escape", "amb1.mp3", 150, "amb2.mp3", 120, "amb3.mp3", 200)
+ * Don't forget to include the duration (in seconds) after each sound path.
+ *
+ * @param szName[]   Game mode name.
+ * @param szSound[]  Path to the sound file ("" = ignore).
+ * @param iLength    Length of the ambience sound in seconds.
+ * @param any:...    Additional ambience tracks (pairs of path and duration).
+ *
+ * @return           true  | If the game mode ambience was registered successfully.
+ *                   false | If no name was provided or the name already exists.
+ * @error            If no name is provided or the name already exists.
+ */
+native ze_res_ambx_register(const szName[], const szSound[], iLength, any:...);
+
+/**
+ * Plays an ambience sound for all players.
+ *
+ * @param szName[]  Game mode name.
+ * @param bLoop     true = Loop sound | false = Once time.
+ *
+ * @return          true  | If the operation was successful.
+ *                  false | If no name was provided or the name does not exist.
+ * @error           If no name is provided or the name does not exist.
+ */
+native ze_res_ambx_play(const szName[], bool:bLoop = true);
 
 /**
  * Plays menu sounds (Sent menu sound to client).
