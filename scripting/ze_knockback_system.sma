@@ -10,6 +10,9 @@
 
 #include <ze_core>
 
+// Libraries.
+stock const LIB_ESCAPEMODE[] = "ze_gescape_mode"
+
 // Weapons Power.
 new Float:g_flWeaponsPower[] =
 {
@@ -65,7 +68,16 @@ public plugin_natives()
 	register_library("ze_kb_system")
 	register_native("ze_get_zombie_knockback", "__native_get_zombie_knockback")
 	register_native("ze_set_zombie_knockback", "__native_set_zombie_knockback")
+
+	set_module_filter("fw_module_filter")
+	set_native_filter("fw_native_filter")
 }
+
+public fw_module_filter(const module[], LibType:libtype)
+	return equal(module, LIB_ESCAPEMODE) ? PLUGIN_HANDLED : PLUGIN_CONTINUE
+
+public fw_native_filter(const name[], index, trap)
+	return !trap ? PLUGIN_HANDLED : PLUGIN_CONTINUE
 
 public plugin_init()
 {
@@ -122,7 +134,10 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDirection[3], tr, const bitsDamageType)
 {
 	// Non-player damage or self damage
-	if (ze_is_zombie_frozen() || iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
+	if (iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
+		return
+
+	if (LibraryExists(LIB_ESCAPEMODE, LibType_Library) && ze_is_zombie_frozen())
 		return
 
 	// Victim isn't zombie or attacker isn't human

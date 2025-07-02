@@ -90,6 +90,7 @@ new HookChain:g_hPMHook,
 
 public plugin_natives()
 {
+	register_library("ze_gescape_mode")
 	register_native("ze_is_zombie_frozen", "__native_is_zombie_frozen")
 
 	set_module_filter("module_filter")
