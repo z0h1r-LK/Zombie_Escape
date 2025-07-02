@@ -221,6 +221,7 @@ MSG_CANT_BUY_WEAPON = "Zombiler nasil silah alsin!"
 MSG_BUY_ENABLED = "Silah menu tekrardan aktiflestirildi!"
 
 MENU_ITEMS_TITLE = "Ekstra Itemler"
+MSG_MAX_PURCHASES = "Maksimum satın alma sayısına ulaştınız (Maksimum: !g%i!y)"
 
 MSG_ITEMS_DISABLED = "Ekstra Item menu devre disi!"
 MSG_NO_ITEMS = "Ekstra Item menusunde hic item yok."
