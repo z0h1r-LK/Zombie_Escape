@@ -99,7 +99,7 @@ public plugin_precache()
 
 	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
-		new const szSurvivorAmbienceSound[] = "zm_es/ze_amb_survivor.wav"
+		new const szSurvivorAmbienceSound[] = "zm_es/ze_amb_survivor.mp3"
 		const iSurvivorAmbienceSound = 200
 
 		// Registers new Ambience on game.

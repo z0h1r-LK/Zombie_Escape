@@ -682,7 +682,12 @@ public __native_res_ambx_register(plugin_id, num_params)
 	{
 		for (i = 2; i < num_params; i++)
 		{
-			get_string(i, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND)
+			if (!get_string(i, pArray[AMB_SOUND], charsmax(pArray) - AMB_SOUND))
+			{
+				log_error(AMX_ERR_NATIVE, "[ZE] Cannot register new ambient sound without sound path.")
+				return false
+			}
+
 			pArray[AMB_LENGTH] = get_param(i + 1)
 			ArrayPushArray(aAmbSounds, pArray)
 

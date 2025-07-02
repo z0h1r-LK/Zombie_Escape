@@ -95,7 +95,7 @@ public plugin_precache()
 
 	if (LibraryExists(LIBRARY_RESOURCES, LibType_Library))
 	{
-		new const szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.wav"
+		new const szNemesisAmbienceSound[] = "zm_es/ze_amb_nemesis.mp3"
 		const iNemesisAmbienceSound = 200
 
 		// Registers new Ambience on game.

@@ -433,7 +433,7 @@ native ze_res_ambience_play(const iHandle, bool:bLoop = true);
  *
  * @return           true  | If the game mode ambience was registered successfully.
  *                   false | If no name was provided or the name already exists.
- * @error            If no name is provided or the name already exists.
+ * @error            If no name or no sound path are provided or the name already exists.
  */
 native ze_res_ambx_register(const szName[], const szSound[], iLength, any:...);
 
