@@ -6,10 +6,10 @@
 #include <amxmisc> // <- amxmodx.inc already included here.
 
 // Macroses.
-#define flag_get(%0,%1)         %0 & BIT(%1)
+#define flag_get(%0,%1)         %0 & (1<<(%1))
 #define flag_get_boolean(%0,%1) bool:(flag_get(%0,%1) ? true : false)
-#define flag_set(%0,%1)         %0 |= BIT(%1)
-#define flag_unset(%0,%1)       %0 &= ~BIT(%1)
+#define flag_set(%0,%1)         %0 |= (1<<(%1))
+#define flag_unset(%0,%1)       %0 &= ~(1<<(%1))
 
 /**
  * Send colored message on chat for specific player or everyone.
