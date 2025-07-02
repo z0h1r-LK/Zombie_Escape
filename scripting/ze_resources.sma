@@ -717,8 +717,11 @@ public __native_res_ambx_register(plugin_id, num_params)
 			pArray[AMB_LENGTH] = str_to_num(szLength)
 
 			// Pre-load sound file.
-			formatex(szSound, charsmax(szSound), "sound/%s", pArray[AMB_SOUND])
-			precache_generic(szSound)
+			if (pArray[AMB_SOUND])
+			{
+				formatex(szSound, charsmax(szSound), "sound/%s", pArray[AMB_SOUND])
+				precache_generic(szSound)
+			}
 
 			ArrayPushArray(aAmbSounds, pArray)
 		}
