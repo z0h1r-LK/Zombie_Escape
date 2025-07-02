@@ -375,3 +375,98 @@ DYNAMIC = "Dinamic"
 
 MENU_LEVEL = "Nivel"
 MSG_LVL_NOT_ENOUGH = "N-ai nivelul necesar!"
+
+[bp]
+GAME_DESC = "Fuga Zumbi"
+CHAT_PREFIX = "[!gZE!y]"
+MENU_PREFIX = "\r[ZE]\w"
+
+HUD_ESCAPE = "** Modo Fuga**"
+HUD_NEMESIS = "** Modo Nêmesis **"
+HUD_SURVIVOR = "** Modo Sobrevivente **"
+HUD_SWARM = "** Modo Enxame **"
+
+HUD_ESCAPE_FAIL = "-=| Fuga Mal Sucedida |=-"
+HUD_ESCAPE_SUCCESS = "-=| Fuga Bem-Sucedida |=-"
+
+HUD_SCOREMESSAGE = "| Humanos: %i - %i :Zumbis |"
+HUD_COUNTDOWN = "Zumbi(s) surgirão em %i segundo(s)!"
+
+HUD_RELEASETIME = "Zumbi(s) serão liberados em %i segundo(s)!"
+HUD_RELEASED = "Zumbi(s) liberados!"
+
+MSG_READY = "!tVocê está Pronto!y? !tNão Esqueça !y= !gCOBERTURA/DEFESA = VITÓRIA!"
+NO_ENOUGH_PLAYERS = "!tJogadores insuficientes!y, Jogadores necessários: !g%i/%i!y"
+
+MENU_PRIMARY_TITLE = "Armas Primárias"
+MENU_SECONDARY_TITLE = "Armas Secundárias"
+MENU_AUTOSELECT = "Lembrar?"
+
+MSG_WEAPONS_DISABLED = "Menu de Armas desativado!"
+MSG_BUYTIME_OVER = "Tempo de compra acabou!"
+MSG_ALREADY_BOUGHT = "Você já comprou armas primária e secundária!"
+MSG_CANT_BUY_WEAPON = "Zumbis não podem comprar Armas"
+MSG_BUY_ENABLED = "Menu de Armas foi reativado!"
+
+MENU_ITEMS_TITLE = "Itens Extras"
+MSG_MAX_PURCHASES = "Você atingiu o número máximo de compras (Máximo: !g%i!y)"
+
+MSG_ITEMS_DISABLED = "Menu de Itens Extras está desativado!"
+MSG_NO_ITEMS = "Não há itens no Menu de Itens Extras."
+MSG_LIMIT_REACHED = "Você excedeu o limite de itens"
+
+MENU_MAIN_TITLE = "Menu Principal"
+MENU_WEAPONS = "Armas"
+MENU_RE_WEAPONS = "Armas \r[Compra Automática]"
+MENU_EXTRAITEMS = "Itens Extras"
+MENU_HCLASSES = "Classes de Humanos"
+MENU_ZCLASSES = "Classes de Zumbis"
+MENU_LEAVE_SPECS = "Sair do Modo Espectador"
+
+MENU_NEXT = "Próximo"
+MENU_BACK = "Voltar"
+MENU_EXIT = "Sair"
+
+ON = "Ligado"
+OFF = "Desligado"
+
+CMD_NOT = "Comando indisponível!"
+CMD_NOT_ALIVE = "Você está morto!"
+
+HUD_INFECT_NOTICE = "{$victim} foi infectado por {$attacker}"
+
+MSG_COINS_WINS = "!tFuga Bem-Sucedida!y | Você ganhou !g+%d!y MF!"
+MSG_COINS_KILLED = "!tZumbi Eliminado!y | Você ganhou !g+%d!y MF!"
+MSG_COINS_INFECTED = "!tHumano Infectado!y | Você ganhou !g+%d!y MF!"
+MSG_NO_COINS_ENOUGH = "Você não tem moedas suficientes!"
+MSG_ITEM_PURCHASED = "Você comprou um item | -!g%i !yMF!t!"
+
+CLASS_HUMAN = "Humano"
+CLASS_ZOMBIE = "Zumbi"
+CLASS_NEMESIS = "Nêmesis"
+CLASS_SURVIVOR = "Sobrevivente"
+
+HUD_INFO_SPEC = "Nome: {$name}^nVida: {$health} | Colete: {$shield} | Classe: {$class} | MF: {$coins}"
+HUD_INFO_STATS = "Nome: {$name}^nVida: {$health} | Colete: {$shield} | Classe: {$class} | MF: {$coins}"
+
+NABBR_THOUSANDS = "K"
+NABBR_MILLIONS = "M"
+NABBR_BILLIONS = "B"
+
+MENU_ZOMBIES_TITLE = "Classes de Zumbis"
+MENU_HUMANS_TITLE = "Classes de Humanos"
+
+NEXT = "Próximo"
+CURRENT = "Atual"
+
+MSG_HUMAN_NAME = "Nome: !t%s"
+MSG_HUMAN_INFO = "Vida: !g%.2f!y | Colete: !g%.2f!y | Velocidade (!g%L!y): !g%.2f!y | Gravidade: !g%.2f!y"
+
+MSG_ZOMBIE_NAME = "Nome: !t%s"
+MSG_ZOMBIE_INFO = "Vida: !g%.2f!y | Velocidade: !g%.2f!y | Gravidade: !g%.2f!y | Repulsão: !g%.2f!y"
+
+STATIC = "Estático"
+DYNAMIC = "Dinâmico"
+
+MENU_LEVEL = "Nível"
+MSG_LVL_NOT_ENOUGH = "Você não tem nível suficiente!"
