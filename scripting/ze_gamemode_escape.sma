@@ -355,7 +355,7 @@ public ze_gamemode_chosen(game_id, target)
 				continue
 
 			// Player was Zombie in previous Rounds?
-			if (g_bSmartRandom && TrieKeyExists(g_tChosen, g_szAuth[id]))
+			if (g_bSmartRandom && g_szAuth[id][0] && TrieKeyExists(g_tChosen, g_szAuth[id]))
 				continue
 
 			if (g_bBackToSpawn)
@@ -416,7 +416,8 @@ public ze_gamemode_chosen(game_id, target)
 			id = iZombies[i]
 
 			// Store AuthID of the player in Trie.
-			TrieSetCell(g_tChosen, g_szAuth[id], 0)
+			if (g_szAuth[id][0])
+				TrieSetCell(g_tChosen, g_szAuth[id], 0)
 		}
 	}
 
