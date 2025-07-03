@@ -137,9 +137,6 @@ public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDire
 	if (iVictim == iAttacker || !is_user_alive(iVictim) || !is_user_alive(iAttacker))
 		return
 
-	if (LibraryExists(LIB_ESCAPEMODE, LibType_Library) && ze_is_zombie_frozen())
-		return
-
 	// Victim isn't zombie or attacker isn't human
 	if (ze_is_user_zombie(iVictim) == ze_is_user_zombie(iAttacker))
 		return
@@ -150,6 +147,9 @@ public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDire
 
 	// Knockback only if damage is done to victim
 	if (flDamage <= 0.0 || GetHamReturnStatus() == HAM_SUPERCEDE || get_tr2(tr, TR_pHit) != iVictim)
+		return
+
+	if (LibraryExists(LIB_ESCAPEMODE, LibType_Library) && ze_is_zombie_frozen())
 		return
 
 	// Get whether the victim is in a crouch state
