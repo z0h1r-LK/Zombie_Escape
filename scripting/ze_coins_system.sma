@@ -9,6 +9,9 @@
 new const g_szVaultName[] = "ZE_Coins"
 new const g_szLogFile[] = "SQL_Coins.log"
 
+// Fix load issues.
+const Float:LOAD_DELAY = 1.5
+
 // Colors indexes.
 enum _:eColors
 {
@@ -223,7 +226,7 @@ public client_putinserver(id)
 	if (is_user_hltv(id))
 		return
 
-	set_task(0.2, "delayReadData", id)
+	set_task(LOAD_DELAY, "delayReadData", id)
 }
 
 public delayReadData(const id)
