@@ -218,20 +218,9 @@ public query_CreateTable(iFailState, Handle:hQuery, szError[], iError, szData[],
 	SQL_IsFail(iFailState, iError, szError, g_szLogFile)
 }
 
-public client_putinserver(id)
+public ze_user_authorized(id, const szAuthID[], RClientAuth:iClType, bool:bNotLoaded, Float:flAuthTime)
 {
 	if (!g_iSaveType)
-		return
-
-	if (is_user_hltv(id))
-		return
-
-	set_task(LOAD_DELAY, "delayReadData", id)
-}
-
-public delayReadData(const id)
-{
-	if (!is_user_connected(id))
 		return
 
 	switch (g_iAuthType)
@@ -243,7 +232,7 @@ public delayReadData(const id)
 		}
 		case 1: // AuthID.
 		{
-			get_user_authid(id, g_szAuth[id], charsmax(g_szAuth[]))
+			copy(g_szAuth[id], charsmax(g_szAuth[]), szAuthID)
 		}
 	}
 

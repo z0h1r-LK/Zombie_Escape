@@ -10,6 +10,10 @@
 #include <ze_stocks>
 #include <ze_core_const>
 
+// Constants.
+const AUTH_CHECK_TIMES = 3
+const Float:AUTH_RETRY_DELAY = 0.5  // Delay before try authorized client (Minimum: 0.1)
+
 // Custom Forwards.
 enum _:FORWARDS
 {
@@ -24,6 +28,7 @@ enum _:FORWARDS
 	FORWARD_USER_KILLED_POST,
 	FORWARD_USER_LAST_HUMAN,
 	FORWARD_USER_LAST_ZOMBIE,
+	FORWARD_USER_AUTHORIZED,
 	FORWARD_USER_DISCONNECTED,
 	FORWARD_ROUNDEND
 }
@@ -100,8 +105,10 @@ new g_iFwSpawn,
 
 // Arrays.
 new g_iForwards[FORWARDS],
+	g_iChecks[MAX_PLAYERS+1],
 	bool:g_bMOTD[MAX_PLAYERS+1],
-	Float:g_flUserSpeed[MAX_PLAYERS+1]
+	Float:g_flUserSpeed[MAX_PLAYERS+1],
+	Float:g_flAuthPeriod[MAX_PLAYERS+1]
 
 // XVars.
 public x_bGameStarted,
@@ -224,6 +231,7 @@ public plugin_init()
 	g_iForwards[FORWARD_USER_KILLED_POST] = CreateMultiForward("ze_user_killed_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
 	g_iForwards[FORWARD_USER_LAST_HUMAN] = CreateMultiForward("ze_user_last_human", ET_IGNORE, FP_CELL)
 	g_iForwards[FORWARD_USER_LAST_ZOMBIE] = CreateMultiForward("ze_user_last_zombie", ET_IGNORE, FP_CELL)
+	g_iForwards[FORWARD_USER_AUTHORIZED] = CreateMultiForward("ze_user_authorized", ET_IGNORE, FP_CELL, FP_STRING, FP_CELL, FP_CELL, FP_FLOAT)
 	g_iForwards[FORWARD_USER_DISCONNECTED] = CreateMultiForward("ze_user_disconnected", ET_CONTINUE, FP_CELL)
 	g_iForwards[FORWARD_ROUNDEND] = CreateMultiForward("ze_roundend", ET_IGNORE, FP_CELL)
 
@@ -286,6 +294,7 @@ public plugin_end()
 	DestroyForward(g_iForwards[FORWARD_USER_KILLED_POST])
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_HUMAN])
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_ZOMBIE])
+	DestroyForward(g_iForwards[FORWARD_USER_AUTHORIZED])
 	DestroyForward(g_iForwards[FORWARD_USER_DISCONNECTED])
 	DestroyForward(g_iForwards[FORWARD_ROUNDEND])
 }
@@ -417,6 +426,9 @@ public client_putinserver(id)
 		return
 
 	g_bMOTD[id] = true
+	g_flAuthPeriod[id] = get_gametime()
+
+	clientAuthorized(id)
 
 	// Delay before check gamerules.
 	set_task(0.5, "client_Connected")
@@ -438,6 +450,68 @@ public client_Connected()
 	check_LastPlayer()
 }
 
+public clientAuthorized(const id)
+{
+	// Player disconnected?
+	if (is_user_connected(id))
+		return
+
+	new RClientAuth:iClType, bool:bIsAuthorized = false
+
+	if (!is_dedicated_server() && id == 1) // It is ListenServer?
+	{
+		iClType = ZE_AUTH_CLIENT
+		bIsAuthorized = true
+	}
+	else if (is_user_bot(id))
+	{
+		iClType = ZE_AUTH_BOT
+		bIsAuthorized = true
+	}
+	else if (is_user_hltv(id))
+	{
+		iClType = ZE_AUTH_PROXY
+		bIsAuthorized = true
+	}
+	else
+	{
+		iClType = ZE_AUTH_CLIENT
+	}
+
+	new szAuthID[MAX_AUTHID_LENGTH], Float:flDuration
+	get_user_authid(id, szAuthID, charsmax(szAuthID))
+
+	if (!bIsAuthorized)
+	{
+		if (!szAuthID[0] || equali(szAuthID, "STEAM_ID_LAN") || equali(szAuthID, "STEAM_ID_PENDING") || equali(szAuthID, "VALVE_ID_LAN") || equali(szAuthID, "VALVE_ID_PENDING"))
+		{
+			if (++g_iChecks[id] >= AUTH_CHECK_TIMES)
+			{
+				flDuration = get_gametime() - g_flAuthPeriod[id]
+
+				// Call forward ze_user_authorized(param1, string2, param3, param4, fparam5)
+				ExecuteForward(g_iForwards[FORWARD_USER_AUTHORIZED], _/* Ignore return value */, id, szAuthID, iClType, true, flDuration)
+			}
+			else
+			{
+				set_task(AUTH_RETRY_DELAY, "clientAuthorized", id) // Try again! Server does not load Auth ID.
+			}
+		}
+		else
+		{
+			bIsAuthorized = true
+		}
+	}
+
+	if (bIsAuthorized)
+	{
+		flDuration = get_gametime() - g_flAuthPeriod[id]
+
+		// Call forward ze_user_authorized(param1, string2, param3, param4, fparam5)
+		ExecuteForward(g_iForwards[FORWARD_USER_AUTHORIZED], _/* Ignore return value */, id, szAuthID, iClType, false, flDuration)
+	}
+}
+
 public client_disconnected(id, bool:drop, message[], maxlen)
 {
 	// HLTV Proxy?
@@ -445,8 +519,10 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 		return
 
 	// Reset Var.
-	g_bMOTD[id] = false
+	g_iChecks[id] = 0
 	g_flUserSpeed[id] = 0.0
+	g_flAuthPeriod[id] = 0.0
+	g_bMOTD[id] = false
 	flag_unset(g_bitsIsZombie, id)
 	flag_unset(g_bitsSpeedFactor, id)
 
