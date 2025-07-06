@@ -74,9 +74,6 @@ new g_xFixSpawn,
 new g_iForwards[FORWARDS],
 	Float:g_flHUDPosit[HUDs]
 
-// String.
-new g_szAuth[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
-
 // Trie's.
 new Trie:g_tChosen
 
@@ -226,34 +223,6 @@ public plugin_end()
 	TrieDestroy(g_tChosen)
 }
 
-public client_putinserver(id)
-{
-	// HLTV Proxy?
-	if (is_user_hltv(id))
-		return
-
-	set_task(0.2, "delayGetAuthID", id)
-}
-
-public delayGetAuthID(const id)
-{
-	// Player disconnected?
-	if (!is_user_connected(id))
-		return
-
-	get_user_authid(id, g_szAuth[id], charsmax(g_szAuth[]))
-}
-
-public client_disconnected(id, bool:drop, message[], maxlen)
-{
-	// HLTV Proxy?
-	if (is_user_hltv(id))
-		return
-
-	// Reset a cell in string.
-	g_szAuth[id] = NULL_STRING
-}
-
 public ze_frost_freeze_start(id)
 {
 	if (g_bReleaseTime && g_bFreezeZombie)
@@ -332,7 +301,7 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 
 public ze_gamemode_chosen(game_id, target)
 {
-	new iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
+	new szAuthID[MAX_AUTHID_LENGTH], iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
 
 	if (!target)
 	{
@@ -355,7 +324,7 @@ public ze_gamemode_chosen(game_id, target)
 				continue
 
 			// Player was Zombie in previous Rounds?
-			if (g_bSmartRandom && g_szAuth[id][0] && TrieKeyExists(g_tChosen, g_szAuth[id]))
+			if (g_bSmartRandom && get_user_authid(id, szAuthID, charsmax(szAuthID)) && TrieKeyExists(g_tChosen, szAuthID))
 				continue
 
 			if (g_bBackToSpawn)
@@ -416,8 +385,8 @@ public ze_gamemode_chosen(game_id, target)
 			id = iZombies[i]
 
 			// Store AuthID of the player in Trie.
-			if (g_szAuth[id][0])
-				TrieSetCell(g_tChosen, g_szAuth[id], 0)
+			if (get_user_authid(id, szAuthID, charsmax(szAuthID)))
+				TrieSetCell(g_tChosen, szAuthID, 0)
 		}
 	}
 
