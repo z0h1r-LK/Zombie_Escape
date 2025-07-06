@@ -130,6 +130,22 @@ forward ze_user_last_human(id);
 forward ze_user_last_zombie(id);
 
 /**
+ * Called when a client (player) is authorized.
+ *
+ * @note If the client is not authorized, this forward will still be called,
+ *       but the authid may not be valid.
+ *
+ * @param id            Client index.
+ * @param authid[]      Authentication ID (e.g., STEAMID/VALVEID).
+ * @param client_type   Client type (enum ZE_AUTH_*).
+ * @param not_loaded    true = Not authorized | false = Authorized.
+ * @param auth_time     Time taken to authorize (in seconds).
+ *
+ * @noreturn
+ */
+forward ze_user_authorized(id, const authid[], RClientAuth:client_type, bool:not_loaded, Float:auth_time);
+
+/**
  * Called when player leave the server.
  *
  * @note Can prevent check Mod rules.

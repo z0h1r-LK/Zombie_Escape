@@ -106,6 +106,16 @@ enum
 }
 
 /**
+ * Types of clients: Used in ze_user_authorized(id, const szAuthID[], iClType)
+ */
+enum RClientAuth
+{
+	ZE_AUTH_CLIENT = 0,
+	ZE_AUTH_BOT,
+	ZE_AUTH_PROXY
+}
+
+/**
  * XVARs Name.
  */
 #define X_Core_RoundNum        "x_iRoundNum"
