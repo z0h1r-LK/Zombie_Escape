@@ -453,7 +453,7 @@ public client_Connected()
 public clientAuthorized(const id)
 {
 	// Player disconnected?
-	if (is_user_connected(id))
+	if (!is_user_connected(id))
 		return
 
 	new RClientAuth:iClType, bool:bIsAuthorized = false
