@@ -10,6 +10,7 @@ stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Define.
 #define GAMEMODE_NAME "Escape"
+//#define SMARTRANDOM_OLD_METHOD
 
 // Custom Forwards.
 enum any:FORWARDS
@@ -73,6 +74,11 @@ new g_xFixSpawn,
 // Array.
 new g_iForwards[FORWARDS],
 	Float:g_flHUDPosit[HUDs]
+
+// String.
+#if !defined SMARTRANDOM_OLD_METHOD
+new g_szAuthID[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
+#endif
 
 // Trie's.
 new Trie:g_tChosen
@@ -223,6 +229,25 @@ public plugin_end()
 	TrieDestroy(g_tChosen)
 }
 
+#if !defined SMARTRANDOM_OLD_METHOD
+public ze_user_authorized(id, const szAuthID[], RClientAuth:iClType, bool:bUnauthorized, Float:flAuthTime)
+{
+	if (iClType == ZE_AUTH_PROXY)
+		return
+
+	copy(g_szAuthID[id], charsmax(g_szAuthID[]), szAuthID)
+}
+
+public client_disconnected(id, bool:drop, message[], maxlen)
+{
+	if (is_user_hltv(id))
+		return
+
+	// Clear string.
+	g_szAuthID[id] = NULL_STRING
+}
+#endif
+
 public ze_frost_freeze_start(id)
 {
 	if (g_bReleaseTime && g_bFreezeZombie)
@@ -301,7 +326,11 @@ public ze_gamemode_chosen_pre(game_id, target, bool:bSkipCheck)
 
 public ze_gamemode_chosen(game_id, target)
 {
-	new szAuthID[MAX_AUTHID_LENGTH], iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
+	new iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
+
+#if defined SMARTRANDOM_OLD_METHOD
+	new szAuthID[MAX_AUTHID_LENGTH]
+#endif
 
 	if (!target)
 	{
@@ -324,8 +353,15 @@ public ze_gamemode_chosen(game_id, target)
 				continue
 
 			// Player was Zombie in previous Rounds?
+#if defined SMARTRANDOM_OLD_METHOD
 			if (g_bSmartRandom && get_user_authid(id, szAuthID, charsmax(szAuthID)) && TrieKeyExists(g_tChosen, szAuthID))
 				continue
+#endif
+
+#if !defined SMARTRANDOM_OLD_METHOD
+			if (g_bSmartRandom && g_szAuthID[id][0] && TrieKeyExists(g_tChosen, g_szAuthID[id]))
+				continue
+#endif
 
 			if (g_bBackToSpawn)
 			{
@@ -385,8 +421,15 @@ public ze_gamemode_chosen(game_id, target)
 			id = iZombies[i]
 
 			// Store AuthID of the player in Trie.
+#if defined SMARTRANDOM_OLD_METHOD
 			if (get_user_authid(id, szAuthID, charsmax(szAuthID)))
 				TrieSetCell(g_tChosen, szAuthID, 0)
+#endif
+
+#if !defined SMARTRANDOM_OLD_METHOD
+			if (g_szAuthID[id][0])
+				TrieSetCell(g_tChosen, g_szAuthID[id], 0)
+#endif
 		}
 	}
 
