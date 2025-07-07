@@ -421,17 +421,14 @@ public close_Connection(taskid)
 
 public client_putinserver(id)
 {
-	// HLTV Proxy?
+	g_flAuthPeriod[id] = get_gametime()
+	clientAuthorized(id)
+
 	if (is_user_hltv(id))
 		return
 
 	g_bMOTD[id] = true
-	g_flAuthPeriod[id] = get_gametime()
-
-	clientAuthorized(id)
-
-	// Delay before check gamerules.
-	set_task(0.5, "client_Connected")
+	set_task(0.5, "client_Connected")  // Delay before check gamerules.
 }
 
 public client_Connected()
