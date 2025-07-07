@@ -95,9 +95,10 @@ public fw_native_filter(const name[], index, trap)
 
 			// Get full path.
 			formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
-
-			// Precache Model.
-			precache_model(szModel)
+			precache_model(szModel) // Precache Model.
+			formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", szPlayerModel, szPlayerModel)
+			if (file_exists(szModel, true))
+				precache_model(szModel)
 		}
 
 		// Read attack shield sound from INI file.

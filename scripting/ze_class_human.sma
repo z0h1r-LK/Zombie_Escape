@@ -494,6 +494,9 @@ public __native_hclass_register(const plugin_id, const num_params)
 	// Precache Models.
 	formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", aArray[HUMAN_MODEL], aArray[HUMAN_MODEL])
 	precache_model(szModel)
+	formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", aArray[HUMAN_MODEL], aArray[HUMAN_MODEL])
+	if (file_exists(szModel, true))
+		precache_model(szModel) // For FastDL.
 
 	// Copy array on dyn Array.
 	ArrayPushArray(g_aHumanClass, aArray)

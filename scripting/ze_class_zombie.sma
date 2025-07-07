@@ -436,6 +436,9 @@ public __native_zclass_register(const plugin_id, const num_params)
 	// Precache Models.
 	formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MODEL])
 	precache_model(szModel)
+	formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MODEL])
+	if (file_exists(szModel, true))
+		precache_model(szModel) // For FastDL.
 	precache_model(aArray[ZOMBIE_MELEE])
 
 	// Copy array on dyn Array.

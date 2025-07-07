@@ -115,7 +115,12 @@ public plugin_precache()
 	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aNemesisModel, i, szPlayerModel, charsmax(szPlayerModel))
-		precache_model(fmt("models/player/%s/%s.mdl", szPlayerModel, szPlayerModel))
+
+		formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
+		precache_model(szModel)
+		formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", szPlayerModel, szPlayerModel)
+		if (file_exists(szModel, true))
+			precache_model(szModel)
 	}
 
 	iFiles = ArraySize(g_aNemesisClaws)

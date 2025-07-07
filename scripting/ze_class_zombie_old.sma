@@ -88,9 +88,10 @@ public plugin_precache()
 
 		// Get full path.
 		formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
-
-		// Precache Model.
-		precache_model(szModel)
+		precache_model(szModel) // Precache Model.
+		formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", szPlayerModel, szPlayerModel)
+		if (file_exists(szModel, true))
+			precache_model(szModel)
 	}
 
 	// Load Zombies Knife from INI file.

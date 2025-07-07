@@ -118,6 +118,9 @@ public plugin_precache()
 		ArrayGetString(g_aSurvivorModel, i, szPlayerModel, charsmax(szPlayerModel))
 		formatex(szModel, charsmax(szModel), "models/player/%s/%s.mdl", szPlayerModel, szPlayerModel)
 		precache_model(szModel)
+		formatex(szModel, charsmax(szModel), "models/player/%s/%sT.mdl", szPlayerModel, szPlayerModel)
+		if (file_exists(szModel, true))
+			precache_model(szModel)
 	}
 
 	// Precache Models.
