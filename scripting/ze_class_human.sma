@@ -18,11 +18,14 @@ stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 // Menu Timeout
 const ZE_MENU_TIMEOUT = 30   // -1 = No time.
 
+// Constant.
+const MAX_DESC_LENGTH = 64
+
 // Human Attributes.
 enum _:HUMAN_ATTRIB
 {
 	HUMAN_NAME[MAX_NAME_LENGTH] = 0,
-	HUMAN_DESC[64],
+	HUMAN_DESC[MAX_DESC_LENGTH],
 	HUMAN_MODEL[MAX_NAME_LENGTH],
 	Float:HUMAN_HEALTH,
 	Float:HUMAN_ARMOR,
@@ -332,6 +335,14 @@ public show_Humans_Menu(const id)
 		if (g_iFwResult >= ZE_CLASS_DONT_SHOW)
 			continue
 
+		// ML: Name.
+		if (GetLangTransKey(aArray[HUMAN_NAME]) != TransKey_Bad)
+			formatex(aArray[HUMAN_NAME], charsmax(aArray) - HUMAN_NAME, "%L", LANG_PLAYER, aArray[HUMAN_NAME])
+
+		// ML: Description.
+		if (GetLangTransKey(aArray[HUMAN_DESC]) != TransKey_Bad)
+			formatex(aArray[HUMAN_DESC], charsmax(aArray) - HUMAN_DESC, "%L", LANG_PLAYER, aArray[HUMAN_DESC])
+
 		if (g_iFwResult == ZE_CLASS_UNAVAILABLE)
 			formatex(szLang, charsmax(szLang), "\d%s • %s%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText)
 		else if (fLevel && iLevel < aArray[HUMAN_LEVEL])
@@ -344,6 +355,7 @@ public show_Humans_Menu(const id)
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText)
 
 		iItemData[0] = i
+		iItemData[1] = 0
 
 		menu_additem(iMenu, szLang, iItemData)
 	}
@@ -404,6 +416,10 @@ public assign_PlayerClassID(const id, iClassID)
 	// ze_select_hclass_post(param1, param2, param3, string4, string5, string6, fparam7, fparam8, param9, fparam10, fparam11, param12)
 	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], g_iFwResult, id, iClassID, false, aArray[HUMAN_NAME], aArray[HUMAN_DESC], aArray[HUMAN_MODEL], aArray[HUMAN_HEALTH], aArray[HUMAN_ARMOR], aArray[HUMAN_SPEED_FACTOR], aArray[HUMAN_SPEED], aArray[HUMAN_GRAVITY], aArray[HUMAN_LEVEL])
 	g_iNext[id] = iClassID
+
+	// Name.
+	if (GetLangTransKey(aArray[HUMAN_NAME]) != TransKey_Bad)
+		formatex(aArray[HUMAN_NAME], charsmax(aArray) - HUMAN_NAME, "%L", LANG_PLAYER, aArray[HUMAN_NAME])
 
 	// Send colored message on chat for player.
 	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_HUMAN_NAME", aArray[HUMAN_NAME])

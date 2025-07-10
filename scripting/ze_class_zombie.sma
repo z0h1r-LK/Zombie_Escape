@@ -15,11 +15,17 @@ stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
 
+// Menu Timeout
+const ZE_MENU_TIMEOUT = 30   // -1 = No time.
+
+// Constant.
+const MAX_DESC_LENGTH = 64
+
 // Zombie Attributes.
 enum _:ZOMBIE_ATTRIB
 {
 	ZOMBIE_NAME[MAX_NAME_LENGTH] = 0,
-	ZOMBIE_DESC[64],
+	ZOMBIE_DESC[MAX_DESC_LENGTH],
 	ZOMBIE_MODEL[MAX_NAME_LENGTH],
 	ZOMBIE_MELEE[MAX_RESOURCE_PATH_LENGTH],
 	Float:ZOMBIE_HEALTH,
@@ -274,6 +280,14 @@ public show_Zombies_Menu(const id)
 		if (g_iFwResult >= ZE_CLASS_DONT_SHOW)
 			continue
 
+		// ML: Name.
+		if (GetLangTransKey(aArray[ZOMBIE_NAME]) != TransKey_Bad)
+			formatex(aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME, "%L", LANG_PLAYER, aArray[ZOMBIE_NAME])
+
+		// ML: Description.
+		if (GetLangTransKey(aArray[ZOMBIE_DESC]) != TransKey_Bad)
+			formatex(aArray[ZOMBIE_DESC], charsmax(aArray) - ZOMBIE_DESC, "%L", LANG_PLAYER, aArray[ZOMBIE_DESC])
+
 		if (g_iFwResult == ZE_ITEM_UNAVAILABLE)
 			formatex(szLang, charsmax(szLang), "\d%s • %s%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText)
 		else if (fLevel && iLevel < aArray[ZOMBIE_LEVEL])
@@ -286,6 +300,7 @@ public show_Zombies_Menu(const id)
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s", aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], g_szText)
 
 		iItemData[0] = i
+		iItemData[1] = 0
 
 		menu_additem(iMenu, szLang, iItemData)
 	}
@@ -299,7 +314,7 @@ public show_Zombies_Menu(const id)
 	menu_setprop(iMenu, MPROP_EXITNAME, szLang)
 
 	// Show the Menu for player.
-	menu_display(id, iMenu, g_iPage[id], 20)
+	menu_display(id, iMenu, g_iPage[id], ZE_MENU_TIMEOUT)
 }
 
 public handler_Zombies_Menu(const id, iMenu, iKey)
@@ -346,6 +361,10 @@ public assign_PlayerClassID(const id, iClassID)
 	// Call forward ze_select_class_post(param1, param2, param3, string4, string5, string6, string7, fparam8, fparam9, fparam10, fparam11, param12)
 	ExecuteForward(g_iForwards[FORWARD_SELECT_CLASS_POST], _/* Ignore return value */, id, iClassID, false, aArray[ZOMBIE_NAME], aArray[ZOMBIE_DESC], aArray[ZOMBIE_MODEL], aArray[ZOMBIE_MELEE], aArray[ZOMBIE_HEALTH], aArray[ZOMBIE_SPEED], aArray[ZOMBIE_GRAVITY], aArray[ZOMBIE_KNOCKBACK], aArray[ZOMBIE_LEVEL])
 	g_iNext[id] = iClassID
+
+	// Name.
+	if (GetLangTransKey(aArray[ZOMBIE_NAME]) != TransKey_Bad)
+		formatex(aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME, "%L", LANG_PLAYER, aArray[ZOMBIE_NAME])
 
 	// Send colored message on chat for player.
 	ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ZOMBIE_NAME", aArray[ZOMBIE_NAME])
