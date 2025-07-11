@@ -77,7 +77,7 @@ public native_filter(const name[], index, trap)
 public plugin_precache()
 {
 	// Default Nemesis Models.
-	new const szNemesisModel[][] = {"ze_nemesis"}
+	new const szNemesisModel[][] = {"ze_nemesis_zombi"}
 	new const szNemesisClaws[][] = {"models/zm_es/v_knife_nemesis.mdl"}
 
 	// Create new dyn Array.

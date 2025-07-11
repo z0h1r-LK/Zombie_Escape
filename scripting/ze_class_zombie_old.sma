@@ -28,7 +28,7 @@ new g_iZombieHealth,
 
 #if defined CUSTOM_MODEL
 // Default Zombie knife Models.
-new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze_es/v_knife_zombie.mdl"
+new g_szZombieKnifeModel[MAX_RESOURCE_PATH_LENGTH] = "models/ze_es/v_knife_zombi.mdl"
 
 // Dynamic Array.
 new Array:g_aZombieModels

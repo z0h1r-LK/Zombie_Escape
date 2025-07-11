@@ -84,7 +84,7 @@ public native_filter(const name[], index, trap)
 public plugin_precache()
 {
 	// Default Survivor Models.
-	new const szSurvivorModel[][] = {"ze_survivor"}
+	new const szSurvivorModel[][] = {"ze_survivor_human"}
 
 	// Create new dyn Array.
 	g_aSurvivorModel = ArrayCreate(MAX_NAME_LENGTH, 1)
