@@ -8,7 +8,7 @@ public plugin_precache()
 	new const szZombieName[] = "Regular"
 	new const szZombieDesc[] = "-= Balanced =-"
 	new const szZombieModel[] = "ze_regular_zombi"
-	new const szZombieMelee[] = "models/zm_es/zombi_melee/v_knife_reg_zombi.mdl"
+	new const szZombieMelee[] = "models/zm_es/v_knife_zombi.mdl"
 	const Float:flZombieHealth = 10000.0
 	const Float:flZombieSpeed = 320.0
 	const Float:flZombieGravity = 640.0
