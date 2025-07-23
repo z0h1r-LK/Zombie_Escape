@@ -9,10 +9,10 @@ Use these versions or higher for the Mod to work without problems.
 | | Version |
 | - | - |
 | AMX Mod X | [1.10.0.5467](https://www.amxmodx.org/downloads-new.php?branch=master) or newer |
-| ReAPI Module | [5.24.0.300](https://github.com/s1lentq/reapi/tag/5.24.0.300) or newer |
-| ReHLDS | [3.13.0.788](https://github.com/dreamstalker/rehlds/releases/tag/3.13.0.788) or newer |
-| ReGameDLL_CS | [5.26.0.668](https://github.com/s1lentq/ReGameDLL_CS/releases/tag/5.26.0.668) or newer |
-| Metamod-R *(Recommended)* | [1.3.0.149](https://github.com/theAsmodai/metamod-r/releases/tag/1.3.0.149) or newer |
+| ReAPI Module | [5.26.0.338](https://github.com/rehlds/ReAPI/releases/tag/5.26.0.338) or newer |
+| ReHLDS | [3.14.0.857](https://github.com/rehlds/rehlds/releases/tag/3.14.0.857) or newer |
+| ReGameDLL_CS | [5.28.0.756](https://github.com/rehlds/ReGameDLL_CS/releases/tag/5.28.0.756) or newer |
+| Metamod-R *(Recommended)* | [1.3.0.149](https://github.com/rehlds/Metamod-R/releases/tag/1.3.0.149) or newer |
 
 ## For More:
 :smile: **Visit Our :**
