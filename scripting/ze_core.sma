@@ -7,12 +7,13 @@
 #include <json>
 #include <xs>
 
+#include <ini_file>
 #include <ze_stocks>
 #include <ze_core_const>
 
-// Constants.
-const AUTH_CHECK_TIMES = 3
-const Float:AUTH_RETRY_DELAY = 0.5  // Delay before try authorized client (Minimum: 0.1)
+// Defines.
+#define AUTH_CHECK_TIMES 3
+#define AUTH_RETRY_DELAY 0.5  // Delay before try authorized client (Minimum: 0.1)
 
 // Custom Forwards.
 enum _:FORWARDS
@@ -94,6 +95,7 @@ new g_iFwSpawn,
 	g_iZombieWins,
 	g_iLastZombie,
 	g_iPainShockFree,
+	g_iAuthCheckTimes,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
 	g_hSocketUpdate,
@@ -101,7 +103,8 @@ new g_iFwSpawn,
 	bool:g_bRoundEnd,
 	bool:g_bCheckUpdate,
 	bool:g_bFreezePeriod,
-	bool:g_bLastHumanDied
+	bool:g_bLastHumanDied,
+	Float:g_flAuthRetryDelay
 
 // Arrays.
 new g_iForwards[FORWARDS],
@@ -239,6 +242,8 @@ public plugin_init()
 	register_dictionary("zombie_escape.txt")
 
 	// Initial Value.
+	g_iAuthCheckTimes = AUTH_CHECK_TIMES
+	g_flAuthRetryDelay = AUTH_RETRY_DELAY
 	g_msgWeapPickup = get_user_msgid("WeapPickup")
 }
 
@@ -278,6 +283,12 @@ public plugin_cfg()
 	// Check Update.
 	if (g_bCheckUpdate)
 		set_task(10.0, "check_Update", TASK_CHECKUPDATE)
+
+	// Read settings from INI file.
+	if (!ini_read_int(ZE_FILENAME, "Fixes", "AUTH_CHECK_TIMES", g_iAuthCheckTimes))
+		ini_write_int(ZE_FILENAME, "Fixes", "AUTH_CHECK_TIMES", g_iAuthCheckTimes)
+	if (!ini_read_float(ZE_FILENAME, "Fixes", "AUTH_RETRY_DELAY", g_flAuthRetryDelay))
+		ini_write_float(ZE_FILENAME, "Fixes", "AUTH_RETRY_DELAY", g_flAuthRetryDelay)
 }
 
 public plugin_end()
@@ -482,7 +493,7 @@ public clientAuthorized(const id)
 	{
 		if (!szAuthID[0] || equali(szAuthID, "STEAM_ID_LAN") || equali(szAuthID, "STEAM_ID_PENDING") || equali(szAuthID, "VALVE_ID_LAN") || equali(szAuthID, "VALVE_ID_PENDING"))
 		{
-			if (++g_iChecks[id] >= AUTH_CHECK_TIMES)
+			if (++g_iChecks[id] >= g_iAuthCheckTimes)
 			{
 				flDuration = get_gametime() - g_flAuthPeriod[id]
 
@@ -491,7 +502,7 @@ public clientAuthorized(const id)
 			}
 			else
 			{
-				set_task(AUTH_RETRY_DELAY, "clientAuthorized", id) // Try again! Server does not load Auth ID.
+				set_task(g_flAuthRetryDelay, "clientAuthorized", id) // Try again! Server does not load Auth ID.
 			}
 		}
 		else
