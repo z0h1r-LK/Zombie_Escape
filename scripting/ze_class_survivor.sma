@@ -29,8 +29,10 @@ enum _:Colors
 }
 
 // Weapon Models.
+#if defined CUSTOM_MODEL
 new g_v_szWeaponModel[MAX_RESOURCE_PATH_LENGTH] = "models/v_m249.mdl"
 new g_p_szWeaponModel[MAX_RESOURCE_PATH_LENGTH] = "models/p_m249.mdl"
+#endif
 
 // CVars.
 new g_iWeaponUID,
@@ -53,8 +55,10 @@ new g_iWeaponUID,
 new g_bitsIsSurvivor,
 	g_msgWeapPickup
 
+#if defined CUSTOM_MODEL
 // Dynamic Arrays.
 new Array:g_aSurvivorModel
+#endif
 
 public plugin_natives()
 {
