@@ -33,10 +33,7 @@ new g_v_szWeaponModel[MAX_RESOURCE_PATH_LENGTH] = "models/v_m249.mdl"
 new g_p_szWeaponModel[MAX_RESOURCE_PATH_LENGTH] = "models/p_m249.mdl"
 
 // CVars.
-new g_iHealth,
-	g_iArmor,
-	g_iGravity,
-	g_iWeaponUID,
+new g_iWeaponUID,
 	g_iGlowAmount,
 	g_iHudColor[Colors],
 	g_iGlowColors[Colors],
@@ -44,7 +41,11 @@ new g_iHealth,
 	bool:g_bGlowEnabled,
 	bool:g_bBlockExtraItems,
 	bool:g_bUnlimitedAmmo,
+	Float:g_flHealth,
+	Float:g_flArmor,
+	Float:g_flGravity,
 	Float:g_flSpeed,
+	Float:g_flWpnDamage,
 	Float:g_flSpeedFactor,
 	g_szWeaponName[MAX_NAME_LENGTH]
 
@@ -109,10 +110,10 @@ public plugin_precache()
 	if (!ini_read_string(ZE_FILENAME, "Weapon Models", "P_WEAPON_SURVIVOR", g_p_szWeaponModel, charsmax(g_p_szWeaponModel)))
 		ini_write_string(ZE_FILENAME, "Weapon Models", "P_WEAPON_SURVIVOR", g_p_szWeaponModel)
 
-	new szPlayerModel[MAX_NAME_LENGTH], szModel[MAX_RESOURCE_PATH_LENGTH], iFiles
+	new szPlayerModel[MAX_NAME_LENGTH], szModel[MAX_RESOURCE_PATH_LENGTH]
 
 	// Precache Models.
-	iFiles = ArraySize(g_aSurvivorModel)
+	new const iFiles = ArraySize(g_aSurvivorModel)
 	for (i = 0; i < iFiles; i++)
 	{
 		ArrayGetString(g_aSurvivorModel, i, szPlayerModel, charsmax(szPlayerModel))
@@ -138,9 +139,9 @@ public plugin_init()
 	RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "fw_HasRestrictItem_Pre")
 
 	// Cvars.
-	bind_pcvar_num(register_cvar("ze_survivor_health", "6000"), g_iHealth)
-	bind_pcvar_num(register_cvar("ze_survivor_armor", "0"), g_iArmor)
-	bind_pcvar_num(register_cvar("ze_survivor_gravity", "640"), g_iGravity)
+	bind_pcvar_float(register_cvar("ze_survivor_health", "6000"), g_flHealth)
+	bind_pcvar_float(register_cvar("ze_survivor_armor", "0.0"), g_flArmor)
+	bind_pcvar_float(register_cvar("ze_survivor_gravity", "640"), g_flGravity)
 
 	bind_pcvar_float(register_cvar("ze_survivor_speed", "0.0"), g_flSpeed)
 	bind_pcvar_float(register_cvar("ze_survivor_speed_factor", "50.0"), g_flSpeedFactor)
@@ -156,6 +157,7 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_survivor_glow_amount", "16"), g_iGlowAmount)
 
 	bind_pcvar_num(register_cvar("ze_survivor_weapon_uid", "0"), g_iWeaponUID)
+	bind_pcvar_float(register_cvar("ze_survivor_weapon_dmg", "100.0"), g_flWpnDamage)
 	bind_pcvar_string(register_cvar("ze_survivor_weapon", "weapon_m249"), g_szWeaponName, charsmax(g_szWeaponName))
 
 	bind_pcvar_num(register_cvar("ze_hud_info_survivor_red", "0"), g_iHudColor[Red])
@@ -188,11 +190,8 @@ public cmd_DropWeapon(const id)
 
 public ze_user_humanized_pre(id)
 {
+	// Remove Survivor flag.
 	unset_User_Survivor(id)
-
-	// Reset player view and weapon Models.
-	ze_remove_user_view_model(id, CSW_M249)
-	ze_remove_user_weap_model(id, CSW_M249)
 }
 
 public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
@@ -202,7 +201,7 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 		return ZE_CONTINUE
 
 	// Survivor?
-	if (flag_get_boolean(g_bitsIsSurvivor, iVictim))
+	if (is_user_survivor(iVictim))
 		return ZE_STOP // Prevent infection, keep taken damage.
 
 	return ZE_CONTINUE
@@ -223,6 +222,9 @@ public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
 
 public fw_HasRestrictItem_Pre(const id, pItem)
 {
+	if (!g_bBlockWeapon)
+		return HC_CONTINUE
+
 	// Player ins't Survivor?
 	if (!is_user_survivor(id))
 		return HC_CONTINUE
@@ -246,23 +248,23 @@ set_User_Survivor(id)
 		flag_set(g_bitsIsSurvivor, id)
 
 	// Health.
-	if (g_iHealth > 0)
+	if (g_flHealth > 0.0)
 	{
-		new Float:flHealth = float(g_iHealth)
-		set_entvar(id, var_health, flHealth)
-		set_entvar(id, var_max_health, flHealth)
+		set_entvar(id, var_health, g_flHealth)
+		set_entvar(id, var_max_health, g_flHealth)
 	}
 
 	// Armor.
-	if (g_iArmor > 0)
+	if (g_flArmor > 0.0)
 	{
-		rg_set_user_armor(id, g_iArmor, ARMOR_VESTHELM)
+		set_entvar(id, var_armorvalue, g_flArmor)
+		set_entvar(id, var_armortype, ARMOR_VESTHELM)
 	}
 
 	// Gravity.
-	if (g_iGravity > 0)
+	if (g_flGravity > 0.0)
 	{
-		set_entvar(id, var_gravity, float(g_iGravity)/800.0)
+		set_entvar(id, var_gravity, g_flGravity/800.0)
 	}
 
 	// Speed.
@@ -292,7 +294,16 @@ set_User_Survivor(id)
 	if (g_szWeaponName[0])
 	{
 		// Special Weapon.
-		rg_give_custom_item(id, g_szWeaponName, GT_DROP_AND_REPLACE, g_iWeaponUID)
+		new iWpnEnt
+		if ((iWpnEnt = rg_give_custom_item(id, g_szWeaponName, GT_DROP_AND_REPLACE, g_iWeaponUID)) == NULLENT)
+		{
+			log_error(AMX_ERR_NOTFOUND, "[ZE] Invalid weapon id (-1)", NULLENT)
+		}
+		else
+		{
+			if (g_flWpnDamage > 0.0)
+				set_member(iWpnEnt, m_Weapon_flBaseDamage, g_flWpnDamage)
+		}
 	}
 
 	// HUD information's color.
@@ -310,7 +321,7 @@ set_User_Survivor(id)
 	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
 	{
 		// Weapon model.
-		new iWeaponID = get_weaponid(g_szWeaponName)
+		new const iWeaponID = get_weaponid(g_szWeaponName)
 		ze_set_user_view_model(id, iWeaponID, g_v_szWeaponModel)
 		ze_set_user_weap_model(id, iWeaponID, g_p_szWeaponModel)
 	}
@@ -335,6 +346,17 @@ unset_User_Survivor(id)
 
 	// Stop unlimited clip.
 	set_member(id, m_iWeaponInfiniteAmmo, 0)
+
+#if defined CUSTOM_MODEL
+	// Reset weapon view and weapon model.
+	if (LibraryExists(LIBRARY_WPNMODELS, LibType_Library))
+	{
+		// Weapon model.
+		new const iWeaponID = get_weaponid(g_szWeaponName)
+		ze_remove_user_view_model(id, iWeaponID)
+		ze_remove_user_weap_model(id, iWeaponID)
+	}
+#endif
 }
 
 /**
@@ -342,7 +364,7 @@ unset_User_Survivor(id)
  */
 public __native_is_user_survivor(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -355,7 +377,7 @@ public __native_is_user_survivor(const plugin_id, const num_params)
 
 public __native_set_user_survivor(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -369,7 +391,7 @@ public __native_set_user_survivor(const plugin_id, const num_params)
 
 public __native_remove_user_survivor(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
