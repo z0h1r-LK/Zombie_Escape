@@ -332,6 +332,9 @@ unset_User_Survivor(id)
 
 	// Reset player rendering.
 	set_ent_rendering(id, kRenderFxNone, 0, 0, 0, kRenderNormal, 255)
+
+	// Stop unlimited clip.
+	set_member(id, m_iWeaponInfiniteAmmo, 0)
 }
 
 /**
