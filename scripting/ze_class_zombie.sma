@@ -241,6 +241,8 @@ public ze_user_infected(iVictim, iInfector)
 
 	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
+		if (GetLangTransKey(aArray[ZOMBIE_NAME]) != TransKey_Bad)
+			formatex(aArray[ZOMBIE_NAME], charsmax(aArray) - ZOMBIE_NAME, "%L", LANG_PLAYER, aArray[ZOMBIE_NAME])
 		ze_hud_info_set(iVictim, aArray[ZOMBIE_NAME], g_iHudColor)
 	}
 
@@ -467,7 +469,7 @@ public __native_zclass_register(const plugin_id, const num_params)
 
 public __native_zclass_get_current(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -480,7 +482,7 @@ public __native_zclass_get_current(const plugin_id, const num_params)
 
 public __native_zclass_get_next(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -500,7 +502,7 @@ public __native_zclass_is_valid(const plugin_id, const num_params)
 
 public __native_zclass_get_name(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -517,7 +519,7 @@ public __native_zclass_get_name(const plugin_id, const num_params)
 
 public __native_zclass_get_desc(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -534,7 +536,7 @@ public __native_zclass_get_desc(const plugin_id, const num_params)
 
 public __native_zclass_get_model(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -551,7 +553,7 @@ public __native_zclass_get_model(const plugin_id, const num_params)
 
 public __native_zclass_get_melee(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -569,7 +571,7 @@ public __native_zclass_get_melee(const plugin_id, const num_params)
 
 public Float:__native_zclass_get_health(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -584,7 +586,7 @@ public Float:__native_zclass_get_health(const plugin_id, const num_params)
 
 public Float:__native_zclass_get_speed(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -599,7 +601,7 @@ public Float:__native_zclass_get_speed(const plugin_id, const num_params)
 
 public Float:__native_zclass_get_gravity(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -614,7 +616,7 @@ public Float:__native_zclass_get_gravity(const plugin_id, const num_params)
 
 public Float:__native_zclass_get_knockback(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -629,7 +631,7 @@ public Float:__native_zclass_get_knockback(const plugin_id, const num_params)
 
 public __native_zclass_get_level(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -663,7 +665,7 @@ public __native_zclass_get_index(const plugin_id, const num_params)
 
 public __native_zclass_set_current(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -671,7 +673,7 @@ public __native_zclass_set_current(const plugin_id, const num_params)
 		return false
 	}
 
-	new i = get_param(2)
+	new const i = get_param(2)
 
 	if (FIsWrongClass(i))
 	{
@@ -691,7 +693,7 @@ public __native_zclass_set_current(const plugin_id, const num_params)
 
 public __native_zclass_set_next(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -699,7 +701,7 @@ public __native_zclass_set_next(const plugin_id, const num_params)
 		return false
 	}
 
-	new i = get_param(2)
+	new const i = get_param(2)
 
 	if (FIsWrongClass(i))
 	{
@@ -713,7 +715,7 @@ public __native_zclass_set_next(const plugin_id, const num_params)
 
 public __native_zclass_set_name(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -730,7 +732,7 @@ public __native_zclass_set_name(const plugin_id, const num_params)
 
 public __native_zclass_set_desc(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -747,7 +749,7 @@ public __native_zclass_set_desc(const plugin_id, const num_params)
 
 public __native_zclass_set_health(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -764,7 +766,7 @@ public __native_zclass_set_health(const plugin_id, const num_params)
 
 public __native_zclass_set_speed(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -781,7 +783,7 @@ public __native_zclass_set_speed(const plugin_id, const num_params)
 
 public __native_zclass_set_gravity(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -798,7 +800,7 @@ public __native_zclass_set_gravity(const plugin_id, const num_params)
 
 public __native_zclass_set_knockback(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -815,7 +817,7 @@ public __native_zclass_set_knockback(const plugin_id, const num_params)
 
 public __native_zclass_set_level(const plugin_id, const num_params)
 {
-	new i = get_param(1)
+	new const i = get_param(1)
 
 	if (FIsWrongClass(i))
 	{
@@ -838,7 +840,7 @@ public __native_zclass_add_text(const plugin_id, const num_params)
 
 public __native_zclass_show_menu(const plugin_id, const num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{

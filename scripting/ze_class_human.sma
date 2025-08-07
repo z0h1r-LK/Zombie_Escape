@@ -257,6 +257,12 @@ public ze_user_humanized(id)
 	set_entvar(id, var_max_health, aArray[HUMAN_HEALTH])
 	set_entvar(id, var_gravity, (aArray[HUMAN_GRAVITY] / 800.0))
 
+	if (aArray[HUMAN_ARMOR] > 0.0)
+	{
+		set_entvar(id, var_armorvalue, aArray[HUMAN_ARMOR])
+		set_entvar(id, var_armortype, ARMOR_VESTHELM)
+	}
+
 	if (g_bWeaponStrips)
 	{
 		// Strips all Weapons for player.
@@ -271,6 +277,8 @@ public ze_user_humanized(id)
 
 	if (LibraryExists(LIBRARY_HUDINFO, LibType_Library))
 	{
+		if (GetLangTransKey(aArray[HUMAN_NAME]) != TransKey_Bad)
+			formatex(aArray[HUMAN_NAME], charsmax(aArray) - HUMAN_NAME, "%L", LANG_PLAYER, aArray[HUMAN_NAME])
 		ze_hud_info_set(id, aArray[HUMAN_NAME], g_iHudColor)
 	}
 
