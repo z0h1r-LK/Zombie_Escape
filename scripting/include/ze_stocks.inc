@@ -34,7 +34,7 @@ stock ze_colored_print(const target, const message[], any:...)
 	}
 
 	new szBuffer[256];
-	new i = formatex(szBuffer, charsmax(szBuffer), "%L ", LANG_PLAYER, "CHAT_PREFIX");
+	new const i = formatex(szBuffer, charsmax(szBuffer), "%L ", LANG_PLAYER, "CHAT_PREFIX");
 	vformat(szBuffer[i], charsmax(szBuffer) - i, message, 3);
 
 	replace_string(szBuffer, charsmax(szBuffer), "!g", "^4");
@@ -74,7 +74,7 @@ stock GetRequiredZombies(iAliveNum)
 stock precache_sky(const szSkyName[])
 {
 	new const szSuffix[6][3] = {"up", "dn", "ft", "bk", "lf", "rt"};
-	for(new szTgaFile[MAX_NAME_LENGTH+3], i = 0; i < 6; i++)
+	for(new szTgaFile[MAX_RESOURCE_PATH_LENGTH+3], i = 0; i < 6; i++)
 	{
 		// Get full path of the File.
 		formatex(szTgaFile, charsmax(szTgaFile), "gfx/env/%s%s.tga", szSkyName, szSuffix[i]);
@@ -85,6 +85,33 @@ stock precache_sky(const szSkyName[])
 		else
 			server_print("[ZE] Cannot locate file '%s', Skipping...", szTgaFile);
 	}
+}
+
+/**
+ * Precaches a model file with safety check.
+ *
+ * @note Can only be used inside of the plugin_precache() forward.
+ *       Also this native avoid crashes the server while file not found.
+ *       Maximum path length is 255 bytes.
+ *
+ * @param path  Path to the model file.
+ * @param ...   Variable number of formatting parameters.
+ *
+ * @return      Unique cache id of the model
+ * @error       If called outside of the plugin_precache() forward, an error is
+ *              thrown or file does not exists.
+ */
+stock precache_model_ex(const path[], any:...)
+{
+	new szPath[PLATFORM_MAX_PATH]
+	vformat(szPath, charsmax(szPath), path, 2)
+	if (!file_exists(szPath, true))
+	{
+		set_fail_state("[ZE] Fatal Error: Model does not exists (path: %s)", szPath)
+		return INVALID_HANDLE
+	}
+
+	return precache_model(szPath)
 }
 
 /**
@@ -178,18 +205,29 @@ stock SQL_IsFail(iFailState, iError, const szError[], const szLogFile[])
 	return false
 }
 
-stock AddCommas(iNum, szOutput[], iLen)
+/**
+ * Adds commas to an integer number for readability.
+ *
+ * @note Example: 100000 will become 100,000
+ *
+ * @param iNum       The integer number to format.
+ * @param szOutput[] The buffer to store the formatted string.
+ * @param iLen       The maximum length of the buffer.
+ *
+ * @return           The number of bytes written to the buffer.
+ */
+stock AddCommas(const iNum, szOutput[], iLen)
 {
-	new szTmp[32], iOutputPos, iNumPos, iNumLen
+	static szTmp[32], iOutputPos, iNumPos, iNumLen, iVal
 	szTmp = NULL_STRING; iOutputPos = iNumPos = iNumLen = 0
 
 	if (iNum < 0)
 	{
 		szOutput[iOutputPos++] = '-'
-		iNum = abs(iNum)
+		iVal = abs(iNum)
 	}
 
-	iNumLen = num_to_str(iNum, szTmp, charsmax(szTmp))
+	iNumLen = num_to_str(iVal, szTmp, charsmax(szTmp))
 
 	if (iNumLen <= 3)
 	{
@@ -211,7 +249,18 @@ stock AddCommas(iNum, szOutput[], iLen)
 	return iOutputPos
 }
 
-stock NumAbbrev(iNum, szOutput[], iLen)
+/**
+ * Converts an integer to a human-readable abbreviated format.
+ *
+ * @note Example: 10000 will become 10.0K
+ *
+ * @param iNum       The integer number to format.
+ * @param szOutput[] The buffer to store the formatted string.
+ * @param iLen       The maximum length of the buffer.
+ *
+ * @return           The number of bytes written to the buffer.
+ */
+stock NumAbbrev(const iNum, szOutput[], iLen)
 {
 	if (iNum <= 999)
 	{
@@ -234,4 +283,51 @@ stock NumAbbrev(iNum, szOutput[], iLen)
 	}
 
 	return 0
+}
+
+/**
+ * Replaces a shortcut placeholder in a string with a number or float value.
+ *
+ * @note    This function searches for {$value} placeholders in the text
+ *          and replaces them with the specified value, similar to string formatting.
+ *
+ * @param num       An integer or float number to be inserted.
+ * @param element[] The placeholder text to search for (e.g., {$hp}, {$id} or whatever).
+ * @param string[]  The string in which to perform replacements.
+ * @param length    Maximum length of the output string buffer.
+ * @param pholder   Format specifier (e.g., "%d", "%02d", "%.2f" or whatever).
+ * @param caseSens  true = for case-sensitive matching on elements[] | false = ignore case.
+ *
+ * @return          The number of bytes written, or 0 if no replacement was made.
+ */
+stock replace_IntShortcut(const any:num, const element[], string[], length, const pholder[] = "%d", bool:caseSens = false)
+{
+	if (!element[0] || length <= 0)
+		return 0
+
+	static buffer[64]; buffer = NULL_STRING
+	formatex(buffer, charsmax(buffer), pholder, num)
+	return replace_string(string, length, element, buffer, caseSens)
+}
+
+/**
+ * Replaces a shortcut placeholder in a string with a string.
+ *
+ * @note This function searches for {$name} placeholders in the text
+ *       and replaces them with the specified value, similar to string formatting.
+ *
+ * @param input[]   A string to be inserted.
+ * @param element[] The placeholder text to search for (e.g., {$hp}, {$id} or whatever).
+ * @param string[]  The string in which to perform replacements.
+ * @param length    Maximum length of the output string buffer.
+ * @param caseSens  true = for case-sensitive matching on elements[] | false = ignore case.
+ *
+ * @return          The number of bytes written, or 0 if no replacement was made
+ */
+stock replace_StrShortcut(const input[], const element[], string[], length, bool:caseSens = false)
+{
+	if (!element[0] || length <= 0)
+		return 0
+
+	return replace_string(string, length, element, input, caseSens)
 }
