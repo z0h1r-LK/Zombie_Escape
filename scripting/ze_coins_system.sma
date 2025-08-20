@@ -218,9 +218,12 @@ public query_CreateTable(iFailState, Handle:hQuery, szError[], iError, szData[],
 	SQL_IsFail(iFailState, iError, szError, g_szLogFile)
 }
 
-public ze_user_authorized(id, const szAuthID[], RClientAuth:iClType, bool:bNotLoaded, Float:flAuthTime)
+public ze_user_authorized(id, const szAuthID[], RClientAuth:clientType, bool:Unnauthorized, Float:flAuthTime)
 {
-	if (!g_iSaveType)
+	if (!g_iSaveType || Unnauthorized)
+		return
+
+	if (clientType == ZE_AUTH_PROXY) // HLTV Proxy?
 		return
 
 	switch (g_iAuthType)
@@ -258,14 +261,15 @@ public client_infochanged(id)
 
 public client_disconnected(id, bool:drop, message[], maxlen)
 {
-	if (is_user_hltv(id))
-		return
-
 	if (!g_iSaveType)
 		return
 
+	if (is_user_hltv(id))
+		return
+
 	// Save player's coins.
-	write_Coins(id)
+	if (g_szAuth[id][0])
+		write_Coins(id)
 
 	// Reset var.
 	g_iCoins[id] = 0

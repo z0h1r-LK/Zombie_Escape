@@ -137,13 +137,13 @@ forward ze_user_last_zombie(id);
  *
  * @param id            Client index.
  * @param authid[]      Authentication ID (e.g., STEAMID/VALVEID).
- * @param client_type   Client type (enum ZE_AUTH_*).
+ * @param unnauthorized Client type (enum ZE_AUTH_*).
  * @param not_loaded    true = Not authorized | false = Authorized.
  * @param auth_time     Time taken to authorize (in seconds).
  *
  * @noreturn
  */
-forward ze_user_authorized(id, const authid[], RClientAuth:client_type, bool:not_loaded, Float:auth_time);
+forward ze_user_authorized(id, const authid[], RClientAuth:client_type, bool:unnauthorized, Float:auth_time);
 
 /**
  * Called when player leave the server.
