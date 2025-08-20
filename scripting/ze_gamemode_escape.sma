@@ -64,12 +64,13 @@ new g_iChance,
 
 // Variables.
 new g_iCountdown,
-	bool:g_bReleaseTime,
-	bool:g_bFreezeZombie
+	bool:g_bReleaseTime
 
-// XVar.
+// XVars.
 new g_xFixSpawn,
 	g_xRespawnAsZombie
+
+public x_bFreezeZombie = 0;
 
 // Array.
 new g_iForwards[FORWARDS],
@@ -250,14 +251,14 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 
 public ze_frost_freeze_start(id)
 {
-	if (g_bReleaseTime && g_bFreezeZombie)
+	if (g_bReleaseTime && x_bFreezeZombie)
 		return ZE_STOP
 	return ZE_CONTINUE
 }
 
 public ze_fire_burn_start(id)
 {
-	if (g_bReleaseTime && g_bFreezeZombie)
+	if (g_bReleaseTime && x_bFreezeZombie)
 		return ZE_STOP
 	return ZE_CONTINUE
 }
@@ -298,7 +299,7 @@ public ze_game_started_pre()
 {
 	rp_hook_status()
 	g_bReleaseTime = false
-	g_bFreezeZombie = false
+	x_bFreezeZombie = 0
 
 	// Remove task.
 	remove_task(TASK_RELEASETIME)
@@ -396,7 +397,7 @@ public ze_gamemode_chosen(game_id, target)
 	if (g_bFreezeMode)
 	{
 		rp_hook_status(true)
-		g_bFreezeZombie = true
+		x_bFreezeZombie = 1
 	}
 
 	if (g_bRespawnAsZombie)
@@ -540,7 +541,7 @@ public release_Zombies()
 	// Release Zombie.
 	rp_hook_status()
 	g_bReleaseTime = false
-	g_bFreezeZombie = false
+	x_bFreezeZombie = 0
 }
 
 public ze_roundend(iWinTeam)
@@ -579,5 +580,5 @@ rp_hook_status(const bool:status = false)
  */
 public __native_is_zombie_frozen(const plugin_id, const num_params)
 {
-	return g_bFreezeZombie
+	return x_bFreezeZombie
 }

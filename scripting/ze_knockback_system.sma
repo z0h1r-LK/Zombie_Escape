@@ -10,9 +10,6 @@
 
 #include <ze_core>
 
-// Libraries.
-stock const LIB_ESCAPEMODE[] = "ze_gescape_mode"
-
 // Weapons Power.
 new Float:g_flWeaponsPower[] =
 {
@@ -60,6 +57,9 @@ new bool:g_bPower,
 new g_iFwHandle,
 	g_iFwResult
 
+// XVars.
+new g_xFreezeZombie
+
 // Array
 new Float:g_flKnockback[MAX_PLAYERS+1]
 
@@ -68,16 +68,7 @@ public plugin_natives()
 	register_library("ze_kb_system")
 	register_native("ze_get_zombie_knockback", "__native_get_zombie_knockback")
 	register_native("ze_set_zombie_knockback", "__native_set_zombie_knockback")
-
-	set_module_filter("fw_module_filter")
-	set_native_filter("fw_native_filter")
 }
-
-public fw_module_filter(const module[], LibType:libtype)
-	return equal(module, LIB_ESCAPEMODE) ? PLUGIN_HANDLED : PLUGIN_CONTINUE
-
-public fw_native_filter(const name[], index, trap)
-	return !trap ? PLUGIN_HANDLED : PLUGIN_CONTINUE
 
 public plugin_init()
 {
@@ -96,6 +87,9 @@ public plugin_init()
 
 	// Create Forwards.
 	g_iFwHandle = CreateMultiForward("ze_take_knockback", ET_CONTINUE, FP_CELL, FP_CELL, FP_ARRAY)
+
+	// Set Values.
+	g_xFreezeZombie = get_xvar_id(x_Escape_FreezeZombie)
 }
 
 public plugin_cfg()
@@ -149,7 +143,8 @@ public fw_TraceAttack_Post(const iVictim, iAttacker, Float:flDamage, Float:vDire
 	if (flDamage <= 0.0 || GetHamReturnStatus() == HAM_SUPERCEDE || get_tr2(tr, TR_pHit) != iVictim)
 		return
 
-	if (LibraryExists(LIB_ESCAPEMODE, LibType_Library) && ze_is_zombie_frozen())
+	// Zombie is Frozen?
+	if (get_xvar_num(g_xFreezeZombie))
 		return
 
 	// Get whether the victim is in a crouch state
