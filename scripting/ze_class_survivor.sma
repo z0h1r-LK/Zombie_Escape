@@ -192,10 +192,19 @@ public cmd_DropWeapon(const id)
 	return PLUGIN_CONTINUE
 }
 
+public client_disconnected(id, bool:drop, message[], maxlen)
+{
+	if (is_user_hltv(id))
+		return
+
+	flag_unset(g_bitsIsSurvivor, id)
+}
+
 public ze_user_humanized_pre(id)
 {
 	// Remove Survivor flag.
-	unset_User_Survivor(id)
+	if (is_user_survivor(id))
+		unset_User_Survivor(id)
 }
 
 public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
@@ -213,7 +222,8 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
 {
-	unset_User_Survivor(iVictim)
+	if (is_user_survivor(iVictim))
+		unset_User_Survivor(iVictim)
 }
 
 public ze_select_item_pre(id, iItem, bool:bIgnoreCost, bool:bInMenu)
