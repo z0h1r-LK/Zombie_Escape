@@ -218,26 +218,27 @@ stock SQL_IsFail(iFailState, iError, const szError[], const szLogFile[])
  */
 stock AddCommas(const iNum, szOutput[], iLen)
 {
-	static szTmp[32], iOutputPos, iNumPos, iNumLen, iVal
-	szTmp = NULL_STRING; iOutputPos = iNumPos = iNumLen = 0
+	static szBuffer[32], iOutputPos, iNumPos, iNumLen, iVal
+	szBuffer[0] = iOutputPos = iNumPos = iNumLen = iVal = 0
+	iVal = iNum
 
-	if (iNum < 0)
+	if (iVal < 0)
 	{
 		szOutput[iOutputPos++] = '-'
-		iVal = abs(iNum)
+		iVal = abs(iVal)
 	}
 
-	iNumLen = num_to_str(iVal, szTmp, charsmax(szTmp))
+	iNumLen = num_to_str(iVal, szBuffer, charsmax(szBuffer))
 
 	if (iNumLen <= 3)
 	{
-		iOutputPos += copy(szOutput[iOutputPos], iLen, szTmp)
+		iOutputPos += copy(szOutput[iOutputPos], iLen, szBuffer)
 	}
 	else
 	{
 		while ((iNumPos < iNumLen) && (iOutputPos < iLen))
 		{
-			szOutput[iOutputPos++] = szTmp[iNumPos++]
+			szOutput[iOutputPos++] = szBuffer[iNumPos++]
 
 			if((iNumLen - iNumPos) && !((iNumLen - iNumPos) % 3))
 				szOutput[iOutputPos++] = ','
