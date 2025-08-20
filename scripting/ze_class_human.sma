@@ -15,9 +15,6 @@ stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumHumans)
 
-// Menu Timeout
-const ZE_MENU_TIMEOUT = 30   // -1 = No time.
-
 // Constant.
 const MAX_DESC_LENGTH = 64
 
@@ -239,7 +236,7 @@ public ze_user_humanized(id)
 	if (g_iCurrent[id] == ZE_CLASS_INVALID)
 		RequestFrame("show_Humans_Menu", id)
 
-	new iClassID = g_iNext[id]
+	new const iClassID = g_iNext[id]
 
 	// Get Human attributes.
 	new aArray[HUMAN_ATTRIB]
@@ -322,15 +319,13 @@ public ze_user_infected_pre(iVictim, iInfector, Float:flDamage)
 
 public show_Humans_Menu(const id)
 {
-	new szLang[MAX_MENU_LENGTH], iLevel
+	new szLang[MAX_MENU_LENGTH]
 
 	// Title.
 	formatex(szLang, charsmax(szLang), "\r%L \y%L:", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_HUMANS_TITLE")
 	new iMenu = menu_create(szLang, "handler_Humans_Menu")
-	new const fLevel = LibraryExists(LIBRARY_LEVELS, LibType_Library)
 
-	if (fLevel)
-		iLevel = ze_get_user_level(id)
+	new const iLevel = LibraryExists(LIBRARY_LEVELS, LibType_Library) ? ze_get_user_level(id) : 0
 
 	for (new aArray[HUMAN_ATTRIB], iItemData[2], i = 0; i < g_iNumHumans; i++)
 	{
@@ -353,7 +348,7 @@ public show_Humans_Menu(const id)
 
 		if (g_iFwResult == ZE_CLASS_UNAVAILABLE)
 			formatex(szLang, charsmax(szLang), "\d%s • %s%s", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText)
-		else if (fLevel && iLevel < aArray[HUMAN_LEVEL])
+		else if (iLevel < aArray[HUMAN_LEVEL])
 			formatex(szLang, charsmax(szLang), "\d%s • %s%s \r[\r%L\d: \y%i\r]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText, LANG_PLAYER, "MENU_LEVEL", aArray[HUMAN_LEVEL])
 		else if (i == g_iCurrent[id])
 			formatex(szLang, charsmax(szLang), "\w%s \d• \y%s%s \d[\r%L\d]", aArray[HUMAN_NAME], aArray[HUMAN_DESC], g_szText, LANG_PLAYER, "CURRENT")
@@ -443,7 +438,7 @@ public __native_hclass_register(const plugin_id, const num_params)
 	new szName[MAX_NAME_LENGTH]
 	if (!get_string(1, szName, charsmax(szName)))
 	{
-		log_error(AMX_ERR_NATIVE, "[ZE] Can't register new class without name.")
+		log_error(AMX_ERR_NATIVE, "[ZE] Cannot register a new class without a name")
 		return ZE_CLASS_INVALID
 	}
 
@@ -454,7 +449,7 @@ public __native_hclass_register(const plugin_id, const num_params)
 
 		if (equal(szName, aArray[HUMAN_NAME]))
 		{
-			log_error(AMX_ERR_NATIVE, "[ZE] Can't register new class with exist name.")
+			log_error(AMX_ERR_NATIVE, "[ZE] Cannot register a class with a duplicate name.")
 			return ZE_CLASS_INVALID
 		}
 	}
@@ -706,7 +701,7 @@ public __native_hclass_get_index(const plugin_id, const num_params)
 	new szName[MAX_NAME_LENGTH]
 	if (!get_string(1, szName, charsmax(szName)))
 	{
-		log_error(AMX_ERR_NATIVE, "[ZE] Can't search class index without name !")
+		log_error(AMX_ERR_NATIVE, "[ZE] A name is required to search the class index.")
 		return ZE_CLASS_INVALID
 	}
 
