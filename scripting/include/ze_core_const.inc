@@ -30,6 +30,11 @@ stock const ZE_HOME_PORT = 80
 stock const Float:MAX_KNOCKBACK = 1000.0
 
 /**
+ * Menu timeout in seconds.
+ */
+stock const ZE_MENU_TIMEOUT = 30
+
+/**
  * General return value.
  */
 enum (+=1)
@@ -116,7 +121,7 @@ enum RClientAuth
 }
 
 /**
- * XVARs Name.
+ * ze_core: XVARs Name.
  */
 #define X_Core_RoundNum        "x_iRoundNum"
 #define X_Core_RoundTime       "x_iRoundTime"
@@ -125,5 +130,9 @@ enum RClientAuth
 #define X_Core_GamemodeBegin   "x_bGameChosen"
 #define X_Core_RespawnAsZm     "x_bRespawnAsZombie"
 #define X_Core_UpdateAvailable "x_bUpdateAvailable"
+
 #define x_Infect_BlockEffect   "x_bBlockInfectEff"
+
 #define x_Weather_3DSkyBoxEnt  "x_i3DSkyEnt"
+
+#define x_Escape_FreezeZombie  "x_bFreezeZombie"
