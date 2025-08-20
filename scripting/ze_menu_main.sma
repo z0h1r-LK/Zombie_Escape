@@ -139,7 +139,7 @@ public show_Menu_Main(const id)
 		ze_res_menu_sound(id, ZE_MENU_DISPLAY)
 
 	// Show the Menu for player.
-	show_menu(id, KEYS_MENU, szMenu, 30, "Menu_Main")
+	show_menu(id, KEYS_MENU, szMenu, ZE_MENU_TIMEOUT, "Menu_Main")
 }
 
 public handler_Menu_Main(const id, iKey)

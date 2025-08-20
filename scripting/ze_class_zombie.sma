@@ -15,9 +15,6 @@ stock const LIBRARY_WPNMODELS[] = "ze_weap_models_api"
 // Macro.
 #define FIsWrongClass(%0) (ZE_CLASS_INVALID>=(%0)>=g_iNumZombies)
 
-// Menu Timeout
-const ZE_MENU_TIMEOUT = 30   // -1 = No time.
-
 // Constant.
 const MAX_DESC_LENGTH = 64
 

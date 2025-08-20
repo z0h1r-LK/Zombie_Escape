@@ -7,9 +7,6 @@ stock const LIBRARY_RESOURCES[] = "ze_resources"
 // Macro.
 #define FIsItemValid(%0) (ZE_ITEM_WRONG<(%0)<x_iMaxItems)
 
-// Menu Timeout.
-const CS_MENU_TIMEOUT = 45
-
 enum _:ITEM_DATA
 {
 	ITEM_NAME[MAX_NAME_LENGTH] = 0,
@@ -204,7 +201,7 @@ public show_Items_Menu(const id)
 		g_iMenuPage[id] = 0
 
 	// Show menu for the player.
-	menu_display(id, iMenu, g_iMenuPage[id], CS_MENU_TIMEOUT)
+	menu_display(id, iMenu, g_iMenuPage[id], ZE_MENU_TIMEOUT)
 }
 
 public handler_Items_Menu(id, iMenu, iKey)
