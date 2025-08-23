@@ -233,7 +233,7 @@ public plugin_end()
 #if !defined SMARTRANDOM_OLD_METHOD
 public ze_user_authorized(id, const szAuthID[], RClientAuth:iClType, bool:bUnauthorized, Float:flAuthTime)
 {
-	if (iClType == ZE_AUTH_PROXY)
+	if (bUnauthorized || iClType == ZE_AUTH_PROXY)
 		return
 
 	copy(g_szAuthID[id], charsmax(g_szAuthID[]), szAuthID)
