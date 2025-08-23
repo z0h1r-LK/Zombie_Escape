@@ -33,7 +33,8 @@ enum (+=1)
 {
 	SECTION_NONE = 0,
 	SECTION_PRIMARY,
-	SECTION_SECONDARY
+	SECTION_SECONDARY,
+	SECTION_ADDITIONAL
 }
 
 // Grenades.
@@ -91,18 +92,21 @@ new const g_szDefSecondaryWpn[][WPN_DATA] =
 
 // Cvars.
 new g_iBuyTime,
+	bool:g_bGiveItems,
 	g_iGiveNades[GRENADES]
 
 // Variables.
 new g_iPrimaryNum,
-	g_iSecondaryNum
+	g_iSecondaryNum,
+	g_iAdditionalNum
 
 // Array.
 new g_iMenuData[MAX_PLAYERS+1][MENU_DATA]
 
 // Dynamic Array.
 new Array:g_aPrimaryWeapons,
-	Array:g_aSecondaryWeapons
+	Array:g_aSecondaryWeapons,
+	Array:g_aAdditionalWeapons
 
 // XVar (Public Variables).
 public x_bWeaponsDisabled = 0;
@@ -139,6 +143,7 @@ public plugin_init()
 
 	// Cvars.
 	bind_pcvar_num(register_cvar("ze_buy_time", "60"), g_iBuyTime)
+	bind_pcvar_num(register_cvar("ze_additional_items", "1"), g_bGiveItems)
 	bind_pcvar_num(register_cvar("ze_give_FB_amount", "1"), g_iGiveNades[FB])
 	bind_pcvar_num(register_cvar("ze_give_HE_amount", "1"), g_iGiveNades[HE])
 	bind_pcvar_num(register_cvar("ze_give_SG_amount", "1"), g_iGiveNades[SG])
@@ -150,6 +155,7 @@ public plugin_init()
 	// Create new dyn Array.
 	g_aPrimaryWeapons = ArrayCreate(WPN_DATA, 1)
 	g_aSecondaryWeapons = ArrayCreate(WPN_DATA, 1)
+	g_aAdditionalWeapons = ArrayCreate(WPN_DATA, 1)
 
 	// New Menu's.
 	register_menu("Primary_Weapons_Menu", KEYS_MENU, "handler_Primary_Weapons")
@@ -175,6 +181,7 @@ public plugin_end()
 	// Free the Memory.
 	ArrayDestroy(g_aPrimaryWeapons)
 	ArrayDestroy(g_aSecondaryWeapons)
+	ArrayDestroy(g_aAdditionalWeapons)
 }
 
 public client_putinserver(id)
@@ -299,6 +306,36 @@ public ze_user_humanized(id)
 		rg_give_item(id, "weapon_smokegrenade", GT_APPEND)
 		if (g_iGiveNades[SG] > 1)
 			rg_set_user_bpammo(id, WEAPON_SMOKEGRENADE, g_iGiveNades[SG])
+	}
+
+	if (g_bGiveItems)
+	{
+		new iLevel
+		new const fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
+
+		if (fLevels)  // Player level.
+			iLevel = ze_get_user_level(id)
+
+		for (new pArray[WPN_DATA], pItem, i = 0; i < g_iAdditionalNum; i++)
+		{
+			ArrayGetArray(g_aAdditionalWeapons, i, pArray)
+
+			if (fLevels && iLevel < pArray[WPN_LEVEL])
+				continue
+
+			if ((pItem = rg_give_custom_item(id, pArray[WPN_CLASS], GT_APPEND, pArray[WPN_CUSTOM])) == NULLENT)
+			{
+				log_error(AMX_ERR_GENERAL, "[ZE] Invalid Weapon ClassName ^'%s^'", pArray[WPN_CLASS])
+			}
+			else
+			{
+				if (pArray[WPN_AMMO] > NULLENT)
+				{
+					rg_set_iteminfo(pItem, ItemInfo_iMaxAmmo1, pArray[WPN_AMMO])
+					rg_set_user_bpammo(id, WeaponIdType:get_weaponid(pArray[WPN_CLASS]), pArray[WPN_AMMO])
+				}
+			}
+		}
 	}
 }
 
@@ -782,6 +819,17 @@ read_Weapons(const szFile[])
 
 					ArrayPushArray(g_aSecondaryWeapons, pArray)
 					g_iSecondaryNum++
+				}
+				case 'A', 'a':
+				{
+					pArray[WPN_CUSTOM] = str_to_num(szWpnCustom)
+					copy(pArray[WPN_NAME], charsmax(pArray) - WPN_NAME, szWpnName)
+					copy(pArray[WPN_CLASS], charsmax(pArray) - WPN_CLASS, szWpnClass)
+					pArray[WPN_AMMO] = str_to_num(szWpnAmmo)
+					pArray[WPN_LEVEL] = str_to_num(szWpnLevel)
+
+					ArrayPushArray(g_aAdditionalWeapons, pArray)
+					g_iAdditionalNum++
 				}
 			}
 		}
