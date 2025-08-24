@@ -212,9 +212,11 @@ public ze_user_humanized(id)
 
 public ze_user_killed_post(iVictim, iAttacker, iGibs)
 {
+	if (!flag_get_boolean(g_bitsIsFrozen, iVictim))
+		return
+
 	// Unfreeze victim.
-	remove_task(iVictim+TASK_UNFREEZE)
-	flag_unset(g_bitsIsFrozen, iVictim)
+	unfreeze_Player(iVictim+TASK_UNFREEZE)
 }
 
 public fw_PlayerMove_Movement(const id)
