@@ -123,18 +123,10 @@ public plugin_natives()
 }
 
 public fw_module_filter(const module[], LibType:type)
-{
-	if (equal(module, LIBRARY_LEVEL))
-		return PLUGIN_HANDLED
-	return PLUGIN_CONTINUE
-}
+	return equal(module, LIBRARY_LEVEL) ? PLUGIN_HANDLED : PLUGIN_CONTINUE
 
 public fw_native_filter(const name[], index, trap)
-{
-	if (!trap)
-		return PLUGIN_HANDLED
-	return PLUGIN_CONTINUE
-}
+	return !trap ? PLUGIN_HANDLED : PLUGIN_CONTINUE
 
 public plugin_init()
 {
@@ -153,9 +145,9 @@ public plugin_init()
 	register_clcmd("say_team /guns", "cmd_WeaponsMenu")
 
 	// Create new dyn Array.
-	g_aPrimaryWeapons = ArrayCreate(WPN_DATA, 1)
-	g_aSecondaryWeapons = ArrayCreate(WPN_DATA, 1)
-	g_aAdditionalWeapons = ArrayCreate(WPN_DATA, 1)
+	g_aPrimaryWeapons = ArrayCreate(WPN_DATA, 20)
+	g_aSecondaryWeapons = ArrayCreate(WPN_DATA, 10)
+	g_aAdditionalWeapons = ArrayCreate(WPN_DATA, 5)
 
 	// New Menu's.
 	register_menu("Primary_Weapons_Menu", KEYS_MENU, "handler_Primary_Weapons")
@@ -357,12 +349,12 @@ public show_Primary_Weapons(id)
 	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLevel, iLen
 
 	// Menu Title.
-	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%L\d:^n^n", LANG_PLAYER, "MENU_PRIMARY_TITLE")
+	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "%L \y%L\d:^n^n", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_PRIMARY_TITLE")
 
 	// Get number of weapons on page.
-	new iWpn = g_iMenuData[id][MD_PRI_PAGE]
-	new iMaxLoops = min(iWpn + 7, g_iPrimaryNum)
-	new fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
+	new const iWpn = g_iMenuData[id][MD_PRI_PAGE]
+	new const iMaxLoops = min(iWpn + 7, g_iPrimaryNum)
+	new const fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
 
 	if (fLevels)
 		iLevel = ze_get_user_level(id)
@@ -456,7 +448,7 @@ public handler_Primary_Weapons(id, iKey)
 		}
 		default:
 		{
-			new iWpn = g_iMenuData[id][MD_PRI_PAGE] + iKey
+			new const iWpn = g_iMenuData[id][MD_PRI_PAGE] + iKey
 
 			if (iWpn < g_iPrimaryNum)
 			{
@@ -484,12 +476,12 @@ public show_Secondary_Weapons(id)
 	new szMenu[MAX_MENU_LENGTH], pArray[WPN_DATA], iLevel, iLen
 
 	// Menu Title.
-	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "\r%L\d:^n^n", LANG_PLAYER, "MENU_SECONDARY_TITLE")
+	iLen = formatex(szMenu[iLen], charsmax(szMenu) - iLen, "%L \y%L\d:^n^n", LANG_PLAYER, "MENU_PREFIX", LANG_PLAYER, "MENU_SECONDARY_TITLE")
 
 	// Get number of weapons on page.
-	new iWpn = g_iMenuData[id][MD_SEC_PAGE]
-	new iMaxLoops = min(iWpn + 7, g_iSecondaryNum)
-	new fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
+	new const iWpn = g_iMenuData[id][MD_SEC_PAGE]
+	new const iMaxLoops = min(iWpn + 7, g_iSecondaryNum)
+	new const fLevels = LibraryExists(LIBRARY_LEVEL, LibType_Library)
 
 	if (fLevels)
 		iLevel = ze_get_user_level(id)
@@ -847,7 +839,7 @@ read_Weapons(const szFile[])
  */
 public __native_auto_buy_enabled(plugin_id, num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -860,7 +852,7 @@ public __native_auto_buy_enabled(plugin_id, num_params)
 
 public __native_set_auto_buy(plugin_id, num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
@@ -874,7 +866,7 @@ public __native_set_auto_buy(plugin_id, num_params)
 
 public __native_show_weapons_menu(plugin_id, num_params)
 {
-	new id = get_param(1)
+	new const id = get_param(1)
 
 	if (!is_user_connected(id))
 	{
