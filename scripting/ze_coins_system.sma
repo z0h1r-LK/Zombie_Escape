@@ -316,13 +316,15 @@ public cmd_FlushCoins(const id, level, cid)
 		case 2: // nVault.
 		{
 			// Close the vault.
-			nvault_close(g_iVaultCoins)
+			if (g_iVaultCoins != INVALID_HANDLE)
+				nvault_close(g_iVaultCoins)
 
 			// Flush the Vault.
 			new szFile[PLATFORM_MAX_PATH], iLen
 			iLen = get_datadir(szFile, charsmax(szFile))
 			formatex(szFile[iLen], charsmax(szFile) - iLen, "/vault/%s.vault", g_szVaultName)
-			fclose(fopen(szFile, "wb"))   // This will flush the Vault.
+			if (file_exists(szFile))
+				fclose(fopen(szFile, "wb"))   // This will flush the Vault.
 			server_print("[nVault][Coins] All data from vault '%s.vault' has been deleted successfully !", g_szVaultName)
 
 			// Open the Vault.
