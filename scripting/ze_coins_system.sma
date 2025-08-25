@@ -116,6 +116,7 @@ public plugin_cfg()
 			// Open the Vault.
 			if ((g_iVaultCoins = nvault_open(g_szVaultName)) == INVALID_HANDLE)
 				set_fail_state("[ZE] Error in opening the nVault (-1)")
+			server_print("[NVault][Coins] Successfully opened the vault ^'%s.vault^'", g_szVaultName)
 		}
 		case 3: // SQL.
 		{
