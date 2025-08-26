@@ -313,7 +313,7 @@ public frost_Explode(const iEnt)
 		victim = iPlayers[i]
 
 		// Is Zombie?
-		if (!ze_is_user_zombie(victim) || flag_get_boolean(g_bitsIsFrozen, victim))
+		if (!is_user_alive(victim) || !ze_is_user_zombie(victim) || flag_get_boolean(g_bitsIsFrozen, victim))
 			continue
 
 		// Freeze the player.
