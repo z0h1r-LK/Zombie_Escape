@@ -52,6 +52,13 @@ enum _:HUDs
 	HUD_TIMER[Positions]
 }
 
+enum _:RequiredZombies
+{
+	rzb_iMinimum = 0,
+	rzb_iMaximum,
+	rzb_iReqZomb
+}
+
 // CVars.
 new g_iChance,
 	g_iMsgNotice,
@@ -84,7 +91,8 @@ new g_xFixSpawn,
 	g_xRespawnAsZombie
 
 // Dynamic Arrays.
-new Array:g_aSounds
+new Array:g_aSounds,
+	Array:g_aReqPlayers
 
 public plugin_natives()
 {
@@ -212,6 +220,14 @@ public plugin_cfg()
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
 	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
+
+	new szReqPlayers[256] = "2-8-1, 8-10-2, 11-15-4, 16-32-5"
+
+	if (!ini_read_string(ZE_FILENAME, "Gamemodes", "SWARM_REQUIRED_ZOMBIES", szReqPlayers, charsmax(szReqPlayers)))
+		ini_write_string(ZE_FILENAME, "Gamemodes", "SWARM_REQUIRED_ZOMBIES", szReqPlayers)
+
+	if ((g_aReqPlayers = init_RequiredZombies(szReqPlayers)) == Invalid_Array)
+		set_fail_state("[ZE][Swarm Mode] Error while initializing Escape gamemode")
 }
 
 public ze_frost_freeze_start(id)
@@ -332,8 +348,7 @@ public ze_gamemode_chosen(game_id, target)
 	set_xvar_num(g_xFixSpawn, 1)
 
 	// Get required Zombies.
-	if ((iReqZombie = floatround(get_playersnum_ex(GetPlayers_ExcludeDead) * g_flRatio, floatround_ceil)) <= 0)
-		iReqZombie = 1
+	iReqZombie = get_RequiredPlayers(iAliveNum)
 
 	// Block infection.
 	g_bIsSwarm = true
@@ -498,4 +513,21 @@ public ze_roundend(iWinTeam)
 
 	// Disable XVar.
 	set_xvar_num(g_xRespawnAsZombie)
+}
+
+public get_RequiredPlayers(iAliveNum)
+{
+	new const iMaxLoops = ArraySize(g_aReqPlayers)
+
+	for (new pArray[RequiredZombies], i = 0; i < iMaxLoops; i++)
+	{
+		ArrayGetArray(g_aReqPlayers, i, pArray)
+
+		if (pArray[rzb_iMinimum] <= iAliveNum <= pArray[rzb_iMaximum])
+		{
+			return pArray[rzb_iReqZomb]
+		}
+	}
+
+	return 0
 }

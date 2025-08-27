@@ -35,9 +35,9 @@ enum any:Colors
 
 enum _:RequiredZombies
 {
-	rzb_iMinPlayers,
-	rzb_iMaxPlayers,
-	rzb_iReqZombies
+	rzb_iMinimum = 0,
+	rzb_iMaximum,
+	rzb_iReqZomb
 }
 
 enum _:Positions
@@ -84,7 +84,8 @@ new g_iForwards[FORWARDS],
 	Float:g_flHUDPosit[HUDs]
 
 // Dynamic Arrays.
-new Array:g_aSounds
+new Array:g_aSounds,
+	Array:g_aReqPlayers
 
 // Hook Handle.
 new HookChain:g_hPMHook,
@@ -218,6 +219,20 @@ public plugin_cfg()
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
 	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
+
+	new szReqPlayers[256] = "2-5-1 , 6-15-2 , 16-25-3 , 26-32-4"
+
+	if (!ini_read_string(ZE_FILENAME, "Gamemodes", "ESCAPE_REQUIRED_ZOMBIES", szReqPlayers, charsmax(szReqPlayers)))
+		ini_write_string(ZE_FILENAME, "Gamemodes", "ESCAPE_REQUIRED_ZOMBIES", szReqPlayers)
+
+	if ((g_aReqPlayers = init_RequiredZombies(szReqPlayers)) == Invalid_Array)
+		set_fail_state("[ZE][Escape Mode] Error while initializing Escape gamemode")
+}
+
+public plugin_end()
+{
+	// Free the Memory.
+	ArrayDestroy(g_aReqPlayers)
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
@@ -314,7 +329,7 @@ public ze_gamemode_chosen(game_id, target)
 		get_players(iPlayers, iAliveNum, "ah")
 
 		// Get required Zombies.
-		iReqZombie = GetRequiredZombies(iAliveNum)
+		iReqZombie = get_RequiredPlayers(iAliveNum)
 
 		if (g_bSmartRandom)
 		{
@@ -532,6 +547,23 @@ public ze_roundend(iWinTeam)
 
 	// Disable XVar.
 	set_xvar_num(g_xRespawnAsZombie)
+}
+
+public get_RequiredPlayers(iAliveNum)
+{
+	new const iMaxLoops = ArraySize(g_aReqPlayers)
+
+	for (new pArray[RequiredZombies], i = 0; i < iMaxLoops; i++)
+	{
+		ArrayGetArray(g_aReqPlayers, i, pArray)
+
+		if (pArray[rzb_iMinimum] <= iAliveNum <= pArray[rzb_iMaximum])
+		{
+			return pArray[rzb_iReqZomb]
+		}
+	}
+
+	return 0
 }
 
 /**
