@@ -64,6 +64,67 @@ stock GetRequiredZombies(iAliveNum)
 }
 
 /**
+ * Parses a string containing groups of three numbers separated by commas.
+ * Each group consists of three numbers separated by hyphens.
+ *
+ * @note Example: "1-10-3,11-24-4" will be parsed into a dynamic array
+ *       containing subarrays [1, 10, 3] and [11, 24, 4].
+ *       Each subarray contains exactly three integers.
+ *
+ * @param szFmt    String to parse (input string)
+ *
+ * @return         Handle to a valid dynamic array on success,
+ *                 Invalid_Array on parsing failure.
+ */
+stock Array:init_RequiredZombies(const szFmt[])
+{
+	if (szFmt[0] == EOS)
+	{
+		return Invalid_Array
+	}
+
+	new szData[256]
+	copy(szData, charsmax(szData), szFmt)
+
+	enum _:eClSys
+	{
+		iMin = 0, iMax, iReq
+	}
+
+	new Array:aHandle
+	if ((aHandle = ArrayCreate(eClSys, 5)) == Invalid_Array)
+	{
+		return Invalid_Array
+	}
+
+	// Ex: 2-5-1 | 6-15-2 | 16-25-3 | 26-32-4
+	new szParsed[10], szNum[4], szMin[4], szMax[4], iToken
+	new pArray[eClSys]
+
+	while (szData[0] && iToken != -1)
+	{
+		iToken = strtok2(szData, szParsed, charsmax(szParsed), szData, charsmax(szData), ',', TRIM_INNER)
+		replace_string(szParsed, charsmax(szParsed), "-", " ") // Replace token Minus with Space.
+
+		// Parse string.
+		if (parse(szParsed, szMin, charsmax(szMin), szMax, charsmax(szMax), szNum, charsmax(szNum)) >= 3)
+		{
+			pArray[iMin] = str_to_num(szMin)
+			pArray[iMax] = str_to_num(szMax)
+			pArray[iReq] = str_to_num(szNum)
+
+			ArrayPushArray(aHandle, pArray)
+		}
+
+		szMin = NULL_STRING
+		szMax = NULL_STRING
+		szNum = NULL_STRING
+	}
+
+	return aHandle
+}
+
+/**
  * Precache sky files.
  *
  * @param szSkyName[]     Sky name.
