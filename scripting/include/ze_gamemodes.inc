@@ -140,3 +140,13 @@ native ze_gamemode_get_count();
  * @return           A valid game mode id.
  */
 native ze_gamemode_get_next();
+
+/**
+ * Checks if gamemode index is valid.
+ *
+ * @param            game mode id.
+ *
+ * @return           true  | If game mode index is valid.
+ *                   false | Otherwise.
+ */
+native ze_gamemode_is_valid(game_id);

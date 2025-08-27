@@ -77,6 +77,7 @@ public plugin_natives()
 	register_native("ze_gamemode_get_name", "__native_gamemode_get_name")
 	register_native("ze_gamemode_get_id", "__native_gamemode_get_id")
 	register_native("ze_gamemode_get_count", "__native_gamemode_get_count")
+	register_native("ze_gamemode_is_valid", "__native_gamemode_is_valid")
 	register_native("ze_gamemode_start", "__native_gamemode_start")
 }
 
@@ -402,6 +403,13 @@ public __native_gamemode_get_id(const plugin_id, const num_params)
 	}
 
 	return ZE_GAME_INVALID
+}
+
+public __native_gamemode_is_valid(const plugin_id, const num_params)
+{
+	if (!FIsGameInvalid(get_param(1)))
+		return 1
+	return 0
 }
 
 public __native_gamemode_start(const plugin_id, const num_params)
