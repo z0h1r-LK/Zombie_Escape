@@ -10,7 +10,6 @@ stock const LIBRARY_RESOURCES[] = "ze_resources"
 
 // Define.
 #define GAMEMODE_NAME "Escape"
-//#define SMARTRANDOM_OLD_METHOD
 
 // Custom Forwards.
 enum any:FORWARDS
@@ -32,6 +31,13 @@ enum any:Colors
 	Red = 0,
 	Green,
 	Blue
+}
+
+enum _:RequiredZombies
+{
+	rzb_iMinPlayers,
+	rzb_iMaxPlayers,
+	rzb_iReqZombies
 }
 
 enum _:Positions
@@ -64,6 +70,7 @@ new g_iChance,
 
 // Variables.
 new g_iCountdown,
+	g_bitsWasZombie,
 	bool:g_bReleaseTime
 
 // XVars.
@@ -75,14 +82,6 @@ public x_bFreezeZombie = 0;
 // Array.
 new g_iForwards[FORWARDS],
 	Float:g_flHUDPosit[HUDs]
-
-// String.
-#if !defined SMARTRANDOM_OLD_METHOD
-new g_szAuthID[MAX_PLAYERS+1][MAX_AUTHID_LENGTH]
-#endif
-
-// Trie's.
-new Trie:g_tChosen
 
 // Dynamic Arrays.
 new Array:g_aSounds
@@ -219,24 +218,6 @@ public plugin_cfg()
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_X", g_flHUDPosit[HUD_TIMER][POSIT_X])
 	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y]))
 		ini_write_float(ZE_FILENAME, "HUDs", "HUD_RELEASETIME_Y", g_flHUDPosit[HUD_TIMER][POSIT_Y])
-
-	// Create new Hash Map.
-	g_tChosen = TrieCreate()
-}
-
-public plugin_end()
-{
-	// Free the Memory.
-	TrieDestroy(g_tChosen)
-}
-
-#if !defined SMARTRANDOM_OLD_METHOD
-public ze_user_authorized(id, const szAuthID[], RClientAuth:iClType, bool:bUnauthorized, Float:flAuthTime)
-{
-	if (bUnauthorized || iClType == ZE_AUTH_PROXY)
-		return
-
-	copy(g_szAuthID[id], charsmax(g_szAuthID[]), szAuthID)
 }
 
 public client_disconnected(id, bool:drop, message[], maxlen)
@@ -244,10 +225,8 @@ public client_disconnected(id, bool:drop, message[], maxlen)
 	if (is_user_hltv(id))
 		return
 
-	// Clear string.
-	g_szAuthID[id] = NULL_STRING
+	flag_unset(g_bitsWasZombie, id)
 }
-#endif
 
 public ze_frost_freeze_start(id)
 {
@@ -329,21 +308,37 @@ public ze_gamemode_chosen(game_id, target)
 {
 	new iPlayers[MAX_PLAYERS], iZombies[MAX_PLAYERS], iReqZombie, iNumZombie, iAliveNum, id
 
-#if defined SMARTRANDOM_OLD_METHOD
-	new szAuthID[MAX_AUTHID_LENGTH]
-#endif
-
 	if (!target)
 	{
 		// Get index of all Alive Players.
-		get_players(iPlayers, iAliveNum, "a")
-
-		// Fix call the Spawn function when respawn player.
-		set_xvar_num(g_xFixSpawn, 1)
+		get_players(iPlayers, iAliveNum, "ah")
 
 		// Get required Zombies.
 		iReqZombie = GetRequiredZombies(iAliveNum)
 
+		if (g_bSmartRandom)
+		{
+			for (new i = 0; i < iAliveNum; i++)
+			{
+				id = iPlayers[i]
+
+				if (flag_get_boolean(g_bitsWasZombie, id))
+					continue
+
+				iNumZombie++
+			}
+
+			// Fix stuck while() in infinity loop.
+			if (iNumZombie < iReqZombie)
+			{
+				g_bitsWasZombie = 0
+			}
+		}
+
+		// Fix call the Spawn function when respawn player.
+		set_xvar_num(g_xFixSpawn, 1)
+
+		iNumZombie = 0
 		while (iNumZombie < iReqZombie)
 		{
 			// Get randomly player.
@@ -354,15 +349,8 @@ public ze_gamemode_chosen(game_id, target)
 				continue
 
 			// Player was Zombie in previous Rounds?
-#if defined SMARTRANDOM_OLD_METHOD
-			if (g_bSmartRandom && get_user_authid(id, szAuthID, charsmax(szAuthID)) && TrieKeyExists(g_tChosen, szAuthID))
+			if (g_bSmartRandom && flag_get_boolean(g_bitsWasZombie, id))
 				continue
-#endif
-
-#if !defined SMARTRANDOM_OLD_METHOD
-			if (g_bSmartRandom && g_szAuthID[id][0] && TrieKeyExists(g_tChosen, g_szAuthID[id]))
-				continue
-#endif
 
 			if (g_bBackToSpawn)
 			{
@@ -413,24 +401,14 @@ public ze_gamemode_chosen(game_id, target)
 
 	if (g_bSmartRandom)
 	{
-		// Clear Trie first.
-		TrieClear(g_tChosen)
+		// Clear variable first.
+		g_bitsWasZombie = 0
 
 		// Remember infected players.
 		for (new i = 0; i < iNumZombie; i++)
 		{
-			id = iZombies[i]
-
-			// Store AuthID of the player in Trie.
-#if defined SMARTRANDOM_OLD_METHOD
-			if (get_user_authid(id, szAuthID, charsmax(szAuthID)))
-				TrieSetCell(g_tChosen, szAuthID, 0)
-#endif
-
-#if !defined SMARTRANDOM_OLD_METHOD
-			if (g_szAuthID[id][0])
-				TrieSetCell(g_tChosen, g_szAuthID[id], 0)
-#endif
+			// Store player id.
+			flag_set(g_bitsWasZombie, iZombies[i])
 		}
 	}
 
