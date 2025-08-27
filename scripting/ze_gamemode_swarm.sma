@@ -73,7 +73,6 @@ new g_iChance,
 	bool:g_bFreezeMode,
 	bool:g_bBackToSpawn,
 	bool:g_bRespawnAsZombie,
-	Float:g_flRatio,
 	Float:g_flMultiDamage
 
 // Variables.
@@ -179,8 +178,6 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_swarm_sound", "1"), g_bSounds)
 	bind_pcvar_num(register_cvar("ze_swarm_spawn", "1"), g_bBackToSpawn)
 	bind_pcvar_float(register_cvar("ze_swarm_damage", "2.0"), g_flMultiDamage)
-
-	bind_pcvar_float(register_cvar("ze_swarm_ratio", "0.25"), g_flRatio)
 
 	bind_pcvar_num(register_cvar("ze_release_time", "3"), g_iReleaseTime)
 	bind_pcvar_num(register_cvar("ze_respawn_as_zombie", "1"), g_bRespawnAsZombie)
