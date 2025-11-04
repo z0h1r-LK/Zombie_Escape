@@ -1,6 +1,5 @@
 #include <amxmodx>
 #include <amxmisc>
-#include <sockets>
 #include <hamsandwich>
 #include <fakemeta>
 #include <reapi>
@@ -37,10 +36,7 @@ enum _:FORWARDS
 // Task IDs.
 enum (+=1)
 {
-	TASK_ROUNDTIME = 100,
-	TASK_SVREPONSE,
-	TASK_CONNECTFAIL,
-	TASK_CHECKUPDATE
+	TASK_ROUNDTIME = 100
 }
 
 new const g_szBlockSounds[][] =
@@ -98,10 +94,8 @@ new g_iFwSpawn,
 	g_iAuthCheckTimes,
 	g_bitsIsZombie,
 	g_bitsSpeedFactor,
-	g_hSocketUpdate,
 	g_msgWeapPickup,
 	bool:g_bRoundEnd,
-	bool:g_bCheckUpdate,
 	bool:g_bFreezePeriod,
 	bool:g_bLastHumanDied,
 	Float:g_flAuthRetryDelay
@@ -119,8 +113,7 @@ public x_bGameStarted,
 		x_bFixSpawn,
 		x_iRoundTime,
 		x_iRoundNum,
-		x_bRespawnAsZombie,
-		x_bUpdateAvailable
+		x_bRespawnAsZombie
 
 public plugin_natives()
 {
@@ -144,20 +137,6 @@ public plugin_natives()
 
 	set_module_filter("fw_module_filter")
 	set_native_filter("fw_native_filter")
-}
-
-public fw_module_filter(const module[], LibType:libtype)
-{
-	if (equal(module, "sockets"))
-		return PLUGIN_HANDLED
-	return PLUGIN_CONTINUE
-}
-
-public fw_native_filter(const name[], index, trap)
-{
-	if (!trap)
-		return PLUGIN_HANDLED
-	return PLUGIN_CONTINUE
 }
 
 public plugin_init()
@@ -215,8 +194,6 @@ public plugin_init()
 	bind_pcvar_num(register_cvar("ze_block_MOTD", "1"), g_bBlockStartupMOTD)
 	bind_pcvar_num(register_cvar("ze_block_hintmsg", "1"), g_bBlockHintMessage)
 	bind_pcvar_num(register_cvar("ze_block_tank", "1"), g_iBlockTanks)
-
-	bind_pcvar_num(register_cvar("ze_check_update", "1"), g_bCheckUpdate)
 
 	bind_pcvar_float(get_cvar_pointer("mp_round_restart_delay"), g_flRoundEndDelay)
 
@@ -280,10 +257,6 @@ public plugin_cfg()
 	register_cvar("ze_mod_md5hash", ZE_MD5HASH, FCVAR_SERVER|FCVAR_SPONLY)
 	set_cvar_string("ze_mod_md5hash", ZE_MD5HASH)
 
-	// Check Update.
-	if (g_bCheckUpdate)
-		set_task(10.0, "check_Update", TASK_CHECKUPDATE)
-
 	// Read settings from INI file.
 	if (!ini_read_int(ZE_FILENAME, "Fixes", "AUTH_CHECK_TIMES", g_iAuthCheckTimes))
 		ini_write_int(ZE_FILENAME, "Fixes", "AUTH_CHECK_TIMES", g_iAuthCheckTimes)
@@ -328,106 +301,6 @@ public cvar_ReqPlayers(pCvar)
 			set_cvar_num("sv_restartround", 2)
 		}
 	}
-}
-
-public check_Update(taskid)
-{
-	new error
-
-	// Open a Socket.
-	if ((g_hSocketUpdate = socket_open(ZE_HOME_HOST, ZE_HOME_PORT, SOCKET_TCP, error)))
-	{
-		switch (error)
-		{
-			case 1: server_print("[ZE] Check-Update: Unable to create socket.")
-			case 2: server_print("[ZE] Check-Update: Unable to connect to hostname.")
-			case 3: server_print("[ZE] Check-Update: Unable to connect to HTTP Port.")
-			default: // No error?
-			{
-				// Send request to Server.
-				new szRequest[256]
-				formatex(szRequest, charsmax(szRequest), "GET /%s HTTP/1.1^r^nHost:%s^r^nAccept:application/json^r^n^r^n", ZE_HOME_TOPIC, ZE_HOME_HOST)
-				socket_send2(g_hSocketUpdate, szRequest, strlen(szRequest))
-
-				// Check from reponse.
-				set_task(1.0, "check_Reponse", TASK_SVREPONSE, "", 0, "a", 5)
-				set_task(6.0, "close_Connection", TASK_CONNECTFAIL)
-			}
-		}
-	}
-}
-
-public check_Reponse(taskid)
-{
-	// Data received?
-	if (socket_is_readable(g_hSocketUpdate))
-	{
-		// Remove Other Tasks.
-		remove_task(TASK_SVREPONSE)
-		remove_task(TASK_CONNECTFAIL)
-
-		new szBuffer[512], szVersion[8]
-		socket_recv(g_hSocketUpdate, szBuffer, charsmax(szBuffer))
-
-		new i
-		if ((i = contain(szBuffer, "{")) > -1)
-			copy(szBuffer, charsmax(szBuffer), szBuffer[i])
-
-		new JSON:hJson
-		if ((hJson = json_parse(szBuffer)) == Invalid_JSON)
-		{
-			server_print("[Zombie-Escape] Error while parsing JSON string (Bad JSON format) (-1)")
-		}
-		else
-		{
-			new szMD5Hash[34]
-
-			if (json_object_get_string(hJson, "fversion", szVersion, charsmax(szVersion)) || json_object_get_string(hJson, "md5hash", szMD5Hash, charsmax(szMD5Hash)))
-			{
-				if (str_to_float(szVersion) < ZE_VERSION_FL || !equal(szMD5Hash, ZE_MD5HASH))
-				{
-					x_bUpdateAvailable = 1
-				}
-			}
-		}
-
-		if (x_bUpdateAvailable)
-		{
-			formatex(szBuffer, charsmax(szBuffer), "\
-			^n^n^n\
-			| ***--- Zombie Escape Rebuild %s ---***^n\
-			| There is a new update!^n\
-			| • Official Website: https://escapers-zone.net/^n\
-			| • GitHub: https://github.com/z0h1r-LK/Zombie_Escape/releases/latest/ \
-			^n^n^n\
-			", szVersion)
-
-			server_print(szBuffer)
-
-			new hFile
-			if ((hFile = fopen("update", "wt")))
-			{
-				fputs(hFile, szVersion)
-				fclose(hFile)
-			}
-		}
-		else
-		{
-			server_print("[Zombie-Escape] Your Mod is up to date :)")
-		}
-
-		// Frees handle.
-		json_free(hJson)
-		socket_close(g_hSocketUpdate)
-	}
-}
-
-public close_Connection(taskid)
-{
-	server_print("[Zombie-Escape] Failed to connect to the server!")
-
-	// Close socket.
-	socket_close(g_hSocketUpdate)
 }
 
 public client_putinserver(id)
