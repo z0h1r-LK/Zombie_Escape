@@ -12,17 +12,9 @@ stock const ZE_ET_FILENAME[] = "ze_extra_items"
 /**
  * Mod Version and Authors.
  */
-stock const ZE_VERSION[] = "Rebuild 1.2"
+stock const ZE_VERSION[] = "Rebuild 1.2.1"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
-stock const ZE_MD5HASH[] = "d6cd769667209c4d2d210626910c52c8"
-stock const Float:ZE_VERSION_FL = 1.2
-
-/**
- * Update check, Host info.
- */
-stock const ZE_HOME_HOST[] = "escapers-zone.net"
-stock const ZE_HOME_TOPIC[] = "latest.json"
-stock const ZE_HOME_PORT = 80
+stock const Float:ZE_VERSION_FL = 1.2.1
 
 /**
  * Maximum Knockback speed.
