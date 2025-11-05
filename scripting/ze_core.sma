@@ -134,9 +134,6 @@ public plugin_natives()
 	register_native("ze_round_end", "__native_round_end")
 
 	g_iFwSpawn = register_forward(FM_Spawn, "fw_Spawn_Pre")
-
-	set_module_filter("fw_module_filter")
-	set_native_filter("fw_native_filter")
 }
 
 public plugin_init()
@@ -254,8 +251,6 @@ public plugin_cfg()
 	// Mod Version.
 	register_cvar("ze_mod_version", ZE_VERSION, FCVAR_SERVER|FCVAR_SPONLY)
 	set_cvar_string("ze_mod_version", ZE_VERSION)
-	register_cvar("ze_mod_md5hash", ZE_MD5HASH, FCVAR_SERVER|FCVAR_SPONLY)
-	set_cvar_string("ze_mod_md5hash", ZE_MD5HASH)
 
 	// Read settings from INI file.
 	if (!ini_read_int(ZE_FILENAME, "Fixes", "AUTH_CHECK_TIMES", g_iAuthCheckTimes))

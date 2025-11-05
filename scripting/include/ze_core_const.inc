@@ -12,9 +12,9 @@ stock const ZE_ET_FILENAME[] = "ze_extra_items"
 /**
  * Mod Version and Authors.
  */
-stock const ZE_VERSION[] = "Rebuild 1.2.1"
+stock const ZE_VERSION[] = "Rebuild 1.3"
 stock const ZE_AUTHORS[] = "Escapers-Zone Team"
-stock const Float:ZE_VERSION_FL = 1.2.1
+stock const Float:ZE_VERSION_FL = 1.3
 
 /**
  * Maximum Knockback speed.
