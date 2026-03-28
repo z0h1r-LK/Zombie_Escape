@@ -844,7 +844,7 @@ public fw_TraceAttack_Pre(const iVictim, const iAttacker, const Float:flDamage, 
 public fw_ResetMaxSpeed_Post(const id)
 {
 	// Is not Alive!
-	if (!is_user_alive(id) || g_bFreezePeriod)
+	if (!is_user_alive(id) || !x_bGameStarted || g_bFreezePeriod)
 		return
 
 	static Float:flMaxSpeed
