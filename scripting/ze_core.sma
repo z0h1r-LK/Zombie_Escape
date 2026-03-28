@@ -48,7 +48,7 @@ new const g_szBlockSounds[][] =
 
 new const g_szBlockTxtMsg[][] =
 {
-	"#Terrorits_Win",
+	"#Terrorists_Win",
 	"#CTs_Win",
 	"#Round_Draw",
 	"#Hostages_Not_Rescued",
