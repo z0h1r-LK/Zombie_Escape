@@ -747,15 +747,18 @@ public fw_PlayerKilled_Post(const iVictim, const iAttacker, const iGibs)
 
 	if (!x_bGameChosen)
 	{
-		if (get_playersnum_ex(GetPlayers_ExcludeDead) < g_iReqPlayers)
+		if (!g_bRoundEnd)
 		{
-			// No One Won!
-			rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
-		}
-		else if (!get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST") && !get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT"))
-		{
-			// No One Won!
-			rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
+			if (get_playersnum_ex(GetPlayers_ExcludeDead) < g_iReqPlayers)
+			{
+				// No One Won!
+				rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
+			}
+			else if (!get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "TERRORIST") && !get_playersnum_ex(GetPlayers_ExcludeDead|GetPlayers_MatchTeam, "CT"))
+			{
+				// No One Won!
+				rg_round_end(g_flRoundEndDelay, WINSTATUS_NONE, ROUND_END_DRAW, "", "rounddraw")
+			}
 		}
 	}
 
