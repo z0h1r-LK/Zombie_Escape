@@ -336,12 +336,20 @@ public show_Available_Menu(id)
 	if (!is_user_alive(id) || ze_is_user_zombie(id)) // For safe and avoid bugs.
 		return
 
-	if (!g_iMenuData[id][MD_PRIMARY_CHOSEN])
-		show_Primary_Weapons(id)
-	else if (!g_iMenuData[id][MD_SECONDARY_CHOSEN])
-		show_Secondary_Weapons(id)
+	if (g_iMenuData[id][MD_AUTO_SELECT])
+	{
+		g_iMenuData[id][MD_AUTO_SELECT] = false
+		ze_colored_print(id, "%L", LANG_PLAYER, "MSG_BUY_ENABLED")
+	}
 	else
-		ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ALREADY_BOUGHT")
+	{
+		if (!g_iMenuData[id][MD_PRIMARY_CHOSEN])
+			show_Primary_Weapons(id)
+		else if (!g_iMenuData[id][MD_SECONDARY_CHOSEN])
+			show_Secondary_Weapons(id)
+		else
+			ze_colored_print(id, "%L", LANG_PLAYER, "MSG_ALREADY_BOUGHT")
+	}
 }
 
 public show_Primary_Weapons(id)
