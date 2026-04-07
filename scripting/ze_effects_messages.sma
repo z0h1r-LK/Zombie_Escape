@@ -6,12 +6,6 @@
 // Defines.
 #define TASK_SHOWHUD 100
 
-// HUD Position.
-const Float:HUD_WIN_X = -1.0
-const Float:HUD_WIN_Y = 0.4
-const Float:HUD_SCORE_X = -1.0
-const Float:HUD_SCORE_Y = 0.0
-
 // Colors.
 enum _:Colors
 {
@@ -27,6 +21,19 @@ enum _:Teams
 	Zombie
 }
 
+// HUD Positions
+enum _:eCoord
+{
+	Float:Posit_X = 0,
+	Float:Posit_Y
+}
+
+enum _:eHUDs
+{
+	HUD_WIN = 0,
+	HUD_SCORE
+}
+
 // Cvars.
 new g_iWinMsgMode,
 	g_iScoreMsgMode,
@@ -38,6 +45,9 @@ new g_iWinMsgMode,
 new g_iHumanWins,
 	g_iZombieWins,
 	g_iMsgScoreHUD
+
+// Array.
+new g_flPosit[eHUDs][eCoord]
 
 public plugin_init()
 {
@@ -62,10 +72,30 @@ public plugin_init()
 	g_iMsgScoreHUD = CreateHudSyncObj()
 }
 
+public plugin_cfg()
+{
+	g_flPosit[HUD_WIN][Posit_X] = -1.0
+	g_flPosit[HUD_WIN][Posit_Y] = 0.4
+	g_flPosit[HUD_SCORE][Posit_X] = -1.0
+	g_flPosit[HUD_SCORE][Posit_Y] = 0.0
+
+	// Read HUD dimension(s) from INI file.
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_WIN_X", g_flPosit[HUD_WIN][Posit_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_WIN_X", g_flPosit[HUD_WIN][Posit_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_WIN_Y", g_flPosit[HUD_WIN][Posit_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_WIN_Y", g_flPosit[HUD_WIN][Posit_Y])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_SCORE_X", g_flPosit[HUD_SCORE][Posit_X]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_SCORE_X", g_flPosit[HUD_SCORE][Posit_X])
+	if (!ini_read_float(ZE_FILENAME, "HUDs", "HUD_SCORE_Y", g_flPosit[HUD_SCORE][Posit_Y]))
+		ini_write_float(ZE_FILENAME, "HUDs", "HUD_SCORE_Y", g_flPosit[HUD_SCORE][Posit_Y])
+}
+
 public client_disconnected(id, bool:drop, message[], maxlen)
 {
-	// Remove tasks.
-	remove_task(id+TASK_SHOWHUD)
+	if (is_user_hltv(id))  // HLTV ?
+		return
+
+	remove_task(id+TASK_SHOWHUD)  // Remove tasks.
 }
 
 public ze_game_started()
@@ -96,12 +126,12 @@ public show_ScoreMessage(id)
 	{
 		case 1: // HUD.
 		{
-			set_hudmessage(g_iScoreMsgColors[Red], g_iScoreMsgColors[Green], g_iScoreMsgColors[Blue], HUD_SCORE_X, HUD_SCORE_Y, 0, 1.0, 1.0, 0.1, 0.1)
+			set_hudmessage(g_iScoreMsgColors[Red], g_iScoreMsgColors[Green], g_iScoreMsgColors[Blue], g_flPosit[HUD_SCORE][Posit_X], g_flPosit[HUD_SCORE][Posit_Y], 0, 1.0, 1.0, 0.1, 0.1)
 			ShowSyncHudMsg(id, g_iMsgScoreHUD, "%L", LANG_PLAYER, "HUD_SCOREMESSAGE", g_iHumanWins, g_iZombieWins)
 		}
 		case 2: // DHUD.
 		{
-			set_dhudmessage(g_iScoreMsgColors[Red], g_iScoreMsgColors[Green], g_iScoreMsgColors[Blue], HUD_SCORE_X, HUD_SCORE_Y, 0, 1.0, 1.0, 0.1, 0.1)
+			set_dhudmessage(g_iScoreMsgColors[Red], g_iScoreMsgColors[Green], g_iScoreMsgColors[Blue], g_flPosit[HUD_SCORE][Posit_X], g_flPosit[HUD_SCORE][Posit_Y], 0, 1.0, 1.0, 0.1, 0.1)
 			show_dhudmessage(id, "%L", LANG_PLAYER, "HUD_SCOREMESSAGE", g_iHumanWins, g_iZombieWins)
 		}
 	}
@@ -145,12 +175,12 @@ public ze_roundend(iWinTeam)
 				}
 				case 3: // HUD.
 				{
-					set_hudmessage(iMsgColor[Red], iMsgColor[Green], iMsgColor[Blue], HUD_WIN_X, HUD_WIN_Y, 2, g_flWinMsgDuration, g_flWinMsgDuration, 0.05, 0.0)
+					set_hudmessage(iMsgColor[Red], iMsgColor[Green], iMsgColor[Blue], g_flPosit[HUD_WIN][Posit_X], g_flPosit[HUD_WIN][Posit_Y], 2, g_flWinMsgDuration, g_flWinMsgDuration, 0.05, 0.0)
 					show_hudmessage(0, "%L", LANG_PLAYER, szTransKey)
 				}
 				case 4: // DHUD.
 				{
-					set_dhudmessage(iMsgColor[Red], iMsgColor[Green], iMsgColor[Blue], HUD_WIN_X, HUD_WIN_Y, 2, g_flWinMsgDuration, g_flWinMsgDuration, 0.05, 0.0)
+					set_dhudmessage(iMsgColor[Red], iMsgColor[Green], iMsgColor[Blue], g_flPosit[HUD_WIN][Posit_X], g_flPosit[HUD_WIN][Posit_Y], 2, g_flWinMsgDuration, g_flWinMsgDuration, 0.05, 0.0)
 					show_dhudmessage(0, "%L", LANG_PLAYER, szTransKey)
 				}
 			}
