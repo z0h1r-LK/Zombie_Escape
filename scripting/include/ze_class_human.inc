@@ -17,7 +17,7 @@
  * @param id           Client index.
  * @param iClassID     Class index.
  * @param bHumanized   true = Assigning Human attributes to the player | false = Do not assign attributes.
- * @param bInMenu      true = Ignore item cost (menu preview) | false = Apply item cost.
+ * @param bInMenu      true = Display it on Menu (menu preview) | false = Assigning Human attributes.
  * @param szName[]     Human name.
  * @param szDesc[]     Human description.
  * @param szModel[]    Human player model.

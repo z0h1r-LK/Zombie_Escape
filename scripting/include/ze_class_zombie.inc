@@ -17,7 +17,7 @@
  * @param id          Client index.
  * @param iClassID    Class index.
  * @param bInfected   true = Assigning Zombie attributes to the player | false = Do not assign attributes.
- * @param bInMenu     true = Ignore item cost (menu preview) | false = Apply item cost.
+ * @param bInMenu     true = Display it on Menu (menu preview) | false = Assigning Zombie attributes.
  * @param szName[]    Zombie name.
  * @param szDesc[]    Zombie description.
  * @param szModel[]   Zombie player model.
