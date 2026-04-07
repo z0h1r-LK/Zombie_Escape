@@ -28,6 +28,7 @@ enum _:FORWARDS
 	FORWARD_USER_LAST_HUMAN,
 	FORWARD_USER_LAST_ZOMBIE,
 	FORWARD_USER_AUTHORIZED,
+	FORWARD_USER_NAMECHANGED,
 	FORWARD_USER_DISCONNECTED,
 	FORWARD_ROUNDEND
 }
@@ -162,6 +163,7 @@ public plugin_init()
 	RegisterHookChain(RG_CBasePlayer_ResetMaxSpeed, "fw_ResetMaxSpeed_Post", 1)
 	RegisterHookChain(RG_CBasePlayer_HasRestrictItem, "fw_HasRestrictItem_Pre", 0)
 	RegisterHookChain(RG_CBasePlayer_HintMessageEx, "fw_PlayerHintMessageEx_Pre")
+	RegisterHookChain(RG_CBasePlayer_SetClientUserInfoName, "fw_SetClientInfoName_Post", 1)
 	RegisterHookChain(RG_CSGameRules_CheckWinConditions, "fw_CheckWinConditions_Post", 1)
 	RegisterHookChain(RG_RoundEnd, "fw_RoundEnd_Post", 1)
 
@@ -207,6 +209,7 @@ public plugin_init()
 	g_iForwards[FORWARD_USER_KILLED_POST] = CreateMultiForward("ze_user_killed_post", ET_IGNORE, FP_CELL, FP_CELL, FP_CELL)
 	g_iForwards[FORWARD_USER_LAST_HUMAN] = CreateMultiForward("ze_user_last_human", ET_IGNORE, FP_CELL)
 	g_iForwards[FORWARD_USER_LAST_ZOMBIE] = CreateMultiForward("ze_user_last_zombie", ET_IGNORE, FP_CELL)
+	g_iForwards[FORWARD_USER_NAMECHANGED] = CreateMultiForward("ze_user_namechanged", ET_IGNORE, FP_CELL, FP_STRING, FP_STRING)
 	g_iForwards[FORWARD_USER_AUTHORIZED] = CreateMultiForward("ze_user_authorized", ET_IGNORE, FP_CELL, FP_STRING, FP_CELL, FP_CELL, FP_FLOAT)
 	g_iForwards[FORWARD_USER_DISCONNECTED] = CreateMultiForward("ze_user_disconnected", ET_CONTINUE, FP_CELL)
 	g_iForwards[FORWARD_ROUNDEND] = CreateMultiForward("ze_roundend", ET_IGNORE, FP_CELL)
@@ -273,6 +276,7 @@ public plugin_end()
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_HUMAN])
 	DestroyForward(g_iForwards[FORWARD_USER_LAST_ZOMBIE])
 	DestroyForward(g_iForwards[FORWARD_USER_AUTHORIZED])
+	DestroyForward(g_iForwards[FORWARD_USER_NAMECHANGED])
 	DestroyForward(g_iForwards[FORWARD_USER_DISCONNECTED])
 	DestroyForward(g_iForwards[FORWARD_ROUNDEND])
 }
@@ -889,6 +893,18 @@ public fw_PlayerHintMessageEx_Pre(id, const message[], Float:duration, bool:bDis
 	}
 
 	return HC_CONTINUE
+}
+
+public fw_SetClientInfoName_Post(const id, const szBuffer[], const szNewName[])
+{
+	if (!is_user_connected(id))
+		return
+
+	new szName[MAX_NAME_LENGTH]
+	get_user_name(id, szName, charsmax(szName))
+
+	// Call forward ze_user_namechanged(param1, string2[], string3[])
+	ExecuteForward(g_iForwards[FORWARD_USER_NAMECHANGED], _/* Ignore return value */, id, szNewName, szName)
 }
 
 public fw_CheckWinConditions_Post()

@@ -146,6 +146,21 @@ forward ze_user_last_zombie(id);
 forward ze_user_authorized(id, const authid[], RClientAuth:client_type, bool:unnauthorized, Float:auth_time);
 
 /**
+ * Called after a client (player) name has changed.
+ *
+ * @note This will be called only when the player's name actually changes.
+ *       Use client_infochanged() to detect client name updates.
+ *       Prefer this forward when you need to load or update data keyed by name.
+ *
+ * @param id          Client index.
+ * @param szNewName[] New name.
+ * @param szOldName[] Old name.
+ *
+ * @noreturn
+ */
+forward ze_user_namechanged(id, const szNewName[], const szOldName[]);
+
+/**
  * Called when player leave the server.
  *
  * @note Can prevent check Mod rules.
