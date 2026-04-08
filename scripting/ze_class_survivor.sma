@@ -177,15 +177,15 @@ public plugin_init()
 
 public cmd_DropWeapon(const id)
 {
-	// Player isn't Survivor?
-	if (!is_user_survivor(id))
+	if (!g_bBlockWeapon)
 		return PLUGIN_CONTINUE
 
 	// Player isn't Alive?
 	if (!is_user_alive(id))
 		return PLUGIN_CONTINUE
 
-	if (g_bBlockWeapon)
+	// Player isn't Survivor?
+	if (is_user_survivor(id))
 		return PLUGIN_HANDLED
 
 	// Allow drop Guns.
