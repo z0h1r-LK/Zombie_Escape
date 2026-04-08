@@ -244,16 +244,16 @@ public ze_user_authorized(id, const szAuthID[], RClientAuth:clientType, bool:Unn
 	read_Coins(id)
 }
 
-public client_infochanged(id)
+public ze_user_namechanged(id, const szNewName[], const szOldName[])
 {
-	if (!is_user_connected(id) || is_user_hltv(id))
+	if (is_user_hltv(id))
 		return
 
 	if (g_iAuthType != 0) // AuthID?
 		return
 
 	// Get new name of the player.
-	get_user_info(id, "name", g_szAuth[id], charsmax(g_szAuth[]))
+	copy(g_szAuth[id], charsmax(g_szAuth[]), szNewName)
 	g_szAuth[id][MAX_NAME_LENGTH] = EOS
 
 	// Load player's coins.
