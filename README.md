@@ -2,8 +2,10 @@
   <img src="https://i.ibb.co/DfrDSVzB/tb.jpg" alt="Escapers-Zone Logo 64x64" width="85%" height="70%">
 </div>
 
-# <div align="center">Escapers-Zone Project – Zombie Escape Rebuild</div>
- [![download_latest](https://img.shields.io/badge/Download-Latest-red.svg)](https://github.com/z0h1r-LK/Zombie_Escape/releases/latest) [![](https://img.shields.io/badge/MOD-Plugins-green.svg)](http://escapers-zone.net/viewforum.php?f=13&sid=8d8c450787bb956d25192fad35e4bb00)
+# <div align="center"> Escapers-Zone Project – Zombie Escape Rebuild</div>
+[![Release](https://img.shields.io/github/v/release/z0h1r-LK/Zombie_Escape)](https://github.com/z0h1r-LK/Zombie_Escape/releases/latest)
+[![License](https://img.shields.io/github/license/z0h1r-LK/Zombie_Escape)](https://github.com/z0h1r-LK/Zombie_Escape/blob/main/LICENSE) 
+[![Downloads](https://img.shields.io/github/downloads/z0h1r-LK/Zombie_Escape/total)](https://github.com/z0h1r-LK/Zombie_Escape/releases)
 
 ## ℹ️ – What is Zombie Escape Rebuild :
 Zombie Escape Rebuild is free and open source mod built from scratch for Counter-Strike 1.6 and Condition Zero, Based on core of [Escapers-Zone.NET](https://escapers-zone.net/) (1.6) with a lot of the changes, fixes and improvements, Also its contains features are exist in **Zombie Plague 4.3/5.0**. Supports classic (Dias Mod), modern. Its dynamic mod and easy in customization.
