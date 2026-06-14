@@ -25,7 +25,7 @@ Zombie Escape Rebuild is free and open source mod built from scratch for Counter
 | Metamod-R *(Recommended)* | [1.3.0.149](https://github.com/rehlds/Metamod-R/releases/tag/1.3.0.149) or newer |
 
 > [!TIP]
-> I recommend you to install Metamod-R instead Metamod-R, Its better and optimized well.
+> I recommend you to install Metamod-R instead Metamod-P, Its better and optimized well.
 
 ## 🔌 – Add-Ons :
 |  | Link |
