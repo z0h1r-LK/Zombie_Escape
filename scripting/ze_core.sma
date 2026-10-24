@@ -143,7 +143,7 @@ public plugin_init()
 
 	// Events.
 	register_event("HLTV", "fw_NewRound_Event", "a", "1=0", "2=0")
-	register_event("TextMsg", "fw_RestartRound_Event", "a", "2=#Game_will_restart_in", "2=#Game_Commecing", "2=#Round_Draw")
+	register_event("TextMsg", "fw_RestartRound_Event", "a", "2=#Game_will_restart_in", "2=#Game_Commencing", "2=#Round_Draw")
 	register_logevent("fw_RoundStart_Event", 2, "1=Round_Start")
 	register_logevent("fw_RoundEnd_Event", 2, "1=Round_End")
 
